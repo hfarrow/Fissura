@@ -23,6 +23,7 @@ namespace fissura
 		StackAllocator& getLower();
 		u32 getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
+		bool canDeallocate() const { return false; }
 		void clear();
 
 	private:

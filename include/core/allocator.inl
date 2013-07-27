@@ -79,7 +79,10 @@ void Allocator::deallocateDelete(T* pObject)
 	if(pObject != nullptr)
 	{
 		pObject->~T();
-		deallocate(pObject);
+		if(canDeallocate())
+		{
+			deallocate(pObject);
+		}
 	}
 }
 template <class T>
@@ -120,6 +123,9 @@ void Allocator::deallocateArray(T* pArray)
 		pArray[i].~T();
 	}
 
-	u32 headerSize = calcArrayHeaderSize<T>();
-	deallocate(pArray - headerSize);
+	if(canDeallocate())
+	{
+		u32 headerSize = calcArrayHeaderSize<T>();
+		deallocate(pArray - headerSize);
+	}
 }

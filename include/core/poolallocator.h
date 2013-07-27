@@ -19,6 +19,7 @@ namespace fissura
 
 		u32 getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
+		bool canDeallocate() const { return true; }
 
 	private:
 		void resetFreeList();

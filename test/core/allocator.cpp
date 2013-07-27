@@ -59,7 +59,17 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_object)
 
 	// StackAllocator cannot deallocate. This test will need to use a different
 	// type of allocator once one has been created.
-	//pAllocator->deallocateDelete<TestObject>(pObj);
+	pAllocator->deallocateDelete<TestObject>(pObj);
+	//BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_deallocate_object_macro)
+{
+	TestObject* pObj = FS_NEW(TestObject, pAllocator);
+
+	// StackAllocator cannot deallocate. This test will need to use a different
+	// type of allocator once one has been created.
+	FS_DELETE(pObj, pAllocator);
 	//BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 0);
 }
 

@@ -40,6 +40,7 @@ namespace fissura
 		void deallocate(void* p);
 		u32 getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
+		bool canDeallocate() const { return false; }
 
 		Marker getMarker() const;
 		void deallocateToMarker(const Marker& marker);

@@ -17,6 +17,7 @@ namespace fissura
 
 		u32 getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
+		bool canDeallocate() const { return false; }
 
 		void swapBuffers();
 		void clearCurrentBuffer();

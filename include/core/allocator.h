@@ -5,6 +5,9 @@
 #include <core/util.h>
 #include <new>
 
+#define FS_NEW(T, allocator) new((allocator)->allocate(sizeof(T), __alignof(T))) T
+#define FS_DELETE(p, allocator) if((p)){(allocator)->deallocateDelete((p));}
+
 namespace fissura
 {
 	class Allocator : public Uncopyable
@@ -17,6 +20,7 @@ namespace fissura
 		virtual void deallocate(void* p) = 0;
 		virtual u32 getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
+		virtual bool canDeallocate() const = 0;
 
 		template <class T> T* allocateNew();
 		template <class T> T* allocateNew(const T& t);

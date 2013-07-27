@@ -2,10 +2,11 @@
 #define CORE_POOL_ALLOCATOR_H
 
 #include <core/types.h>
+#include <core/allocator.h>
 
 namespace fissura
 {
-	class PoolAllocator
+	class PoolAllocator : public Allocator
 	{
 	public:
 		PoolAllocator(u32 objectSize, u32 objAlignment, u32 memorySize, void* pMemory);
@@ -20,9 +21,6 @@ namespace fissura
 		u32 getTotalNumAllocations() const;
 
 	private:
-		PoolAllocator(PoolAllocator& other);
-		PoolAllocator& operator=(const PoolAllocator& rhs);
-
 		void resetFreeList();
 
 		u32 _objectSize;

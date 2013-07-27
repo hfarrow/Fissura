@@ -6,7 +6,7 @@
 
 namespace fissura
 {
-	class DoubleBufferedAllocator
+	class DoubleBufferedAllocator : public Allocator
 	{
 	public:
 		DoubleBufferedAllocator(StackAllocator& stackA, StackAllocator& stackB);
@@ -14,6 +14,9 @@ namespace fissura
 
 		void* allocate(u32 size, u8 alignment);
 		void deallocate(void* p);
+
+		u32 getTotalUsedMemory() const;
+		u32 getTotalNumAllocations() const;
 
 		void swapBuffers();
 		void clearCurrentBuffer();
@@ -23,9 +26,6 @@ namespace fissura
 		const StackAllocator& getStackB() const;
 
 	private:
-		DoubleBufferedAllocator(DoubleBufferedAllocator& other);
-		DoubleBufferedAllocator& operator=( const DoubleBufferedAllocator& rhs );
-
 		StackAllocator* _stacks[2];
 		u32 _currentStack;
 	};

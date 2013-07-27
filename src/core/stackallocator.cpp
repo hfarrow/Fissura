@@ -33,7 +33,8 @@ void StackAllocator::init(u32 stackSize, void* pStack, bool growUpwards)
 
 StackAllocator::~StackAllocator()
 {
-
+	FS_ASSERT(_totalNumAllocations == 0);
+	FS_ASSERT(_totalUsedMemory == 0);
 }
 
 void* StackAllocator::allocate(u32 size, u8 alignment)

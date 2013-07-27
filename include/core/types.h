@@ -20,6 +20,17 @@ namespace fissura
 	typedef std::int_fast32_t i32f;
 	typedef std::uint_fast32_t u32f;
 	typedef __m128 vf32;
+
+	class Uncopyable
+	{
+	public:
+		Uncopyable(){}
+		~Uncopyable(){}
+
+	private:
+		Uncopyable(const Uncopyable&);
+		Uncopyable& operator=(const Uncopyable&);
+	};
 }
 
 #endif

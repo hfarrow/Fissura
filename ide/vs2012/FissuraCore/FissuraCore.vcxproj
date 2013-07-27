@@ -63,6 +63,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_54_0;../../../include/;../../../src;$(ProjectDir)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,6 +80,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_54_0;../../../include/;../../../src;$(ProjectDir)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,6 +98,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_54_0;../../../include/;../../../src;$(ProjectDir)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +119,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\core\allocator.cpp" />
     <ClCompile Include="..\..\..\src\core\doublebufferedallocator.cpp" />
     <ClCompile Include="..\..\..\src\core\doublestackallocator.cpp" />
     <ClCompile Include="..\..\..\src\core\poolallocator.cpp" />
@@ -128,6 +132,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\core\allocator.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dlmalloc\dlmalloc\dlmalloc.vcxproj">
+      <Project>{867734c1-ec96-4105-b2cf-38e2292f1950}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

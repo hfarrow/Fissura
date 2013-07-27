@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraCore", "FissuraCore\FissuraCore.vcxproj", "{19AEC263-D5CE-419F-A45B-2B3AAFA5F875}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraTest", "tests\FissuraTest\FissuraTest.vcxproj", "{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraTest", "test\FissuraTest\FissuraTest.vcxproj", "{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmallocSpike", "spike\dlmallocSpike\dlmallocSpike.vcxproj", "{BEE3ACB1-4862-4490-87AB-85AD6971534B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc", "dlmalloc\dlmalloc\dlmalloc.vcxproj", "{867734C1-EC96-4105-B2CF-38E2292F1950}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +28,18 @@ Global
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Win32.Build.0 = DebugTestable|Win32
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Win32.ActiveCfg = Release|Win32
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Win32.Build.0 = Release|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.Debug|Win32.Build.0 = Debug|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.DebugTestable|Win32.ActiveCfg = Debug|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.DebugTestable|Win32.Build.0 = Debug|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.Release|Win32.ActiveCfg = Release|Win32
+		{BEE3ACB1-4862-4490-87AB-85AD6971534B}.Release|Win32.Build.0 = Release|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.Debug|Win32.ActiveCfg = Debug|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.Debug|Win32.Build.0 = Debug|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.DebugTestable|Win32.ActiveCfg = Debug|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.DebugTestable|Win32.Build.0 = Debug|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.Release|Win32.ActiveCfg = Release|Win32
+		{867734C1-EC96-4105-B2CF-38E2292F1950}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

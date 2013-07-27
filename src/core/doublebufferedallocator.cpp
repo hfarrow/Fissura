@@ -14,7 +14,10 @@ DoubleBufferedAllocator::DoubleBufferedAllocator(StackAllocator& stackA, StackAl
 
 DoubleBufferedAllocator::~DoubleBufferedAllocator()
 {
-	
+	FS_ASSERT(_stacks[0]->getTotalNumAllocations() == 0);
+	FS_ASSERT(_stacks[0]->getTotalUsedMemory() == 0);
+	FS_ASSERT(_stacks[1]->getTotalNumAllocations() == 0);
+	FS_ASSERT(_stacks[1]->getTotalUsedMemory() == 0);
 }
 
 void* DoubleBufferedAllocator::allocate(u32 size, u8 alignment)
@@ -25,6 +28,16 @@ void* DoubleBufferedAllocator::allocate(u32 size, u8 alignment)
 void DoubleBufferedAllocator::deallocate(void* p)
 {
 	FS_ASSERT(!"Cannot deallocate from DoubleBufferedAllocator. Use clearCurrentBuffer instead.");
+}
+
+u32 DoubleBufferedAllocator::getTotalUsedMemory() const
+{
+	return _stacks[0]->getTotalUsedMemory() + _stacks[1]->getTotalUsedMemory();
+}
+
+u32 DoubleBufferedAllocator::getTotalNumAllocations() const
+{
+	return _stacks[0]->getTotalNumAllocations() + _stacks[1]->getTotalNumAllocations();
 }
 
 void DoubleBufferedAllocator::swapBuffers()

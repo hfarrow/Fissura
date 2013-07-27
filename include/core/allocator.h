@@ -7,18 +7,16 @@
 
 namespace fissura
 {
-	template <class AllocatorType>
-	class Allocator
+	class Allocator : public Uncopyable
 	{
 	public:
-		Allocator(AllocatorType& allocator);
-		~Allocator();
+		Allocator();
+		virtual ~Allocator();
 
-		AllocatorType& getAllocator() const;
-		void* allocate(u32 size, u8 alignment);
-		void deallocate(void* p);
-		u32 getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
+		virtual void* allocate(u32 size, u8 alignment) = 0;
+		virtual void deallocate(void* p) = 0;
+		virtual u32 getTotalUsedMemory() const = 0;
+		virtual u32 getTotalNumAllocations() const = 0;
 
 		template <class T> T* allocateNew();
 		template <class T> T* allocateNew(const T& t);
@@ -26,9 +24,6 @@ namespace fissura
 
 		template <class T> T* allocateArray(u32 length);
 		template <class T> void deallocateArray(T* pArray);
-
-	private:
-		AllocatorType& _allocator;
 	};
 
 	template <class T> inline u32 calcArrayHeaderSize();

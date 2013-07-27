@@ -16,7 +16,6 @@ struct allocator_fixture
 {
 	allocator_fixture()
 	{
-		pStack = nullptr;
 		pStackData = nullptr;
 		pAllocator = nullptr;
 		resizeStack(DEFAULT_STACK_MEM_SIZE);
@@ -24,29 +23,26 @@ struct allocator_fixture
 
 	~allocator_fixture()
 	{
-		pStack->clear();
+		static_cast<StackAllocator*>(pAllocator)->clear();
 		resizeStack(0);
 	}
 
 	void resizeStack(u32 size)
 	{
 		delete pAllocator;
-		delete pStack;
 		delete pStackData;
 
 		currentStackSize = size;
 		if(size > 0)
 		{
 			pStackData = new u8[size];
-			pStack = new StackAllocator(size, pStackData);
-			pAllocator = new Allocator<StackAllocator>(*pStack);
+			pAllocator = new StackAllocator(size, pStackData);
 		}
 	}
 
 	u32 currentStackSize;
-	StackAllocator* pStack;
 	void* pStackData;
-	Allocator<StackAllocator>* pAllocator;
+	Allocator* pAllocator;
 };
 
 struct TestObject
@@ -55,12 +51,6 @@ struct TestObject
 };
 
 BOOST_FIXTURE_TEST_SUITE(allocator, allocator_fixture)
-
-BOOST_AUTO_TEST_CASE(get_allocator_matches_expected)
-{
-	auto& stack = pAllocator->getAllocator();
-	BOOST_CHECK((uptr)&stack == (uptr)pStack);
-}
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_object)
 {
@@ -79,8 +69,8 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_array)
 	BOOST_REQUIRE(pArray != nullptr);
 
 	// + sizeof(TestObject) for array header
-	BOOST_CHECK(pAllocator->getAllocator().getTotalUsedMemory() == sizeof(TestObject) * 3 + sizeof(TestObject));
-	BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 1);
+	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(TestObject) * 3 + sizeof(TestObject));
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
 
 	// StackAllocator cannot deallocate. This test will need to use a different
 	// type of allocator once one has been created.

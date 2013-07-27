@@ -31,7 +31,7 @@ PoolAllocator::PoolAllocator(u32 objectSize, u32 objectAlignment, u32 memorySize
 
 PoolAllocator::~PoolAllocator()
 {
-
+	FS_ASSERT(_totalNumAllocations == 0);
 }
 
 void PoolAllocator::resetFreeList()
@@ -49,6 +49,8 @@ void PoolAllocator::resetFreeList()
 	// Set the final free list pointer to null.
 	uptr* pLastObject = (uptr*)((uptr)_pFreeList + ((_maxObjects - 1) * _objectSize));
 	*pLastObject = 0;
+
+	_totalNumAllocations = 0;
 }
 
 void* PoolAllocator::allocateSingle()

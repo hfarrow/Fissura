@@ -2,16 +2,19 @@
 #define CORE_DOUBLE_STACK_ALLOCATOR_H
 
 #include <core/types.h>
+#include <core/allocator.h>
 #include <core/stackallocator.h>
 
 namespace fissura
 {
-	class DoubleStackAllocator
+	class DoubleStackAllocator : public Allocator
 	{
 	public:
 		DoubleStackAllocator(u32 stackSize, void* pStack);
 		~DoubleStackAllocator();
 
+		void* allocate(u32 size, u8 alignment);
+		void deallocate(void* p);
 		void* allocateUpper(u32 size, u8 alignment);
 		void* allocateLower(u32 size, u8 alignment);
 		void deallocateUpper(StackAllocator::Marker& marker);
@@ -23,9 +26,6 @@ namespace fissura
 		void clear();
 
 	private:
-		DoubleStackAllocator(DoubleStackAllocator& other);
-		DoubleStackAllocator& operator=( const DoubleStackAllocator& rhs );
-
 		StackAllocator _upper;
 		StackAllocator _lower;
 	};

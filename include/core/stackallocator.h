@@ -2,10 +2,11 @@
 #define FS_STACK_ALLOCATOR_H
 
 #include <core/types.h>
+#include <core/allocator.h>
 
 namespace fissura
 {
-	class StackAllocator
+	class StackAllocator : public Allocator
 	{
 	public:
 		friend class DoubleStackAllocator;
@@ -45,8 +46,6 @@ namespace fissura
 		void clear();
 
 	private:
-		StackAllocator(StackAllocator& other);
-		StackAllocator& operator=(const StackAllocator& rhs);
 		/*
 		// No header required for stack allocator.
 		// Leaving struct here for easy addiditon of header

@@ -15,7 +15,20 @@ DoubleStackAllocator::DoubleStackAllocator(u32 stackSize, void* pStack)
 
 DoubleStackAllocator::~DoubleStackAllocator()
 {
+	FS_ASSERT(_upper.getTotalNumAllocations() == 0);
+	FS_ASSERT(_upper.getTotalUsedMemory() == 0);
+	FS_ASSERT(_lower.getTotalNumAllocations() == 0);
+	FS_ASSERT(_lower.getTotalUsedMemory() == 0);
+}
 
+void* DoubleStackAllocator::allocate(u32 size, u8 alignment)
+{
+	return _lower.allocate(size, alignment);
+}
+
+void DoubleStackAllocator::deallocate(void* p)
+{
+	FS_ASSERT(!"Cannot deallocate from DoubleStackAllocator. Use deallocateLower or deallocateUpper instead.");
 }
 
 void* DoubleStackAllocator::allocateUpper(u32 size, u8 alignment)

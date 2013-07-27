@@ -61,54 +61,20 @@ inline u8 fissura::alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 he
 	return adjustment;
 }
 
-template <class AllocatorType>
-Allocator<AllocatorType>::Allocator(AllocatorType& allocator)
-	:
-	_allocator(allocator)
-{
-	
-}
-
-template <class AllocatorType>
-Allocator<AllocatorType>::~Allocator()
-{
-}
-
-template <class AllocatorType>
-AllocatorType& Allocator<AllocatorType>::getAllocator() const
-{
-	return _allocator;
-}
-
-template <class AllocatorType>
-void* Allocator<AllocatorType>::allocate(u32 size, u8 alignment)
-{
-	return _allocator.allocate(size, alignment);
-}
-
-template <class AllocatorType>
-void Allocator<AllocatorType>::deallocate(void* p)
-{
-	_allocator.deallocate(p);
-}
-
-template <class AllocatorType>
 template <class T>
-T* Allocator<AllocatorType>::allocateNew()
+T* Allocator::allocateNew()
 {
 	return new (allocate(sizeof(T), __alignof(T))) T;
 }
 
-template <class AllocatorType>
 template <class T>
-T* Allocator<AllocatorType>::allocateNew(const T& t)
+T* Allocator::allocateNew(const T& t)
 {
 	return new (allocate(sizeof(T), __alignof(T))) T(t);
 }
 
-template <class AllocatorType>
 template <class T>
-void Allocator<AllocatorType>::deallocateDelete(T* pObject)
+void Allocator::deallocateDelete(T* pObject)
 {
 	if(pObject != nullptr)
 	{
@@ -116,9 +82,8 @@ void Allocator<AllocatorType>::deallocateDelete(T* pObject)
 		deallocate(pObject);
 	}
 }
-template <class AllocatorType>
 template <class T>
-T* Allocator<AllocatorType>::allocateArray(u32 length)
+T* Allocator::allocateArray(u32 length)
 {
 	if(length == 0)
 	{
@@ -140,9 +105,8 @@ T* Allocator<AllocatorType>::allocateArray(u32 length)
 	return p;
 }
 
-template <class AllocatorType>
 template <class T>
-void Allocator<AllocatorType>::deallocateArray(T* pArray)
+void Allocator::deallocateArray(T* pArray)
 {
 	if(pArray == nullptr)
 	{
@@ -158,16 +122,4 @@ void Allocator<AllocatorType>::deallocateArray(T* pArray)
 
 	u32 headerSize = calcArrayHeaderSize<T>();
 	deallocate(pArray - headerSize);
-}
-
-template <class AllocatorType>
-u32 Allocator<AllocatorType>::getTotalUsedMemory() const
-{
-	return _allocator.getTotalUsedMemory();
-}
-
-template <class AllocatorType>
-u32 Allocator<AllocatorType>::getTotalNumAllocations() const
-{
-	return _allocator.getTotalNumAllocations();
 }

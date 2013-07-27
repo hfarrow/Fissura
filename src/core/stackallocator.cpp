@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <core/allocator.h>
+#include <core/stackallocator.h>
 #include <core/util.h>
 
 using namespace fissura;

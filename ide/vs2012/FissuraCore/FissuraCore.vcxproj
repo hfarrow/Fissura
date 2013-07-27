@@ -111,6 +111,7 @@
     <ClInclude Include="..\..\..\include\core\allocator.h" />
     <ClInclude Include="..\..\..\include\core\doublebufferedallocator.h" />
     <ClInclude Include="..\..\..\include\core\doublestackallocator.h" />
+    <ClInclude Include="..\..\..\include\core\heapallocator.h" />
     <ClInclude Include="..\..\..\include\core\poolallocator.h" />
     <ClInclude Include="..\..\..\include\core\stackallocator.h" />
     <ClInclude Include="..\..\..\include\core\types.h" />
@@ -122,6 +123,7 @@
     <ClCompile Include="..\..\..\src\core\allocator.cpp" />
     <ClCompile Include="..\..\..\src\core\doublebufferedallocator.cpp" />
     <ClCompile Include="..\..\..\src\core\doublestackallocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\heapallocator.cpp" />
     <ClCompile Include="..\..\..\src\core\poolallocator.cpp" />
     <ClCompile Include="..\..\..\src\core\stackallocator.cpp" />
     <ClCompile Include="stdafx.cpp">

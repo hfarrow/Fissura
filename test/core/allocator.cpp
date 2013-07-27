@@ -1,11 +1,11 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/stackallocator.h>
+#include <core/heapallocator.h>
 #include <core/allocator.h>
 #include <core/types.h>
 #include <exception>
 
-#define DEFAULT_STACK_MEM_SIZE  256 // bytes
+#define DEFAULT_STACK_MEM_SIZE  (64 * 1024) // bytes
 
 using namespace fissura;
 
@@ -23,7 +23,6 @@ struct allocator_fixture
 
 	~allocator_fixture()
 	{
-		static_cast<StackAllocator*>(pAllocator)->clear();
 		resizeStack(0);
 	}
 
@@ -36,7 +35,7 @@ struct allocator_fixture
 		if(size > 0)
 		{
 			pStackData = new u8[size];
-			pAllocator = new StackAllocator(size, pStackData);
+			pAllocator = new HeapAllocator(size, pStackData);
 		}
 	}
 
@@ -57,20 +56,17 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_object)
 	TestObject* pObj = pAllocator->allocateNew<TestObject>();
 	BOOST_REQUIRE(pObj != nullptr);
 
-	// StackAllocator cannot deallocate. This test will need to use a different
-	// type of allocator once one has been created.
 	pAllocator->deallocateDelete<TestObject>(pObj);
-	//BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 0);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_object_macro)
 {
 	TestObject* pObj = FS_NEW(TestObject, pAllocator);
+	BOOST_CHECK(pObj != nullptr);
 
-	// StackAllocator cannot deallocate. This test will need to use a different
-	// type of allocator once one has been created.
 	FS_DELETE(pObj, pAllocator);
-	//BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 0);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_array)
@@ -78,15 +74,10 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_array)
 	TestObject* pArray = pAllocator->allocateArray<TestObject>(3);
 	BOOST_REQUIRE(pArray != nullptr);
 
-	// + sizeof(TestObject) for array header
-	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(TestObject) * 3 + sizeof(TestObject));
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
 
-	// StackAllocator cannot deallocate. This test will need to use a different
-	// type of allocator once one has been created.
-	//pAllocator->deallocateArray<TestObject>(pArray);
-	//BOOST_CHECK(pAllocator->getAllocator().getTotalUsedMemory() == 0);
-	//BOOST_CHECK(pAllocator->getAllocator().getTotalNumAllocations() == 0);
+	pAllocator->deallocateArray<TestObject>(pArray);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(calc_array_header_size)

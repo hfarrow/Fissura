@@ -44,5 +44,8 @@
     <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\heapallocator.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

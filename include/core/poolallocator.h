@@ -1,5 +1,5 @@
-#ifndef CORE_POOL_ALLOCATOR_H
-#define CORE_POOL_ALLOCATOR_H
+#ifndef FS_POOL_ALLOCATOR_H
+#define FS_POOL_ALLOCATOR_H
 
 #include <core/types.h>
 #include <core/allocator.h>

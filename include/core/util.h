@@ -1,5 +1,5 @@
-#ifndef CORE_UTIL_H
-#define CORE_UTIL_H
+#ifndef FS_UTIL_H
+#define FS_UTIL_H
 
 #ifdef FS_DEBUG_TESTABLE
 	#include <exception>

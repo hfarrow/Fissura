@@ -5,7 +5,7 @@
 
 using namespace fissura;
 
-HeapAllocator::HeapAllocator(u32 memorySize, void* pMemory)
+HeapAllocator::HeapAllocator(size_t memorySize, void* pMemory)
 	:
 	_memorySize(memorySize),
 	_totalNumAllocations(0)
@@ -19,7 +19,7 @@ HeapAllocator::~HeapAllocator()
 	FS_ASSERT(_totalNumAllocations == 0);
 }
 
-void* HeapAllocator::allocate(u32 size, u8 alignment)
+void* HeapAllocator::allocate(size_t size, u8 alignment)
 {
 	void* p = mspace_memalign(_mspace, alignment, size);
 	if(p == nullptr)
@@ -46,7 +46,7 @@ void HeapAllocator::deallocate(void* p)
 	_totalNumAllocations -= 1;
 }
 
-u32 HeapAllocator::getTotalUsedMemory() const
+size_t HeapAllocator::getTotalUsedMemory() const
 {
 	return mspace_mallinfo(_mspace).uordblks;
 }

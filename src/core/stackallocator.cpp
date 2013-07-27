@@ -4,17 +4,17 @@
 
 using namespace fissura;
 
-StackAllocator::StackAllocator(u32 stackSize, void* pStack)
+StackAllocator::StackAllocator(size_t stackSize, void* pStack)
 {
 	init(stackSize, pStack, true);
 }
 
-StackAllocator::StackAllocator(u32 stackSize, void* pStack, bool growUpwards)
+StackAllocator::StackAllocator(size_t stackSize, void* pStack, bool growUpwards)
 {
 	init(stackSize, pStack, growUpwards);
 }
 
-void StackAllocator::init(u32 stackSize, void* pStack, bool growUpwards)
+void StackAllocator::init(size_t stackSize, void* pStack, bool growUpwards)
 {
 	FS_ASSERT(stackSize > 0);
 	FS_ASSERT(pStack);
@@ -37,13 +37,13 @@ StackAllocator::~StackAllocator()
 	FS_ASSERT(_totalUsedMemory == 0);
 }
 
-void* StackAllocator::allocate(u32 size, u8 alignment)
+void* StackAllocator::allocate(size_t size, u8 alignment)
 {
 	FS_ASSERT(size > 0);
 	return _growUpwards ? allocateUpwards(size, alignment) : allocateDownwards(size, alignment);
 }
 
-void* StackAllocator::allocateUpwards(u32 size, u8 alignment)
+void* StackAllocator::allocateUpwards(size_t size, u8 alignment)
 {
 	u8 adjustment = alignAdjustment(_pCurrentPosition, alignment);
 	
@@ -64,7 +64,7 @@ void* StackAllocator::allocateUpwards(u32 size, u8 alignment)
 	return (void*) alignedAddress;
 }
 
-void* StackAllocator::allocateDownwards(u32 size, u8 alignment)
+void* StackAllocator::allocateDownwards(size_t size, u8 alignment)
 {
 	u8 adjustment = alignAdjustment((void*)((uptr)_pCurrentPosition - (uptr)size), alignment);
 	if(adjustment > 0)
@@ -91,7 +91,7 @@ void StackAllocator::deallocate(void* p)
 	FS_ASSERT(!"Cannot deallocate from StackAllocator. Use deallocateToMarker instead.");
 }
 
-u32 StackAllocator::getTotalUsedMemory() const
+size_t StackAllocator::getTotalUsedMemory() const
 {
 	return _totalUsedMemory;
 }
@@ -103,7 +103,7 @@ u32 StackAllocator::getTotalNumAllocations() const
 
 StackAllocator::Marker StackAllocator::getMarker() const
 {
-	return StackAllocator::Marker((u32)_pCurrentPosition, _totalNumAllocations);
+	return StackAllocator::Marker((size_t)_pCurrentPosition, _totalNumAllocations);
 }
 
 void StackAllocator::deallocateToMarker(const StackAllocator::Marker& marker)

@@ -17,7 +17,7 @@ namespace fissura
 		struct Marker
 		{
 			friend StackAllocator;
-			const u32 position;
+			const size_t position;
 			const u32 allocationIndex;
 
 			Marker& operator=( const Marker& rhs )
@@ -32,13 +32,13 @@ namespace fissura
 				: position(position), allocationIndex(allocationIndex) {}
 		};
 
-		StackAllocator(u32 stackSize, void* pStack);
-		StackAllocator(u32 stackSize, void* pStack, bool growUpwards);
+		StackAllocator(size_t stackSize, void* pStack);
+		StackAllocator(size_t stackSize, void* pStack, bool growUpwards);
 		~StackAllocator();
 
-		void* allocate(u32 size, u8 alignment);
+		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
-		u32 getTotalUsedMemory() const;
+		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return false; }
 
@@ -57,14 +57,14 @@ namespace fissura
 		};
 		*/
 
-		void init(u32 stackSize, void* pStack, bool growUpwards);
-		void* allocateUpwards(u32, u8 alignment);
-		void* allocateDownwards(u32, u8 alignment);
+		void init(size_t stackSize, void* pStack, bool growUpwards);
+		void* allocateUpwards(size_t, u8 alignment);
+		void* allocateDownwards(size_t, u8 alignment);
 
-		u32 _stackSize;
+		size_t _stackSize;
 		void* _pStack;
 		void* _pCurrentPosition;
-		u32 _totalUsedMemory;
+		size_t _totalUsedMemory;
 		u32 _totalNumAllocations;
 		bool _growUpwards;
 

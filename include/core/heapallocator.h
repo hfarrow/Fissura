@@ -10,17 +10,17 @@ namespace fissura
 	class HeapAllocator : public Allocator
 	{
 	public:
-		HeapAllocator(u32 memorySize, void* pMemory);
+		HeapAllocator(size_t memorySize, void* pMemory);
 		~HeapAllocator();
 
-		void* allocate(u32 size, u8 alignment);
+		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
 		u32 getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }
 
 	private:
-		u32 _memorySize;
+		size_t _memorySize;
 		mspace _mspace;
 		u32 _totalNumAllocations;
 	};

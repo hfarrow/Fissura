@@ -4,7 +4,7 @@
 
 using namespace fissura;
 
-DoubleStackAllocator::DoubleStackAllocator(u32 stackSize, void* pStack)
+DoubleStackAllocator::DoubleStackAllocator(size_t stackSize, void* pStack)
 	:
 	_upper(stackSize, pStack, false),
 	_lower(stackSize, pStack, true)
@@ -21,7 +21,7 @@ DoubleStackAllocator::~DoubleStackAllocator()
 	FS_ASSERT(_lower.getTotalUsedMemory() == 0);
 }
 
-void* DoubleStackAllocator::allocate(u32 size, u8 alignment)
+void* DoubleStackAllocator::allocate(size_t size, u8 alignment)
 {
 	return _lower.allocate(size, alignment);
 }
@@ -31,12 +31,12 @@ void DoubleStackAllocator::deallocate(void* p)
 	FS_ASSERT(!"Cannot deallocate from DoubleStackAllocator. Use deallocateLower or deallocateUpper instead.");
 }
 
-void* DoubleStackAllocator::allocateUpper(u32 size, u8 alignment)
+void* DoubleStackAllocator::allocateUpper(size_t size, u8 alignment)
 {
 	return _upper.allocate(size, alignment);
 }
 
-void* DoubleStackAllocator::allocateLower(u32 size, u8 alignment)
+void* DoubleStackAllocator::allocateLower(size_t size, u8 alignment)
 {
 	return _lower.allocate(size, alignment);
 }
@@ -61,7 +61,7 @@ StackAllocator& DoubleStackAllocator::getLower()
 	return _lower;
 }
 
-u32 DoubleStackAllocator::getTotalUsedMemory() const
+size_t DoubleStackAllocator::getTotalUsedMemory() const
 {
 	return _upper.getTotalUsedMemory() + _lower.getTotalUsedMemory();
 }

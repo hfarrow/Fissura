@@ -10,18 +10,18 @@ namespace fissura
 	class DoubleStackAllocator : public Allocator
 	{
 	public:
-		DoubleStackAllocator(u32 stackSize, void* pStack);
+		DoubleStackAllocator(size_t stackSize, void* pStack);
 		~DoubleStackAllocator();
 
-		void* allocate(u32 size, u8 alignment);
+		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
-		void* allocateUpper(u32 size, u8 alignment);
-		void* allocateLower(u32 size, u8 alignment);
+		void* allocateUpper(size_t size, u8 alignment);
+		void* allocateLower(size_t size, u8 alignment);
 		void deallocateUpper(StackAllocator::Marker& marker);
 		void deallocateLower(StackAllocator::Marker& marker);
 		StackAllocator& getUpper();
 		StackAllocator& getLower();
-		u32 getTotalUsedMemory() const;
+		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return false; }
 		void clear();

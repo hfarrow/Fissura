@@ -9,11 +9,11 @@ namespace fissura
 	class PoolAllocator : public Allocator
 	{
 	public:
-		PoolAllocator(u32 objectSize, u32 objAlignment, u32 memorySize, void* pMemory);
+		PoolAllocator(size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
 		~PoolAllocator();
 
 		void* allocateSingle();
-		void* allocate(u32 size, u8 alignment);
+		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
 		void clear();
 
@@ -24,9 +24,9 @@ namespace fissura
 	private:
 		void resetFreeList();
 
-		u32 _objectSize;
+		size_t _objectSize;
 		u32 _objectAlignment;
-		u32 _memorySize;
+		size_t _memorySize;
 		void* _pFreeList;
 		void* _pMemory;
 		u32 _maxObjects;

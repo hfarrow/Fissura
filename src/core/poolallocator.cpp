@@ -6,7 +6,7 @@
 
 using namespace fissura;
 
-PoolAllocator::PoolAllocator(u32 objectSize, u32 objectAlignment, u32 memorySize, void* pMemory)
+PoolAllocator::PoolAllocator(size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:
 	_objectSize(objectSize),
 	_objectAlignment(objectAlignment),
@@ -58,7 +58,7 @@ void* PoolAllocator::allocateSingle()
 	return allocate(_objectSize, _objectAlignment);
 }
 
-void* PoolAllocator::allocate(u32 size, u8 alignment)
+void* PoolAllocator::allocate(size_t size, u8 alignment)
 {
 	FS_ASSERT(size == _objectSize);
 	FS_ASSERT(alignment == _objectAlignment);
@@ -99,7 +99,7 @@ void PoolAllocator::clear()
 	resetFreeList();
 }
 
-u32 PoolAllocator::getTotalUsedMemory() const
+size_t PoolAllocator::getTotalUsedMemory() const
 {
 	return _totalNumAllocations * _objectSize;
 }

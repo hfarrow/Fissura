@@ -10,7 +10,7 @@ namespace fissura
 	class DoubleStackAllocator : public Allocator
 	{
 	public:
-		DoubleStackAllocator(size_t stackSize, void* pStack);
+		DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack);
 		~DoubleStackAllocator();
 
 		void* allocate(size_t size, u8 alignment);

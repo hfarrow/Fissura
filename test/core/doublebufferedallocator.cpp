@@ -45,12 +45,12 @@ struct doublebufferedallocator_fixture
 		if(size > 0)
 		{
 			pStackDataA = new u8[size];
-			pStackA = new StackAllocator(size, pStackDataA);
+			pStackA = new StackAllocator(nullptr, size, pStackDataA);
 
 			pStackDataB = new u8[size];
-			pStackB = new StackAllocator(size, pStackDataB);
+			pStackB = new StackAllocator(nullptr, size, pStackDataB);
 
-			pAllocator = new DoubleBufferedAllocator(*pStackA, *pStackB);
+			pAllocator = new DoubleBufferedAllocator(nullptr, *pStackA, *pStackB);
 		}
 	}
 

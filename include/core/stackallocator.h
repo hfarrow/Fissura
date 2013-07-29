@@ -32,8 +32,8 @@ namespace fissura
 				: position(position), allocationIndex(allocationIndex) {}
 		};
 
-		StackAllocator(size_t stackSize, void* pStack);
-		StackAllocator(size_t stackSize, void* pStack, bool growUpwards);
+		StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack);
+		StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack, bool growUpwards);
 		~StackAllocator();
 
 		void* allocate(size_t size, u8 alignment);

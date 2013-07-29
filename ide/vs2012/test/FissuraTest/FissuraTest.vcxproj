@@ -126,7 +126,9 @@
     <ClCompile Include="..\..\..\..\test\core\doublebufferedallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\doublestackallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\heapallocator.cpp" />
+    <ClCompile Include="..\..\..\..\test\core\pageallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\poolallocator.cpp" />
+    <ClCompile Include="..\..\..\..\test\core\proxyallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\fissura.cpp" />
   </ItemGroup>

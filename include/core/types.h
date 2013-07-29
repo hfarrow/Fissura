@@ -3,9 +3,11 @@
 
 #include <cstdint>
 #include <xmmintrin.h>
+#include <tchar.h>
 
 namespace fissura
 {
+	typedef TCHAR fschar;
 	typedef unsigned char uchar;
 	typedef uintptr_t uptr;
 	typedef float f32;

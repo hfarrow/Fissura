@@ -6,13 +6,14 @@
 
 using namespace fissura;
 
-PoolAllocator::PoolAllocator(size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
+PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:
 	_objectSize(objectSize),
 	_objectAlignment(objectAlignment),
 	_memorySize(memorySize),
 	_pMemory(pMemory),
-	_totalNumAllocations(0)
+	_totalNumAllocations(0),
+	Allocator(pName)
 {
 	FS_ASSERT_MSG(_objectSize >= 4, "Pool allocator can not allocate objects smaller than 4 bytes");
 	FS_ASSERT(_objectAlignment >= 4);

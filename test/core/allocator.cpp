@@ -35,7 +35,7 @@ struct allocator_fixture
 		if(size > 0)
 		{
 			pStackData = new u8[size];
-			pAllocator = new HeapAllocator(size, pStackData);
+			pAllocator = new HeapAllocator(nullptr, size, pStackData);
 		}
 	}
 

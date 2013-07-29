@@ -4,9 +4,10 @@
 
 using namespace fissura;
 
-DoubleBufferedAllocator::DoubleBufferedAllocator(StackAllocator& stackA, StackAllocator& stackB)
+DoubleBufferedAllocator::DoubleBufferedAllocator(const fschar* const  pName, StackAllocator& stackA, StackAllocator& stackB)
 	:
-	_currentStack(0)
+	_currentStack(0),
+	Allocator(pName)
 {
 	_stacks[0] = &stackA;
 	_stacks[1] = &stackB;

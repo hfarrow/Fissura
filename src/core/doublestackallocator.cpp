@@ -4,10 +4,11 @@
 
 using namespace fissura;
 
-DoubleStackAllocator::DoubleStackAllocator(size_t stackSize, void* pStack)
+DoubleStackAllocator::DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack)
 	:
-	_upper(stackSize, pStack, false),
-	_lower(stackSize, pStack, true)
+	_upper(pName, stackSize, pStack, false),
+	_lower(pName, stackSize, pStack, true),
+	Allocator(pName)
 {
 	_upper._pOther = &_lower;
 	_lower._pOther = &_upper;

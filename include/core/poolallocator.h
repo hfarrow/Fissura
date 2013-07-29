@@ -9,7 +9,7 @@ namespace fissura
 	class PoolAllocator : public Allocator
 	{
 	public:
-		PoolAllocator(size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
+		PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
 		~PoolAllocator();
 
 		void* allocateSingle();

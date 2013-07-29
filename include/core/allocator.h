@@ -13,7 +13,7 @@ namespace fissura
 	class Allocator : public Uncopyable
 	{
 	public:
-		Allocator();
+		Allocator(const fschar* const  pName);
 		virtual ~Allocator();
 
 		virtual void* allocate(size_t size, u8 alignment) = 0;
@@ -22,12 +22,17 @@ namespace fissura
 		virtual u32 getTotalNumAllocations() const = 0;
 		virtual bool canDeallocate() const = 0;
 
+		const fschar* const getName() const;
+
 		template <class T> T* allocateNew();
 		template <class T> T* allocateNew(const T& t);
 		template <class T> void deallocateDelete(T* pObject);
 
 		template <class T> T* allocateArray(u32 length);
 		template <class T> void deallocateArray(T* pArray);
+
+	private:
+		const fschar* const _pName;
 	};
 
 	template <class T> inline u32 calcArrayHeaderSize();

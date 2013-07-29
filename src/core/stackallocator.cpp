@@ -4,12 +4,14 @@
 
 using namespace fissura;
 
-StackAllocator::StackAllocator(size_t stackSize, void* pStack)
+StackAllocator::StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack)
+	: Allocator(pName)
 {
 	init(stackSize, pStack, true);
 }
 
-StackAllocator::StackAllocator(size_t stackSize, void* pStack, bool growUpwards)
+StackAllocator::StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack, bool growUpwards)
+	: Allocator(pName)
 {
 	init(stackSize, pStack, growUpwards);
 }

@@ -35,7 +35,7 @@ struct poolallocator_fixture
 		if(size > 0)
 		{
 			pMemory = new u8[size];
-			pAllocator = new PoolAllocator(sizeof(u32), __alignof(u32), size, pMemory);
+			pAllocator = new PoolAllocator(nullptr, sizeof(u32), __alignof(u32), size, pMemory);
 		}
 	}
 

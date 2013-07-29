@@ -9,7 +9,7 @@ namespace fissura
 	class DoubleBufferedAllocator : public Allocator
 	{
 	public:
-		DoubleBufferedAllocator(StackAllocator& stackA, StackAllocator& stackB);
+		DoubleBufferedAllocator(const fschar* const  pName, StackAllocator& stackA, StackAllocator& stackB);
 		~DoubleBufferedAllocator();
 
 		void* allocate(size_t size, u8 alignment);

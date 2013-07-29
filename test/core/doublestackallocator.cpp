@@ -35,7 +35,7 @@ struct doublestackallocator_fixture
 		if(size > 0)
 		{
 			pStackData = new u8[size];
-			pStack = new DoubleStackAllocator(size, pStackData);
+			pStack = new DoubleStackAllocator(nullptr, size, pStackData);
 		}
 	}
 

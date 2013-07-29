@@ -16,6 +16,9 @@
     <Filter Include="Source Files\core">
       <UniqueIdentifier>{a1c3e755-466e-4dd3-b9d1-8ec3bfb06139}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\core\allocators">
+      <UniqueIdentifier>{575a135c-680f-43b2-990a-b99c9d95a353}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,22 +33,28 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\test\core\allocator.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\test\core\doublebufferedallocator.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\test\core\doublestackallocator.cpp">
-      <Filter>Source Files\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\poolallocator.cpp">
-      <Filter>Source Files\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\test\core\heapallocator.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\poolallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\proxyallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\pageallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

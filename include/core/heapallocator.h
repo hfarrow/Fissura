@@ -10,7 +10,7 @@ namespace fissura
 	class HeapAllocator : public Allocator
 	{
 	public:
-		HeapAllocator(size_t memorySize, void* pMemory);
+		HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory);
 		~HeapAllocator();
 
 		void* allocate(size_t size, u8 alignment);

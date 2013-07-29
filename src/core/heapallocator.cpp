@@ -5,10 +5,11 @@
 
 using namespace fissura;
 
-HeapAllocator::HeapAllocator(size_t memorySize, void* pMemory)
+HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory)
 	:
 	_memorySize(memorySize),
-	_totalNumAllocations(0)
+	_totalNumAllocations(0),
+	Allocator(pName)
 {
 	_mspace = create_mspace_with_base(pMemory, memorySize, 0);
 	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");

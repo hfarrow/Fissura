@@ -37,8 +37,8 @@ struct stackallocator_fixture
 		if(size > 0)
 		{
 			pStackData = new u8[size];
-			pStack = new StackAllocator(size, pStackData);
-			pReverseStack = new StackAllocator(size, pStackData, false);
+			pStack = new StackAllocator(nullptr, size, pStackData);
+			pReverseStack = new StackAllocator(nullptr, size, pStackData, false);
 		}
 	}
 

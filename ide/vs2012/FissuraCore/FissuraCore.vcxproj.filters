@@ -63,6 +63,9 @@
     <ClInclude Include="..\..\..\include\core\pageallocator.h">
       <Filter>Header Files\core\allocators</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\core\traceallocator.h">
+      <Filter>Header Files\core\allocators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +93,9 @@
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\pageallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\traceallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
   </ItemGroup>

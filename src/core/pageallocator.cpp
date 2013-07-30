@@ -25,6 +25,7 @@ PageAllocator::~PageAllocator()
 void* PageAllocator::allocate(size_t size, u8 alignment)
 {
 	FS_ASSERT(size > 0);
+	FS_ASSERT_MSG(alignment == 0, "PageAllocator is aligned by default. Please pass 0 for alignment.");
 
 	u32 numPagesRequired = calcRequiredPages(size);
 	void* pBase = VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT, PAGE_NOACCESS);
@@ -45,7 +46,7 @@ void PageAllocator::deallocate(void* p)
 	FS_ASSERT_MSG((uptr)p % _pageSize == 0, "Can only deallocate a pointer to a base page.");
 
 	MEMORY_BASIC_INFORMATION info;
-	if(VirtualQuery(p, &info, sizeof(info) != sizeof(info)))
+	if(VirtualQuery(p, &info, sizeof(info)) != sizeof(info))
 	{
 		FS_ASSERT(!"Failed query provided page base pointer.");
 		return;
@@ -59,7 +60,7 @@ void PageAllocator::deallocate(void* p)
 	}
 
 	_totalNumAllocations -= 1;
-	_totalNumAllocations -= info.RegionSize;
+	_totalUsedMemory -= info.RegionSize;
 }
 
 size_t PageAllocator::getTotalUsedMemory() const
@@ -84,4 +85,9 @@ u32 PageAllocator::calcRequiredPages(size_t size) const
 	}
 
 	return numPages;
+}
+
+size_t PageAllocator::getPageSize() const
+{
+	return _pageSize;
 }

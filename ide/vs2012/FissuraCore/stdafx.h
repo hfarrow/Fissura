@@ -16,5 +16,9 @@
 #include <core/doublebufferedallocator.h>
 #include <core/doublestackallocator.h>
 #include <core/poolallocator.h>
+#include <core/heapallocator.h>
+#include <core/pageallocator.h>
+#include <core/traceallocator.h>
+#include <core/proxyallocator.h>
 
 #include <new>

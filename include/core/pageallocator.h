@@ -19,6 +19,7 @@ namespace fissura
 		bool canDeallocate() const { return true; }
 
 		u32 calcRequiredPages(size_t size) const;
+		size_t getPageSize() const;
 
 	private:
 		u32 _totalNumAllocations;

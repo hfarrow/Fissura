@@ -71,6 +71,8 @@
       <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_54_0;..\..\..\..\include;..\..\..\..\test\;$(ProjectDir)</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +132,7 @@
     <ClCompile Include="..\..\..\..\test\core\poolallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\proxyallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp" />
+    <ClCompile Include="..\..\..\..\test\core\traceallocator.cpp" />
     <ClCompile Include="..\..\..\..\test\fissura.cpp" />
   </ItemGroup>
   <ItemGroup>

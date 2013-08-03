@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <core/doublestackallocator.h>
+#include <core/assert.h>
 
 using namespace fissura;
 

@@ -4,18 +4,13 @@
 #include <core/types.h>
 #include <core/util.h>
 #include <new>
+#include <memory>
 
 #define FS_NEW(T, allocator) new((allocator)->allocate(sizeof(T), __alignof(T))) T
 #define FS_DELETE(p, allocator) if((p)){(allocator)->deallocateDelete((p));}
 
 namespace fissura
 {
-	class HeapAllocator;
-	// Application must create the debug heap. The debug heap is
-	// used in classes such as TraceAllocator that record stack
-	// traces in the debug heap.
-	extern HeapAllocator* gDebugHeap;
-
 	class Allocator : public Uncopyable
 	{
 	public:

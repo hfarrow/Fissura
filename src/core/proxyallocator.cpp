@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <core/proxyallocator.h>
+#include <core/assert.h>
 
 using namespace fissura;
 

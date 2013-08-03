@@ -66,6 +66,18 @@
     <ClInclude Include="..\..\..\include\core\traceallocator.h">
       <Filter>Header Files\core\allocators</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\core\stlallocator.h">
+      <Filter>Header Files\core\allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\globals.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\assert.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\trace.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -97,6 +109,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\traceallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\globals.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\stlallocatorcpp.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\assert.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\trace.cpp">
+      <Filter>Source Files\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

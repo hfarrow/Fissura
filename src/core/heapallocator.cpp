@@ -2,6 +2,7 @@
 #include <dlmalloc/malloc.h>
 #include <core/heapallocator.h>
 #include <core/util.h>
+#include <core/assert.h>
 
 using namespace fissura;
 
@@ -18,6 +19,7 @@ HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void
 HeapAllocator::~HeapAllocator()
 {
 	FS_ASSERT(_totalNumAllocations == 0);
+	destroy_mspace(_mspace);
 }
 
 void* HeapAllocator::allocate(size_t size, u8 alignment)

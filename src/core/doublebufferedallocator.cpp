@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <core/doublebufferedallocator.h>
 #include <core/util.h>
+#include <core/assert.h>
 
 using namespace fissura;
 

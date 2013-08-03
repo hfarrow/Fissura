@@ -56,5 +56,8 @@
     <ClCompile Include="..\..\..\..\test\core\pageallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\test\core\traceallocator.cpp">
+      <Filter>Source Files\core\allocators</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

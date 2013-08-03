@@ -4,6 +4,9 @@
 #include <core/types.h>
 #include <core/allocator.h>
 #include <core/proxyallocator.h>
+#include <core/stlallocator.h>
+#include <memory>
+#include <map>
 
 namespace fissura
 {
@@ -13,7 +16,7 @@ namespace fissura
 		struct AllocationInfo
 		{
 			static const size_t maxStackFrames = 10;
-			size_t offsets[maxStackFrames];
+			DWORD64 offsets[maxStackFrames];
 		};
 
 		TraceAllocator(const fschar* const  pName, Allocator& allocator);
@@ -23,9 +26,20 @@ namespace fissura
 		void deallocate(void* p);
 
 	private:
-		// void saveStackTrace(AllocationInfo* pInfo);
-		// coid unsaveStackTrace(AllocationInfo* pInfo);
-		// const char* getCallers(const AllocationInfo* const pInfo);
+#if defined(_DEBUG) && defined(WIN32)
+		void getStackTrace(AllocationInfo* pInfo, void* pAllocation);
+		const char* getCaller(const AllocationInfo* const pInfo) const;
+
+		typedef std::map<
+			uptr,
+			AllocationInfo,
+			std::less<uptr>,
+			StlAllocator<std::pair<uptr, AllocationInfo>>
+			> AllocationMap;
+
+		typedef FS_DECL_UNIQUE_PTR(AllocationMap) AllocationMapPointer;
+		AllocationMapPointer _pAllocationMap;
+#endif
 	};
 }
 

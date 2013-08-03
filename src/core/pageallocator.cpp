@@ -2,6 +2,7 @@
 #include <core/pageallocator.h>
 #include <core/util.h>
 #include <windows.h>
+#include <core/assert.h>
 
 using namespace fissura;
 

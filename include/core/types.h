@@ -4,9 +4,23 @@
 #include <cstdint>
 #include <xmmintrin.h>
 #include <tchar.h>
+#include <memory>
+#include <functional>
+#include <exception>
 
 namespace fissura
 {
+	// alias declarations not support by VS11
+	// Defer to using the DECL macro below for now.
+	// Once supported, replace all FS_DECL_UNIQUE_PTR(T) with
+	// UniquePtr<T>.
+		//template<typename T>
+		//using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
+	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
+
+	template<typename T> class StlAllocator;
+	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> string;
+
 	typedef TCHAR fschar;
 	typedef unsigned char uchar;
 	typedef uintptr_t uptr;
@@ -22,6 +36,8 @@ namespace fissura
 	typedef std::int_fast32_t i32f;
 	typedef std::uint_fast32_t u32f;
 	typedef __m128 vf32;
+
+	typedef std::exception exception;
 
 	class Uncopyable
 	{

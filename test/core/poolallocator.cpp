@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 	pAllocator->allocateSingle();
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pAllocator->allocateSingle(), std::exception);
+	BOOST_REQUIRE_THROW(pAllocation = pAllocator->allocateSingle(), fissura::assert_exception);
 	BOOST_REQUIRE(pAllocation == nullptr);
 
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 2);
@@ -103,12 +103,12 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 
 BOOST_AUTO_TEST_CASE(allocate_invalid_sizes)
 {
-	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 4), std::exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 4), std::exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 8), std::exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 7), std::exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 8), std::exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 7), std::exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 4), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 4), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 8), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 7), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 8), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 7), fissura::assert_exception);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -38,6 +38,7 @@ namespace fissura
 	typedef __m128 vf32;
 
 	typedef std::exception exception;
+	typedef exception assert_exception;
 
 	class Uncopyable
 	{

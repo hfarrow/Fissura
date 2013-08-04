@@ -8,17 +8,13 @@ namespace fissura
 {
 	bool reportAssertFailure(char* const condition,
 							 char* const strFile,
-							 int nLine,
+							 u32 nLine,
 							 char* const format, ...);
 }
 
 #define FS_HALT() __debugbreak()
 
-#ifdef FS_DEBUG_TESTABLE
-	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) FS_ASSERT(condition)
-	#define FS_ASSERT_MSG(condition, message) FS_ASSERT(condition)
-	#define FS_ASSERT(condition) do{if(!(condition)){throw fissura::exception(#condition);}}while(0)
-#elif _DEBUG
+#ifdef _DEBUG
 	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
 	do \
 	{ \
@@ -39,18 +35,5 @@ namespace fissura
 	#define FS_ASSERT_MSG(condition, message) FS_UNUSED(condition)
 	#define FS_ASSERT(condition) FS_UNUSED(condition)
 #endif
-
-#define FS_TRACE_FORMATTED_CAT(category, format, ...) fissura::traceDebugStringFormatted(category, format, __VA_ARGS__)
-#define FS_TRACE_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("", format, __VA_ARGS__)
-#define FS_TRACE(message) FS_TRACE_FORMATTED("%s", message)
-
-#define FS_TRACE_INFO_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("FISSURA_INFO", format, __VA_ARGS__)
-#define FS_TRACE_INFO(message) FS_TRACE_INFO_FORMATTED("%s", message)
-
-#define FS_TRACE_WARN_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("FISSURA_WARNING", format, __VA_ARGS__)
-#define FS_TRACE_WARN(message) FS_TRACE_WARN_FORMATTED("%s", message)
-
-#define FS_TRACE_ERR_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("FISSURA_ERROR", format, __VA_ARGS__)
-#define FS_TRACE_ERR(message) FS_TRACE_ERR_FORMATTED("%s", message)
 
 #endif

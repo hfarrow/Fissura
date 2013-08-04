@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(allocate_memory_available)
 	BOOST_CHECK(pStack->getTotalUsedMemory() == totalAllocations * sizeof(u32));
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(sizeof(u32), __alignof(u32)), std::exception);
+	BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(sizeof(u32), __alignof(u32)), fissura::assert_exception);
 	BOOST_CHECK(pAllocation == nullptr);
 
 	auto marker = pStack->getMarker();
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 	auto marker = pStack->getMarker();
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), std::exception);
+	BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), fissura::assert_exception);
 	BOOST_CHECK(pAllocation == nullptr);
 
 	auto newMarker = pStack->getMarker();
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(deallocate_not_allowed)
 	auto end = pStack->getMarker();
 	BOOST_CHECK(pAllocation != nullptr);
 
-	BOOST_REQUIRE_THROW(pStack->deallocate(pAllocation), std::exception);
+	BOOST_REQUIRE_THROW(pStack->deallocate(pAllocation), fissura::assert_exception);
 	auto marker = pStack->getMarker();
 	BOOST_CHECK(marker.position == end.position);
 	BOOST_CHECK(marker.allocationIndex == 1);
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(deallocate_to_old_invalid_marker)
 	BOOST_CHECK(pAllocation != nullptr);
 
 	pStack->deallocateToMarker(begin);
-	BOOST_REQUIRE_THROW(pStack->deallocateToMarker(end), std::exception);
+	BOOST_REQUIRE_THROW(pStack->deallocateToMarker(end), fissura::assert_exception);
 	BOOST_CHECK(pStack->getTotalUsedMemory() == 0);
 	BOOST_CHECK(pStack->getTotalNumAllocations() == 0);
 
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory_downwards)
 	auto begin = pReverseStack->getMarker();
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pReverseStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), std::exception);
+	BOOST_REQUIRE_THROW(pAllocation = pReverseStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), fissura::assert_exception);
 	BOOST_CHECK(pAllocation == nullptr);
 
 	auto newMarker = pReverseStack->getMarker();

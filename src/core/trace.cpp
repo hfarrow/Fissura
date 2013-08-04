@@ -6,7 +6,7 @@ using namespace fissura;
 
 const u32 gDebugStrBufferSize = 2048;
 
-void traceDebugStringFormatted(char* category, const char* format, ...)
+void fissura::traceDebugStringFormatted(char* category, const char* format, ...)
 {
 	static char userMessage[gDebugStrBufferSize];
 	static char output[gDebugStrBufferSize];
@@ -15,7 +15,7 @@ void traceDebugStringFormatted(char* category, const char* format, ...)
 	va_start(arg, format);
 
 	vsprintf_s(userMessage, format, arg);
-	sprintf_s(output, "[%s] -> %s\n", category, userMessage);
+	sprintf_s(output, "[%s] %s\n", category, userMessage);
 	OutputDebugStringA(output);
 	std::cout << output;
 

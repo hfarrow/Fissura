@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_large)
 BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 {
 	void* p = nullptr;
-	BOOST_REQUIRE_THROW(p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4), std::exception);
+	BOOST_REQUIRE_THROW(p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4), fissura::assert_exception);
 
 	// In Release, p will still be allocated. This is because dlmalloc will expand
 	// the mspace if more space is needed. Fissura will assert to notify that

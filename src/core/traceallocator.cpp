@@ -3,7 +3,7 @@
 #include <core/heapallocator.h>
 #include <core/globals.h>
 #include <core/assert.h>
-#include <sstream>
+#include <core/trace.h>
 
 #if defined(_DEBUG) && defined(WIN32)
 // windows includes
@@ -30,17 +30,17 @@ TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 
 TraceAllocator::~TraceAllocator()
 {
+#if defined(_DEBUG) && defined(WIN32)
 	if(_pAllocationMap->size() > 0)
 	{
 		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
 		{
-			std::ostringstream os;
-			os << "MemoryLeak: " << getCaller(&it->second);
-			OutputDebugStringA(os.str().c_str());
-			FS_ASSERT(!"TraceAllocator found memory leak. See output window");
+			FS_TRACE_ERR_FORMATTED("%s: %s", "TraceAllocator memory leak", getCaller(&it->second));
+			FS_ASSERT(!"TraceAllocator memory leak. Please see above trace");
 		}
 	}
 	_pAllocationMap->clear();
+#endif
 }
 
 void* TraceAllocator::allocate(size_t size, u8 alignment)

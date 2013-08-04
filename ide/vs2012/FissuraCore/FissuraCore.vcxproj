@@ -100,6 +100,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_54_0;../../../include/;../../../src;$(ProjectDir)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>-D_HAS_EXCEPTIONS=0</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -23,7 +23,7 @@ namespace fissura
 
 	private:
 		u32 _totalNumAllocations;
-		u32 _totalUsedMemory;
+		size_t _totalUsedMemory;
 		size_t _pageSize;
 	};
 }

@@ -16,19 +16,19 @@ namespace fissura
 		// not to an arbirtrary location within the stack.
 		struct Marker
 		{
-			friend StackAllocator;
 			const size_t position;
 			const u32 allocationIndex;
 
 			Marker& operator=( const Marker& rhs )
 			{
 				// Allow the marker to be copy assigned.
-				const_cast<u32&>(position) = rhs.position;
+				const_cast<size_t&>(position) = rhs.position;
 				const_cast<u32&>(allocationIndex) = rhs.allocationIndex;
 				return *this;
 			}
 		private:
-			Marker(u32 position, u32 allocationIndex)
+			friend StackAllocator;
+			Marker(size_t position, u32 allocationIndex)
 				: position(position), allocationIndex(allocationIndex) {}
 		};
 

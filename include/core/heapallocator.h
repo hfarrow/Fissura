@@ -15,7 +15,7 @@ namespace fissura
 
 		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
-		u32 getTotalUsedMemory() const;
+		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }
 

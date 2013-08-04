@@ -14,11 +14,11 @@ PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 
 	_memorySize(memorySize),
 	_pMemory(pMemory),
 	_totalNumAllocations(0),
-	Allocator(pName)
+	Allocator(nullptr)
 {
-	FS_ASSERT_MSG(_objectSize >= 4, "Pool allocator can not allocate objects smaller than 4 bytes");
-	FS_ASSERT(_objectAlignment >= 4);
-	FS_ASSERT(_memorySize >= 4);
+	FS_ASSERT_MSG_FORMATTED(_objectSize >= sizeof(uptr), "Pool allocator can not allocate objects smaller than %i bytes", sizeof(uptr));
+	FS_ASSERT(_objectAlignment >= sizeof(uptr));
+	FS_ASSERT(_memorySize >= sizeof(uptr));
 	FS_ASSERT(pMemory != nullptr);
 
 	u8 adjustment = alignAdjustment(pMemory, _objectAlignment);
@@ -26,7 +26,7 @@ PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 
 
 	FS_ASSERT((uptr)_pFreeList < (uptr)pMemory + _memorySize);
 
-	_maxObjects = (_memorySize - adjustment) / objectSize;
+	_maxObjects = (u32)((_memorySize - (size_t)adjustment) / objectSize);
 
 	resetFreeList();
 }

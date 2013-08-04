@@ -35,7 +35,7 @@ void* PageAllocator::allocate(size_t size, u8 alignment)
 		FS_ASSERT(!"Page allocator failed to reserve and commit request.");
 		return nullptr;
 	}
-	_totalUsedMemory += numPagesRequired * _pageSize;
+	_totalUsedMemory += (size_t)numPagesRequired * _pageSize;
 	_totalNumAllocations += 1;
 
 	return pBase;
@@ -76,7 +76,7 @@ u32 PageAllocator::getTotalNumAllocations() const
 
 u32 PageAllocator::calcRequiredPages(size_t size) const
 {
-	u32 numPages = size / _pageSize;
+	u32 numPages = (u32)(size / _pageSize);
 	if(size % _pageSize > 0)
 	{
 		// If the size is not a multiple of _pageSize,

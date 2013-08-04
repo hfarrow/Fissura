@@ -44,7 +44,7 @@ struct traceallocator_fixture
 			pDebugMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
 			gpDebugHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pDebugMemory);
 			pMemory = new u8[size];
-			pAllocator = new PoolAllocator(nullptr, 4, 4, size, pMemory);
+			pAllocator = new PoolAllocator(nullptr, 8, 8, size, pMemory);
 		}
 	}
 
@@ -59,7 +59,7 @@ BOOST_FIXTURE_TEST_SUITE(traceallocator, traceallocator_fixture)
 BOOST_AUTO_TEST_CASE(record_stack_trace)
 {
 	TraceAllocator proxy = TraceAllocator(nullptr, *pAllocator);
-	void* p = proxy.allocate(4, 4);
+	void* p = proxy.allocate(8, 8);
 	BOOST_REQUIRE(p != nullptr);
 	proxy.deallocate(p);
 

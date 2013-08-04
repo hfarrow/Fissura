@@ -35,7 +35,7 @@ struct proxyallocator_fixture
 		if(size > 0)
 		{
 			pMemory = new u8[size];
-			pAllocator = new PoolAllocator(nullptr, 4, 4, size, pMemory);
+			pAllocator = new PoolAllocator(nullptr, 8, 8, size, pMemory);
 		}
 	}
 
@@ -51,23 +51,23 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	ProxyAllocator proxyA = ProxyAllocator(_T("ProxyA"), *pAllocator);
 	ProxyAllocator proxyB = ProxyAllocator(_T("ProxyB"), *pAllocator);
 
-	u32* pA1 = proxyA.allocateNew<u32>();
+	u64* pA1 = proxyA.allocateNew<u64>();
 	BOOST_CHECK(pA1 != nullptr);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
-	BOOST_CHECK(proxyA.getTotalUsedMemory() == 4);
+	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 0);
 
-	u32* pB1 = proxyB.allocateNew<u32>();
+	u64* pB1 = proxyB.allocateNew<u64>();
 	BOOST_CHECK(pB1 != nullptr);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
-	BOOST_CHECK(proxyA.getTotalUsedMemory() == 4);
+	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 1);
-	BOOST_CHECK(proxyB.getTotalUsedMemory() == 4);
+	BOOST_CHECK(proxyB.getTotalUsedMemory() == 8);
 
 	proxyB.deallocateDelete(pB1);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
-	BOOST_CHECK(proxyA.getTotalUsedMemory() == 4);
+	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 0);
 

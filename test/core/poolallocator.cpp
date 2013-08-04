@@ -4,7 +4,7 @@
 #include <core/types.h>
 #include <exception>
 
-#define DEFAULT_MEM_SIZE  32 // bytes
+#define DEFAULT_MEM_SIZE  64 // bytes
 
 using namespace fissura;
 
@@ -35,7 +35,7 @@ struct poolallocator_fixture
 		if(size > 0)
 		{
 			pMemory = new u8[size];
-			pAllocator = new PoolAllocator(nullptr, sizeof(u32), __alignof(u32), size, pMemory);
+			pAllocator = new PoolAllocator(nullptr, sizeof(u64), __alignof(u64), size, pMemory);
 		}
 	}
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_single)
 {
 	void* pAllocation = pAllocator->allocateSingle();
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
-	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u32));
+	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u64));
 	BOOST_CHECK(pAllocation >= pMemory);
 	BOOST_CHECK((uptr)pAllocation < (uptr)pMemory + DEFAULT_MEM_SIZE);
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_many)
 	void* pAllocation2 = pAllocator->allocateSingle();
 	void* pAllocation3 = pAllocator->allocateSingle();
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 3);
-	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u32) * 3);
+	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u64) * 3);
 
 	pAllocator->deallocate(pAllocation2);
 	pAllocator->deallocate(pAllocation3);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_many)
 
 	pAllocator->allocateSingle();
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
-	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u32));
+	BOOST_CHECK(pAllocator->getTotalUsedMemory() == sizeof(u64));
 }
 
 BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
@@ -91,13 +91,12 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 	resizeMemory(8);
 
 	pAllocator->allocateSingle();
-	pAllocator->allocateSingle();
 
 	void* pAllocation = nullptr;
 	BOOST_REQUIRE_THROW(pAllocation = pAllocator->allocateSingle(), fissura::assert_exception);
 	BOOST_REQUIRE(pAllocation == nullptr);
 
-	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 2);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
 	BOOST_CHECK(pAllocator->getTotalUsedMemory() == 8);
 }
 
@@ -107,7 +106,7 @@ BOOST_AUTO_TEST_CASE(allocate_invalid_sizes)
 	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 4), fissura::assert_exception);
 	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 8), fissura::assert_exception);
 	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 7), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 8), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 4), fissura::assert_exception);
 	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 7), fissura::assert_exception);
 }
 

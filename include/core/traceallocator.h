@@ -6,7 +6,6 @@
 #include <core/proxyallocator.h>
 #include <core/stlallocator.h>
 #include <memory>
-#include <map>
 
 namespace fissura
 {
@@ -30,13 +29,7 @@ namespace fissura
 		void getStackTrace(AllocationInfo* pInfo, void* pAllocation);
 		const char* getCaller(const AllocationInfo* const pInfo) const;
 
-		typedef std::map<
-			uptr,
-			AllocationInfo,
-			std::less<uptr>,
-			StlAllocator<std::pair<uptr, AllocationInfo>>
-			> AllocationMap;
-
+		typedef FS_DECL_MAP(uptr, AllocationInfo) AllocationMap;
 		typedef FS_DECL_UNIQUE_PTR(AllocationMap) AllocationMapPointer;
 		AllocationMapPointer _pAllocationMap;
 #endif

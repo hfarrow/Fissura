@@ -53,10 +53,10 @@ BOOST_FIXTURE_TEST_SUITE(allocator, allocator_fixture)
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_object)
 {
-	TestObject* pObj = pAllocator->allocateNew<TestObject>();
+	TestObject* pObj = pAllocator->allocateConstruct<TestObject>();
 	BOOST_REQUIRE(pObj != nullptr);
 
-	pAllocator->deallocateDelete<TestObject>(pObj);
+	pAllocator->deallocateDestruct<TestObject>(pObj);
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 
@@ -71,12 +71,12 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_object_macro)
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_array)
 {
-	TestObject* pArray = pAllocator->allocateArray<TestObject>(3);
+	TestObject* pArray = pAllocator->allocateArrayConstruct<TestObject>(3);
 	BOOST_REQUIRE(pArray != nullptr);
 
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
 
-	pAllocator->deallocateArray<TestObject>(pArray);
+	pAllocator->deallocateArrayDestruct<TestObject>(pArray);
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 

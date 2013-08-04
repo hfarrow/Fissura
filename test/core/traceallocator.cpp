@@ -10,8 +10,8 @@
 #define DEBUG_MEM_SIZE 1048576 // 1mb
 
 using namespace fissura;
-
 HeapAllocator* gpDebugHeap = nullptr;
+
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)

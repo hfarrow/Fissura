@@ -49,6 +49,13 @@ void HeapAllocator::deallocate(void* p)
 	_totalNumAllocations -= 1;
 }
 
+void HeapAllocator::clear()
+{
+	destroy_mspace(_mspace);
+	_mspace = create_mspace_with_base((void*)_mspace, _memorySize, 0);
+	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
+}
+
 size_t HeapAllocator::getTotalUsedMemory() const
 {
 	return mspace_mallinfo(_mspace).uordblks;

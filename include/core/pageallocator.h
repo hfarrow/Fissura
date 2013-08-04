@@ -17,6 +17,7 @@ namespace fissura
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }
+		void clear();
 
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;

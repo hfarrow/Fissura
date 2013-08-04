@@ -56,3 +56,8 @@ bool ProxyAllocator::canDeallocate() const
 {
 	return _allocator.canDeallocate();
 }
+
+void ProxyAllocator::clear()
+{
+	_allocator.clear();
+}

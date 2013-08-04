@@ -51,27 +51,27 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	ProxyAllocator proxyA = ProxyAllocator(_T("ProxyA"), *pAllocator);
 	ProxyAllocator proxyB = ProxyAllocator(_T("ProxyB"), *pAllocator);
 
-	u64* pA1 = proxyA.allocateNew<u64>();
+	u64* pA1 = proxyA.allocateConstruct<u64>();
 	BOOST_CHECK(pA1 != nullptr);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
 	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 0);
 
-	u64* pB1 = proxyB.allocateNew<u64>();
+	u64* pB1 = proxyB.allocateConstruct<u64>();
 	BOOST_CHECK(pB1 != nullptr);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
 	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 1);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 8);
 
-	proxyB.deallocateDelete(pB1);
+	proxyB.deallocateDestruct(pB1);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 1);
 	BOOST_CHECK(proxyA.getTotalUsedMemory() == 8);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 0);
 
-	proxyA.deallocateDelete(pA1);
+	proxyA.deallocateDestruct(pA1);
 	BOOST_CHECK(proxyA.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyA.getTotalUsedMemory() == 0);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);

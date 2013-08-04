@@ -18,6 +18,7 @@ namespace fissura
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }
+		void clear();
 
 	private:
 		size_t _memorySize;

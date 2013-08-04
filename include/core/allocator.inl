@@ -62,19 +62,19 @@ inline u8 fissura::alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 he
 }
 
 template <class T>
-T* Allocator::allocateNew()
+T* Allocator::allocateConstruct()
 {
 	return new (allocate(sizeof(T), __alignof(T))) T;
 }
 
 template <class T>
-T* Allocator::allocateNew(const T& t)
+T* Allocator::allocateConstruct(const T& t)
 {
 	return new (allocate(sizeof(T), __alignof(T))) T(t);
 }
 
 template <class T>
-void Allocator::deallocateDelete(T* pObject)
+void Allocator::deallocateDestruct(T* pObject)
 {
 	if(pObject != nullptr)
 	{
@@ -86,7 +86,7 @@ void Allocator::deallocateDelete(T* pObject)
 	}
 }
 template <class T>
-T* Allocator::allocateArray(u32 length)
+T* Allocator::allocateArrayConstruct(u32 length)
 {
 	if(length == 0)
 	{
@@ -109,7 +109,7 @@ T* Allocator::allocateArray(u32 length)
 }
 
 template <class T>
-void Allocator::deallocateArray(T* pArray)
+void Allocator::deallocateArrayDestruct(T* pArray)
 {
 	if(pArray == nullptr)
 	{

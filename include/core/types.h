@@ -5,11 +5,15 @@
 #include <xmmintrin.h>
 #include <tchar.h>
 #include <memory>
+#include <map>
+#include <vector>
 #include <functional>
 #include <exception>
 
 namespace fissura
 {
+	template<typename T> class StlAllocator;
+
 	// alias declarations not support by VS11
 	// Defer to using the DECL macro below for now.
 	// Once supported, replace all FS_DECL_UNIQUE_PTR(T) with
@@ -17,6 +21,8 @@ namespace fissura
 		//template<typename T>
 		//using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
 	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
+	#define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<K ,V>>>
+	#define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
 
 	template<typename T> class StlAllocator;
 	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> string;

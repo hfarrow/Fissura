@@ -92,3 +92,10 @@ size_t PageAllocator::getPageSize() const
 {
 	return _pageSize;
 }
+
+void PageAllocator::clear()
+{
+	FS_ASSERT(!"PageAllocator cannot be cleared.");
+	// To implement this, the allocator would need to keep a list
+	// of allocations and deallocate each one.
+}

@@ -15,11 +15,10 @@ namespace fissura
 		void* allocateSingle();
 		void* allocate(size_t size, u8 alignment);
 		void deallocate(void* p);
-		void clear();
-
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }
+		void clear();
 
 	private:
 		void resetFreeList();

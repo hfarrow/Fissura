@@ -7,7 +7,7 @@
 #include <memory>
 
 #define FS_NEW(T, allocator) new((allocator)->allocate(sizeof(T), __alignof(T))) T
-#define FS_DELETE(p, allocator) if((p)){(allocator)->deallocateDelete((p));}
+#define FS_DELETE(p, allocator) if((p)){(allocator)->deallocateDestruct((p));}
 
 namespace fissura
 {
@@ -22,15 +22,16 @@ namespace fissura
 		virtual size_t getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
 		virtual bool canDeallocate() const = 0;
+		virtual void clear() = 0;
 
 		const fschar* const getName() const;
 
-		template <class T> T* allocateNew();
-		template <class T> T* allocateNew(const T& t);
-		template <class T> void deallocateDelete(T* pObject);
+		template <class T> T* allocateConstruct();
+		template <class T> T* allocateConstruct(const T& t);
+		template <class T> void deallocateDestruct(T* pObject);
 
-		template <class T> T* allocateArray(u32 length);
-		template <class T> void deallocateArray(T* pArray);
+		template <class T> T* allocateArrayConstruct(u32 length);
+		template <class T> void deallocateArrayDestruct(T* pArray);
 
 	private:
 		const fschar* const _pName;

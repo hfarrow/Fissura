@@ -133,7 +133,9 @@ namespace fissura
 		/// Get the max allocation size
 		size_type max_size() const
 		{
+			// compiler error because of conflict with "max" macro
 			#undef max
+
 			return std::numeric_limits<size_type>::max();
 		}
  
@@ -147,8 +149,7 @@ namespace fissura
 		/// Reinit the allocator. All existing allocated memory will be lost
 		void reset()
 		{
-			FS_ASSERT(!"Uh oh... my allocators don't have a way to reset...");
-			//mpool->reset();
+			_pAllocator->clear();
 		}
  
 		const Allocator& getAllocator() const

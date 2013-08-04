@@ -17,6 +17,7 @@ namespace fissura
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const;
+		void clear();
 
 	protected:
 		

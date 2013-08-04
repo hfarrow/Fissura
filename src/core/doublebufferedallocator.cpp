@@ -42,6 +42,12 @@ u32 DoubleBufferedAllocator::getTotalNumAllocations() const
 	return _stacks[0]->getTotalNumAllocations() + _stacks[1]->getTotalNumAllocations();
 }
 
+void DoubleBufferedAllocator::clear()
+{
+	clearCurrentBuffer();
+	clearOtherBuffer();
+}
+
 void DoubleBufferedAllocator::swapBuffers()
 {
 	_currentStack = (u32)!_currentStack;

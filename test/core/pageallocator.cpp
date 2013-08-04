@@ -43,7 +43,7 @@ struct pageallocator_fixture
 	void* pMemory;
 };
 
-BOOST_FIXTURE_TEST_SUITE(pageallocator, pageallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(page_allocator, pageallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(can_deallocate_is_true)
 {

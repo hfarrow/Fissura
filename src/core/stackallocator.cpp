@@ -89,9 +89,10 @@ void* StackAllocator::allocateDownwards(size_t size, u8 alignment)
 	return (void*) alignedAddress;
 }
 
-void StackAllocator::deallocate(void* p)
+bool StackAllocator::deallocate(void* p)
 {
 	FS_ASSERT(!"Cannot deallocate from StackAllocator. Use deallocateToMarker instead.");
+	return false;
 }
 
 size_t StackAllocator::getTotalUsedMemory() const

@@ -4,11 +4,12 @@
 
 using namespace fissura;
 
-ProxyAllocator::ProxyAllocator(const fschar* const  pName, Allocator& allocator)
+ProxyAllocator::ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget)
 	:
 	_allocator(allocator),
 	_totalUsedMemory(0),
 	_totalNumAllocations(0),
+	_budget(budget),
 	Allocator(pName)
 {
 }
@@ -31,15 +32,19 @@ void* ProxyAllocator::allocate(size_t size, u8 alignment)
 	_totalUsedMemory += _allocator.getTotalUsedMemory() - oldTotalMemory;
 	_totalNumAllocations += 1;
 
+	FS_ASSERT_MSG_FORMATTED(_budget == 0 || _totalUsedMemory <= _budget, "ProxyAllocator named '%s' exceded memory budget.", getName());
+
 	return pAllocation;
 }
 
-void ProxyAllocator::deallocate(void* p)
+bool ProxyAllocator::deallocate(void* p)
 {
 	size_t oldTotalMemory = _allocator.getTotalUsedMemory();
-	_allocator.deallocate(p);
+	if(!_allocator.deallocate(p))
+		return false;
 	_totalUsedMemory -= oldTotalMemory - _allocator.getTotalUsedMemory();
 	_totalNumAllocations -= 1;
+	return true;
 }
 
 size_t ProxyAllocator::getTotalUsedMemory() const
@@ -60,4 +65,6 @@ bool ProxyAllocator::canDeallocate() const
 void ProxyAllocator::clear()
 {
 	_allocator.clear();
+	_totalNumAllocations = 0;
+	_totalUsedMemory = 0;
 }

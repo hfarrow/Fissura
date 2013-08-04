@@ -12,8 +12,9 @@ namespace fissura
 		PageAllocator(const fschar* const pName);
 		~PageAllocator();
 
+		void* allocateWithFlags(size_t size, u32 allocationTypeFlag, u32 protecFlag);
 		void* allocate(size_t size, u8 alignment);
-		void deallocate(void* p);
+		bool deallocate(void* p);
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const { return true; }

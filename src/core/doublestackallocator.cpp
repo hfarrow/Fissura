@@ -28,9 +28,10 @@ void* DoubleStackAllocator::allocate(size_t size, u8 alignment)
 	return _lower.allocate(size, alignment);
 }
 
-void DoubleStackAllocator::deallocate(void* p)
+bool DoubleStackAllocator::deallocate(void* p)
 {
 	FS_ASSERT(!"Cannot deallocate from DoubleStackAllocator. Use deallocateLower or deallocateUpper instead.");
+	return false;
 }
 
 void* DoubleStackAllocator::allocateUpper(size_t size, u8 alignment)

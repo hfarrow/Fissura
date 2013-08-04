@@ -44,12 +44,12 @@ struct proxyallocator_fixture
 	void* pMemory;
 };
 
-BOOST_FIXTURE_TEST_SUITE(proxyallocator, proxyallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(proxy_allocator, proxyallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 {
-	ProxyAllocator proxyA = ProxyAllocator(_T("ProxyA"), *pAllocator);
-	ProxyAllocator proxyB = ProxyAllocator(_T("ProxyB"), *pAllocator);
+	ProxyAllocator proxyA = ProxyAllocator(L"ProxyA", *pAllocator);
+	ProxyAllocator proxyB = ProxyAllocator(L"ProxyB", *pAllocator);
 
 	u64* pA1 = proxyA.allocateConstruct<u64>();
 	BOOST_CHECK(pA1 != nullptr);
@@ -76,6 +76,15 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	BOOST_CHECK(proxyA.getTotalUsedMemory() == 0);
 	BOOST_CHECK(proxyB.getTotalNumAllocations() == 0);
 	BOOST_CHECK(proxyB.getTotalUsedMemory() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(excede_memory_budget)
+{
+	ProxyAllocator proxy = ProxyAllocator(L"Proxy", *pAllocator, 8);
+	proxy.allocate(8, 8);
+
+	BOOST_REQUIRE_THROW(proxy.allocate(8, 8), fissura::assert_exception);
+	proxy.clear();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

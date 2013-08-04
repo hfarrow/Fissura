@@ -59,13 +59,15 @@ void* TraceAllocator::allocate(size_t size, u8 alignment)
 	return pAllocation;
 }
 
-void TraceAllocator::deallocate(void* p)
+bool TraceAllocator::deallocate(void* p)
 {
-	ProxyAllocator::deallocate(p);
+	if(!ProxyAllocator::deallocate(p))
+		return false;
 
 #if defined(_DEBUG) && defined(WIN32)
 	_pAllocationMap->erase((uptr)p);
 #endif
+	return true;
 }
 
 #if defined(_DEBUG) && defined(WIN32)

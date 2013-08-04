@@ -1,29 +1,64 @@
 #include "stdafx.h"
 #include <dlmalloc/malloc.h>
 #include <core/heapallocator.h>
+#include <core/pageallocator.h>
 #include <core/util.h>
 #include <core/assert.h>
 
 using namespace fissura;
 
+extern PageAllocator* gpVirtualAllocator;
+
 HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory)
 	:
+	_pMemory(pMemory),
 	_memorySize(memorySize),
 	_totalNumAllocations(0),
+	_pBackingAllocator(nullptr),
 	Allocator(pName)
 {
-	_mspace = create_mspace_with_base(pMemory, memorySize, 0);
-	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
+	createHeap();	
+}
+
+HeapAllocator::HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator)
+	:
+	_pMemory(nullptr),
+	_memorySize(0),
+	_totalNumAllocations(0),
+	_pBackingAllocator(&backingAllocator),
+	Allocator(pName)
+{
+	createHeap();
 }
 
 HeapAllocator::~HeapAllocator()
 {
 	FS_ASSERT(_totalNumAllocations == 0);
+	gpVirtualAllocator = _pBackingAllocator;
 	destroy_mspace(_mspace);
+	gpVirtualAllocator = nullptr;
+}
+
+void HeapAllocator::createHeap()
+{
+	gpVirtualAllocator = _pBackingAllocator;
+	if(_pBackingAllocator == nullptr)
+	{
+		_mspace = create_mspace_with_base(_pMemory, _memorySize, 0);
+	}
+	else
+	{
+		_mspace = create_mspace(0, 0);
+	}
+
+	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
+
+	gpVirtualAllocator = nullptr;
 }
 
 void* HeapAllocator::allocate(size_t size, u8 alignment)
 {
+	gpVirtualAllocator = _pBackingAllocator;
 	void* p = mspace_memalign(_mspace, alignment, size);
 	if(p == nullptr)
 	{
@@ -32,28 +67,35 @@ void* HeapAllocator::allocate(size_t size, u8 alignment)
 	}
 
 #ifdef _DEBUG
-	if(mspace_mallinfo(_mspace).uordblks > _memorySize)
+	// TODO: replace this with mspace_footprint
+	if(_memorySize > 0 && mspace_mallinfo(_mspace).uordblks > _memorySize)
 	{
 		FS_ASSERT(!"Heap exceded budget. Request will be served anyways if execution continues.");
 	}
 #endif
 
 	_totalNumAllocations += 1;
+	gpVirtualAllocator = nullptr;
 	return p;
 }
 
-void HeapAllocator::deallocate(void* p)
+bool HeapAllocator::deallocate(void* p)
 {
+	gpVirtualAllocator = _pBackingAllocator;
 	mspace_free(_mspace, p);
 	FS_ASSERT(_totalNumAllocations > 0);
 	_totalNumAllocations -= 1;
+	gpVirtualAllocator = nullptr;
+
+	return true;
 }
 
 void HeapAllocator::clear()
 {
+	gpVirtualAllocator = _pBackingAllocator;
 	destroy_mspace(_mspace);
-	_mspace = create_mspace_with_base((void*)_mspace, _memorySize, 0);
-	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
+	createHeap();
+	gpVirtualAllocator = nullptr;
 }
 
 size_t HeapAllocator::getTotalUsedMemory() const

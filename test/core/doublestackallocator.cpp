@@ -44,7 +44,7 @@ struct doublestackallocator_fixture
 	void* pStackData;
 };
 
-BOOST_FIXTURE_TEST_SUITE(doublestackallocator, doublestackallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(double_stack_allocator, doublestackallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(valid_construction)
 {

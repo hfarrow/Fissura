@@ -44,7 +44,7 @@ struct poolallocator_fixture
 	void* pMemory;
 };
 
-BOOST_FIXTURE_TEST_SUITE(poolallocator, poolallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(pool_allocator, poolallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(valid_construction)
 {

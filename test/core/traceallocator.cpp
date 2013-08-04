@@ -54,7 +54,7 @@ struct traceallocator_fixture
 	void* pDebugMemory;
 };
 
-BOOST_FIXTURE_TEST_SUITE(traceallocator, traceallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(trace_allocator, traceallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(record_stack_trace)
 {

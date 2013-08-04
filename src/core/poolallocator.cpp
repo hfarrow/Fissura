@@ -82,11 +82,12 @@ void* PoolAllocator::allocate(size_t size, u8 alignment)
 	return pAllocation;
 }
 
-void PoolAllocator::deallocate(void* p)
+bool PoolAllocator::deallocate(void* p)
 {
 	if(p < _pMemory || p > (void*)((uptr)_pMemory + _memorySize))
 	{
 		FS_ASSERT(!"object to deallocate does not belong to this pool.");
+		return false;
 	}
 
 	// Point p to the current head and replace the current head with p.
@@ -94,6 +95,8 @@ void PoolAllocator::deallocate(void* p)
 	_pFreeList = p;
 
 	_totalNumAllocations -= 1;
+
+	return true;
 }
 
 void PoolAllocator::clear()

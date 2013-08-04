@@ -13,7 +13,7 @@ namespace fissura
 		~DoubleBufferedAllocator();
 
 		void* allocate(size_t size, u8 alignment);
-		void deallocate(void* p);
+		bool deallocate(void* p);
 
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;

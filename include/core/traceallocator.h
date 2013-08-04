@@ -22,7 +22,7 @@ namespace fissura
 		~TraceAllocator();
 
 		void* allocate(size_t size, u8 alignment);
-		void deallocate(void* p);
+		bool deallocate(void* p);
 
 	private:
 #if defined(_DEBUG) && defined(WIN32)

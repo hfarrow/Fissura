@@ -27,7 +27,7 @@ namespace fissura
 	template<typename T> class StlAllocator;
 	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> string;
 
-	typedef TCHAR fschar;
+	typedef wchar_t fschar;
 	typedef unsigned char uchar;
 	typedef uintptr_t uptr;
 	typedef float f32;

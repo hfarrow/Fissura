@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\..\include\core\traceallocator.h" />
     <ClInclude Include="..\..\..\include\core\types.h" />
     <ClInclude Include="..\..\..\include\core\util.h" />
+    <ClInclude Include="..\..\..\include\dlmalloc\malloc.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <ClCompile Include="..\..\..\src\core\stlallocatorcpp.cpp" />
     <ClCompile Include="..\..\..\src\core\trace.cpp" />
     <ClCompile Include="..\..\..\src\core\traceallocator.cpp" />
+    <ClCompile Include="..\..\..\src\dlmalloc\malloc.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTestable|x64'">Create</PrecompiledHeader>
@@ -155,11 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\core\allocator.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\dlmalloc\dlmalloc\dlmalloc.vcxproj">
-      <Project>{867734c1-ec96-4105-b2cf-38e2292f1950}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

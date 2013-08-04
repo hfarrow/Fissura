@@ -5,8 +5,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraCore", "FissuraCore\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraTest", "test\FissuraTest\FissuraTest.vcxproj", "{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc", "dlmalloc\dlmalloc\dlmalloc.vcxproj", "{867734C1-EC96-4105-B2CF-38E2292F1950}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -24,12 +22,6 @@ Global
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.ActiveCfg = DebugTestable|x64
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.Build.0 = DebugTestable|x64
 		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|x64.ActiveCfg = Release|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.Debug|x64.ActiveCfg = Debug|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.Debug|x64.Build.0 = Debug|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.DebugTestable|x64.ActiveCfg = Debug|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.DebugTestable|x64.Build.0 = Debug|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.Release|x64.ActiveCfg = Release|x64
-		{867734C1-EC96-4105-B2CF-38E2292F1950}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

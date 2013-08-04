@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include <dlmalloc/malloc.h>
+#include <core/pageallocator.h>
 
 /*------------------------------ internal #includes ---------------------- */
 
@@ -234,16 +236,26 @@ static int dev_zero_fd = -1; /* Cached file descriptor for /dev/zero. */
 
 #else /* WIN32 */
 
+fissura::PageAllocator* gpVirtualAllocator = nullptr;
+
 /* Win32 MMAP via VirtualAlloc */
 static FORCEINLINE void* win32mmap(size_t size) {
-  void* ptr = VirtualAlloc(0, size, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+  void* ptr;
+  if(gpVirtualAllocator)
+	  ptr = gpVirtualAllocator->allocateWithFlags(size, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+  else
+	  ptr = VirtualAlloc(0, size, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
   return (ptr != 0)? ptr: MFAIL;
 }
 
 /* For direct MMAP, use MEM_TOP_DOWN to minimize interference */
 static FORCEINLINE void* win32direct_mmap(size_t size) {
-  void* ptr = VirtualAlloc(0, size, MEM_RESERVE|MEM_COMMIT|MEM_TOP_DOWN,
-                           PAGE_READWRITE);
+  void* ptr;
+  if(gpVirtualAllocator)
+	  ptr = gpVirtualAllocator->allocateWithFlags(size, MEM_RESERVE|MEM_COMMIT|MEM_TOP_DOWN,
+		PAGE_READWRITE);
+  else
+	  ptr = VirtualAlloc(0, size, MEM_RESERVE|MEM_COMMIT|MEM_TOP_DOWN, PAGE_READWRITE);
   return (ptr != 0)? ptr: MFAIL;
 }
 
@@ -257,7 +269,12 @@ static FORCEINLINE int win32munmap(void* ptr, size_t size) {
     if (minfo.BaseAddress != cptr || minfo.AllocationBase != cptr ||
         minfo.State != MEM_COMMIT || minfo.RegionSize > size)
       return -1;
-    if (VirtualFree(cptr, 0, MEM_RELEASE) == 0)
+	if(gpVirtualAllocator)
+	{
+		if(!gpVirtualAllocator->deallocate(cptr))
+			return -1;
+	}
+    else if (VirtualFree(cptr, 0, MEM_RELEASE) == 0)
       return -1;
     cptr += minfo.RegionSize;
     size -= minfo.RegionSize;

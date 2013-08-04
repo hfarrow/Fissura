@@ -25,6 +25,12 @@
     <Filter Include="Header Files\core\allocators">
       <UniqueIdentifier>{3a79f5ac-08b8-4d59-a17d-5989ac2dceeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\dlmalloc">
+      <UniqueIdentifier>{a6e9afbe-5336-4575-8d96-d655b25721af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dlmalloc">
+      <UniqueIdentifier>{b82ddf93-e015-4782-93cf-a3ea0e3a804e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -78,6 +84,9 @@
     <ClInclude Include="..\..\..\include\core\trace.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\dlmalloc\malloc.h">
+      <Filter>Source Files\dlmalloc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -121,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\trace.cpp">
       <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\dlmalloc\malloc.cpp">
+      <Filter>Header Files\dlmalloc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

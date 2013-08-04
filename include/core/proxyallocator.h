@@ -9,11 +9,11 @@ namespace fissura
 	class ProxyAllocator : public Allocator
 	{
 	public:
-		ProxyAllocator(const fschar* const  pName, Allocator& allocator);
+		ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget = 0);
 		~ProxyAllocator();
 
 		void* allocate(size_t size, u8 alignment);
-		void deallocate(void* p);
+		bool deallocate(void* p);
 		size_t getTotalUsedMemory() const;
 		u32 getTotalNumAllocations() const;
 		bool canDeallocate() const;
@@ -27,6 +27,7 @@ namespace fissura
 		size_t _totalUsedMemory;
 		u32 _totalNumAllocations;
 		bool _canDeallocate;
+		size_t _budget;
 	};
 }
 

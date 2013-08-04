@@ -62,7 +62,7 @@ struct doublebufferedallocator_fixture
 	void* pStackDataB;
 };
 
-BOOST_FIXTURE_TEST_SUITE(doublebufferedallocator, doublebufferedallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(double_buffered_allocator, doublebufferedallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(swap_buffers)
 {

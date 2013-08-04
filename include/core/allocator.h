@@ -18,7 +18,7 @@ namespace fissura
 		virtual ~Allocator();
 
 		virtual void* allocate(size_t size, u8 alignment) = 0;
-		virtual void deallocate(void* p) = 0;
+		virtual bool deallocate(void* p) = 0;
 		virtual size_t getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
 		virtual bool canDeallocate() const = 0;

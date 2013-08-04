@@ -14,7 +14,7 @@ namespace fissura
 		~DoubleStackAllocator();
 
 		void* allocate(size_t size, u8 alignment);
-		void deallocate(void* p);
+		bool deallocate(void* p);
 		void* allocateUpper(size_t size, u8 alignment);
 		void* allocateLower(size_t size, u8 alignment);
 		void deallocateUpper(StackAllocator::Marker& marker);

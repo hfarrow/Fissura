@@ -8,9 +8,9 @@ using namespace fissura;
 const u32 gDebugStrBufferSize = 2048;
 
 bool fissura::reportAssertFailure(char* const condition,
-						 char* const strFile,
-						 u32 nLine,
-						 char* const format, ...)
+								  char* const strFile,
+								  u32 nLine,
+								  char* const format, ...)
 {
 	static char userMessage[gDebugStrBufferSize];
 	static char output[gDebugStrBufferSize];

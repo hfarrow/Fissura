@@ -48,7 +48,7 @@ struct stackallocator_fixture
 	void* pStackData;
 };
 
-BOOST_FIXTURE_TEST_SUITE(stackallocator, stackallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(stack_allocator, stackallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(valid_construction)
 {

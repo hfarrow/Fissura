@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <core/heapallocator.h>
+#include <core/pageallocator.h>
 #include <core/types.h>
 #include <exception>
 
@@ -43,7 +44,7 @@ struct heapallocator_fixture
 	void* pMemory;
 };
 
-BOOST_FIXTURE_TEST_SUITE(heapallocator, heapallocator_fixture)
+BOOST_FIXTURE_TEST_SUITE(heap_allocator, heapallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(valid_construction)
 {
@@ -83,6 +84,68 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 	// this allocation excedes the initial budget of the allocator.
 	//BOOST_REQUIRE(p == nullptr);
 	//BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+struct pageheapallocator_fixture
+{
+	pageheapallocator_fixture()
+	{
+		SYSTEM_INFO systemInfo;
+		GetSystemInfo(&systemInfo);
+		granularity = systemInfo.dwAllocationGranularity;
+
+		pPageAllocator = nullptr;
+		pAllocator = nullptr;
+		resizeMemory(DEFAULT_MEM_SIZE);
+	}
+
+	~pageheapallocator_fixture()
+	{
+		resizeMemory(0);
+	}
+
+	void resizeMemory(u32 size)
+	{
+		delete pAllocator;
+		delete pPageAllocator;
+
+		currentMemorySize = size;
+		if(size > 0)
+		{
+			pPageAllocator = new PageAllocator(L"PageAllocator");
+			pAllocator = new HeapAllocator(nullptr, *pPageAllocator);
+		}
+	}
+
+	u32 currentMemorySize;
+	PageAllocator* pPageAllocator;
+	HeapAllocator* pAllocator;
+	size_t granularity;
+};
+
+BOOST_FIXTURE_TEST_SUITE(page_heap_allocator, pageheapallocator_fixture)
+/*
+BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
+{
+	void* p = pAllocator->allocate(4, 4);
+	BOOST_REQUIRE(p != nullptr);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
+
+	pAllocator->deallocate(p);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
+}
+*/
+BOOST_AUTO_TEST_CASE(allocate_and_grow)
+{
+	void* p = pAllocator->allocate(granularity * 2, 0);
+	BOOST_REQUIRE(p != nullptr);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
+	BOOST_CHECK(pPageAllocator->getTotalNumAllocations() > 1);
+
+	pAllocator->deallocate(p);
+	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -7,7 +7,7 @@
 
 #define DEFAULT_STACK_MEM_SIZE  (64 * 1024) // bytes
 
-using namespace fissura;
+using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)

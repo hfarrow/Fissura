@@ -3,26 +3,26 @@
 
 #include <core/types.h>
 #include <core/util.h>
+#include <core/IAllocator.h>
 #include <new>
 #include <memory>
 
-#define FS_NEW(T, allocator) new((allocator)->allocate(sizeof(T), __alignof(T))) T
-#define FS_DELETE(p, allocator) if((p)){(allocator)->deallocateDestruct((p));}
-
-namespace fissura
+namespace fs
 {
-	class Allocator : public Uncopyable
+	class Allocator : public IAllocator, public Uncopyable
 	{
 	public:
 		Allocator(const fschar* const  pName);
 		virtual ~Allocator();
 
+		/*
 		virtual void* allocate(size_t size, u8 alignment) = 0;
 		virtual bool deallocate(void* p) = 0;
+		virtual void clear() = 0;
+		virtual bool canDeallocate() const = 0;
 		virtual size_t getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
-		virtual bool canDeallocate() const = 0;
-		virtual void clear() = 0;
+		*/
 
 		const fschar* const getName() const;
 

@@ -2,7 +2,7 @@
 // required to store the array header. The only time this
 // function returns something other than 1 is when sizeof(T)
 // is less than 4 (u16 and u8).
-template <class T> inline u32 fissura::calcArrayHeaderSize()
+template <class T> inline u32 fs::calcArrayHeaderSize()
 {
 	u32 headerSize = sizeof(u32) / sizeof(T);
 	if(sizeof(u32) % sizeof(T) > 0)
@@ -15,14 +15,14 @@ template <class T> inline u32 fissura::calcArrayHeaderSize()
 
 // Return the next aligned address for based on the starting
 // address and the alignment provided.
-inline void* fissura::nextAlignedAddress(void* pAddress, u8 alignment)
+inline void* fs::nextAlignedAddress(void* pAddress, u8 alignment)
 {
 	return (void*) (((uptr)pAddress + (alignment-1)) & ~(alignment-1));
 }
 
 // Calculate by what amount in bytes the pAddress must be moved
 // forward to be aligned by the specified amount.
-inline u8 fissura::alignAdjustment(void* pAddress, u8 alignment)
+inline u8 fs::alignAdjustment(void* pAddress, u8 alignment)
 {
 	u8 adjustment = alignment - ((uptr)pAddress & (alignment-1));
 
@@ -37,7 +37,7 @@ inline u8 fissura::alignAdjustment(void* pAddress, u8 alignment)
 // Calculate by what amount in bytes the pAddress must be moved
 // forward to be aligned by the specified amount and also have space
 // for headerSize while maintaining alignment.
-inline u8 fissura::alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 headerSize)
+inline u8 fs::alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 headerSize)
 {
 	u8 adjustment = alignment - ((uptr)pAddress & (alignment-1));
 

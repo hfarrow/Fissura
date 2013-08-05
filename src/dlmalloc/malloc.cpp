@@ -236,7 +236,7 @@ static int dev_zero_fd = -1; /* Cached file descriptor for /dev/zero. */
 
 #else /* WIN32 */
 
-fissura::PageAllocator* gpVirtualAllocator = nullptr;
+fs::PageAllocator* gpVirtualAllocator = nullptr;
 
 /* Win32 MMAP via VirtualAlloc */
 static FORCEINLINE void* win32mmap(size_t size) {

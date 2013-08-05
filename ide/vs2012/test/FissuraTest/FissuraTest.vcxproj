@@ -141,6 +141,9 @@
     <ProjectReference Include="..\..\FissuraCore\FissuraCore.vcxproj">
       <Project>{19aec263-d5ce-419f-a45b-2b3aafa5f875}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\FissureWindows\FissureWindows.vcxproj">
+      <Project>{32d4ec75-029e-4c97-9d3d-3acd333ee9c4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

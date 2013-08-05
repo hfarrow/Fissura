@@ -5,7 +5,7 @@
 #include <core/util.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 extern PageAllocator* gpVirtualAllocator;
 

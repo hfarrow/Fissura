@@ -4,7 +4,7 @@
 #include <core/types.h>
 #include <core/allocator.h>
 
-namespace fissura
+namespace fs
 {
 	class PageAllocator : public Allocator
 	{
@@ -12,14 +12,14 @@ namespace fissura
 		PageAllocator(const fschar* const pName);
 		~PageAllocator();
 
-		void* allocateWithFlags(size_t size, u32 allocationTypeFlag, u32 protecFlag);
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return true; }
-		void clear();
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return true; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
 
+		void* allocateWithFlags(size_t size, u32 allocationTypeFlag, u32 protecFlag);
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;
 

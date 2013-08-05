@@ -3,7 +3,7 @@
 #include <core/util.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 StackAllocator::StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack)
 	: Allocator(pName)

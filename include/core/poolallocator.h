@@ -4,7 +4,7 @@
 #include <core/types.h>
 #include <core/allocator.h>
 
-namespace fissura
+namespace fs
 {
 	class PoolAllocator : public Allocator
 	{
@@ -12,13 +12,15 @@ namespace fissura
 		PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
 		~PoolAllocator();
 
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return true; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
+
 		void* allocateSingle();
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return true; }
-		void clear();
+		
 
 	private:
 		void resetFreeList();

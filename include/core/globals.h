@@ -1,8 +1,8 @@
 #ifndef FS_GLOBALS_H
 #define FS_GLOBALS_H
-namespace fissura
+namespace fs
 {
 	class HeapAllocator;
 }
-extern fissura::HeapAllocator* gpDebugHeap;
+extern fs::HeapAllocator* gpDebugHeap;
 #endif

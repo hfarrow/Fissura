@@ -5,7 +5,7 @@
 #include <core/poolallocator.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:

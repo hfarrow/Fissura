@@ -5,7 +5,7 @@
 #include <core/allocator.h>
 #include <dlmalloc/malloc.h>
 
-namespace fissura
+namespace fs
 {
 	class PageAllocator;
 
@@ -24,12 +24,12 @@ namespace fissura
 		HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator);
 		~HeapAllocator();
 
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return true; }
-		void clear();
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return true; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;		
 
 	private:
 		void createHeap();

@@ -5,7 +5,7 @@
 #include <core/allocator.h>
 #include <core/stackallocator.h>
 
-namespace fissura
+namespace fs
 {
 	class DoubleStackAllocator : public Allocator
 	{
@@ -13,18 +13,19 @@ namespace fissura
 		DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack);
 		~DoubleStackAllocator();
 
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return false; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
+
 		void* allocateUpper(size_t size, u8 alignment);
 		void* allocateLower(size_t size, u8 alignment);
 		void deallocateUpper(StackAllocator::Marker& marker);
 		void deallocateLower(StackAllocator::Marker& marker);
 		StackAllocator& getUpper();
 		StackAllocator& getLower();
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return false; }
-		void clear();
 
 	private:
 		StackAllocator _upper;

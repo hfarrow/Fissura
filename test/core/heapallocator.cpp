@@ -7,7 +7,7 @@
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
 
-using namespace fissura;
+using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_large)
 BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 {
 	void* p = nullptr;
-	BOOST_REQUIRE_THROW(p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4), fs::assert_exception);
 
 	// In Release, p will still be allocated. This is because dlmalloc will expand
 	// the mspace if more space is needed. Fissura will assert to notify that
@@ -126,7 +126,7 @@ struct pageheapallocator_fixture
 };
 
 BOOST_FIXTURE_TEST_SUITE(page_heap_allocator, pageheapallocator_fixture)
-/*
+
 BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 {
 	void* p = pAllocator->allocate(4, 4);
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	pAllocator->deallocate(p);
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
-*/
+
 BOOST_AUTO_TEST_CASE(allocate_and_grow)
 {
 	void* p = pAllocator->allocate(granularity * 2, 0);

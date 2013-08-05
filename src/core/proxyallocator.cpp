@@ -2,7 +2,7 @@
 #include <core/proxyallocator.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 ProxyAllocator::ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget)
 	:

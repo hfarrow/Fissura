@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 PageAllocator::PageAllocator(const fschar* const pName)
 	:

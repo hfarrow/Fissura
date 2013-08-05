@@ -12,6 +12,7 @@
 #include <core/types.h>
 #include <core/util.h>
 #include <core/globals.h>
+#include <core/IAllocator.h>
 #include <core/allocator.h>
 #include <core/stackallocator.h>
 #include <core/doublebufferedallocator.h>

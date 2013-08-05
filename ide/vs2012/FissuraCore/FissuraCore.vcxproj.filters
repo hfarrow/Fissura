@@ -13,23 +13,17 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\core">
-      <UniqueIdentifier>{4477e34c-262a-4cc8-90d5-477e1567f945}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\core">
-      <UniqueIdentifier>{181228b1-c1f7-463e-ac1a-d62fbc247f2e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\core\allocators">
-      <UniqueIdentifier>{989a269a-04af-4b1b-94bb-1c4fdc6f24b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\core\allocators">
-      <UniqueIdentifier>{3a79f5ac-08b8-4d59-a17d-5989ac2dceeb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\dlmalloc">
       <UniqueIdentifier>{a6e9afbe-5336-4575-8d96-d655b25721af}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\dlmalloc">
       <UniqueIdentifier>{b82ddf93-e015-4782-93cf-a3ea0e3a804e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\allocators">
+      <UniqueIdentifier>{3a79f5ac-08b8-4d59-a17d-5989ac2dceeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\allocators">
+      <UniqueIdentifier>{989a269a-04af-4b1b-94bb-1c4fdc6f24b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,52 +34,55 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\allocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\stackallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\doublebufferedallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\doublestackallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\poolallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\heapallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\proxyallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\core\util.h">
-      <Filter>Header Files\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\core\types.h">
-      <Filter>Header Files\core</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\pageallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\traceallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\stlallocator.h">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\core\globals.h">
-      <Filter>Header Files\core</Filter>
+    <ClInclude Include="..\..\..\include\core\IAllocator.h">
+      <Filter>Header Files\allocators</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\assert.h">
-      <Filter>Header Files\core</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\globals.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\core\trace.h">
-      <Filter>Header Files\core</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\core\util.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\dlmalloc\malloc.h">
-      <Filter>Source Files\dlmalloc</Filter>
+      <Filter>Header Files\dlmalloc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -93,51 +90,48 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\allocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\doublebufferedallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\doublestackallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\heapallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\poolallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\proxyallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\stackallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\pageallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\core\traceallocator.cpp">
-      <Filter>Source Files\core\allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\core\globals.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\stlallocatorcpp.cpp">
-      <Filter>Source Files\core\allocators</Filter>
+      <Filter>Source Files\allocators</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\assert.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\globals.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\trace.cpp">
-      <Filter>Source Files\core</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\dlmalloc\malloc.cpp">
-      <Filter>Header Files\dlmalloc</Filter>
+      <Filter>Source Files\dlmalloc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\core\allocator.inl">
-      <Filter>Header Files\core\allocators</Filter>
+      <Filter>Header Files\allocators</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@
 #include <functional>
 #include <exception>
 
-namespace fissura
+namespace fs
 {
 	template<typename T> class StlAllocator;
 

@@ -1,7 +1,7 @@
 #ifndef FS_TRACE_H
 #define FS_TRACE_H
 
-namespace fissura
+namespace fs
 {
 	void traceDebugStringFormatted(char* category, const char* format, ...);
 }
@@ -9,7 +9,7 @@ namespace fissura
 #ifdef FS_NO_TRACES
 	#define FS_TRACE_FORMATTED_CAT(category, format, ...) FS_UNUSED(category)
 #else
-	#define FS_TRACE_FORMATTED_CAT(category, format, ...) fissura::traceDebugStringFormatted(category, format, __VA_ARGS__)
+	#define FS_TRACE_FORMATTED_CAT(category, format, ...) fs::traceDebugStringFormatted(category, format, __VA_ARGS__)
 #endif
 
 #define FS_TRACE_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("FISSURA", format, __VA_ARGS__)

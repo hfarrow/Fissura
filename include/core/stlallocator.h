@@ -7,7 +7,7 @@
 #include <core/assert.h>
 #include <limits>
 
-namespace fissura
+namespace fs
 {
 	template<typename T>
 	class StlAllocator
@@ -45,7 +45,7 @@ namespace fissura
 		{
 			FS_ASSERT(!"StlAllocator(size_type size) not implemented");
 			// Ugh what to do here...
-			// _pAllocator = &fissura::globals::mainHeap;
+			// _pAllocator = &fs::globals::mainHeap;
 		}
  
 		~StlAllocator()

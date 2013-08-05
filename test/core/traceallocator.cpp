@@ -2,14 +2,14 @@
 
 #include <core/poolallocator.h>
 #include <core/heapallocator.h>
-#include <core/traceallocator.h>
+#include <windows/traceallocator.h>
 #include <core/types.h>
 #include <exception>
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
 #define DEBUG_MEM_SIZE 1048576 // 1mb
 
-using namespace fissura;
+using namespace fs;
 HeapAllocator* gpDebugHeap = nullptr;
 
 
@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_SUITE(trace_allocator, traceallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(record_stack_trace)
 {
-	TraceAllocator proxy = TraceAllocator(nullptr, *pAllocator);
+	windows::TraceAllocator proxy = windows::TraceAllocator(nullptr, *pAllocator);
 	void* p = proxy.allocate(8, 8);
 	BOOST_REQUIRE(p != nullptr);
 	proxy.deallocate(p);

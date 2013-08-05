@@ -6,7 +6,7 @@
 
 #define DEFAULT_STACK_MEM_SIZE  256 // bytes
 
-using namespace fissura;
+using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory_in_middle)
 	BOOST_CHECK(pStack->getTotalUsedMemory() == DEFAULT_STACK_MEM_SIZE);
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pStack->allocateLower(4, 4), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocation = pStack->allocateLower(4, 4), fs::assert_exception);
 	BOOST_CHECK(pAllocation == nullptr);
 }
 

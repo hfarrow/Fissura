@@ -4,7 +4,7 @@
 #include <core/types.h>
 #include <core/allocator.h>
 
-namespace fissura
+namespace fs
 {
 	class StackAllocator : public Allocator
 	{
@@ -36,27 +36,17 @@ namespace fissura
 		StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack, bool growUpwards);
 		~StackAllocator();
 
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return false; }
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return false; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
 
 		Marker getMarker() const;
 		void deallocateToMarker(const Marker& marker);
-		void clear();
 
 	private:
-		/*
-		// No header required for stack allocator.
-		// Leaving struct here for easy addiditon of header
-		// at later time.
-		struct AllocationHeader
-		{
-			u8 adjustment;
-		};
-		*/
-
 		void init(size_t stackSize, void* pStack, bool growUpwards);
 		void* allocateUpwards(size_t, u8 alignment);
 		void* allocateDownwards(size_t, u8 alignment);

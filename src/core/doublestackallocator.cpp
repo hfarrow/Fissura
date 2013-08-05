@@ -3,7 +3,7 @@
 #include <core/doublestackallocator.h>
 #include <core/assert.h>
 
-using namespace fissura;
+using namespace fs;
 
 DoubleStackAllocator::DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack)
 	:

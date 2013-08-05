@@ -6,7 +6,7 @@
 
 #define DEFAULT_MEM_SIZE  64 // bytes
 
-using namespace fissura;
+using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 	pAllocator->allocateSingle();
 
 	void* pAllocation = nullptr;
-	BOOST_REQUIRE_THROW(pAllocation = pAllocator->allocateSingle(), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocation = pAllocator->allocateSingle(), fs::assert_exception);
 	BOOST_REQUIRE(pAllocation == nullptr);
 
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
@@ -102,12 +102,12 @@ BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
 
 BOOST_AUTO_TEST_CASE(allocate_invalid_sizes)
 {
-	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 4), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 4), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 8), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 7), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 4), fissura::assert_exception);
-	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 7), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(8, 4), fs::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 4), fs::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 8), fs::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 7), fs::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(4, 4), fs::assert_exception);
+	BOOST_REQUIRE_THROW(pAllocator->allocate(7, 7), fs::assert_exception);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -4,7 +4,7 @@
 #include <core/util.h>
 #include <core/types.h>
 
-namespace fissura
+namespace fs
 {
 	bool reportAssertFailure(char* const condition,
 							 char* const strFile,
@@ -20,7 +20,7 @@ namespace fissura
 	{ \
 		if (!(condition)) \
 		{ \
-			if(fissura::reportAssertFailure(#condition, __FILE__, __LINE__, format, __VA_ARGS__)) \
+			if(fs::reportAssertFailure(#condition, __FILE__, __LINE__, format, __VA_ARGS__)) \
 			{ \
 				FS_HALT(); \
 			} \

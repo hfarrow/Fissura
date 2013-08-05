@@ -7,7 +7,7 @@
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
 
-using namespace fissura;
+using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(excede_memory_budget)
 	ProxyAllocator proxy = ProxyAllocator(L"Proxy", *pAllocator, 8);
 	proxy.allocate(8, 8);
 
-	BOOST_REQUIRE_THROW(proxy.allocate(8, 8), fissura::assert_exception);
+	BOOST_REQUIRE_THROW(proxy.allocate(8, 8), fs::assert_exception);
 	proxy.clear();
 }
 

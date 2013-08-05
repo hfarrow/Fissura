@@ -2,7 +2,7 @@
 #include <core/allocator.h>
 #include <core/util.h>
 
-using namespace fissura;
+using namespace fs;
 
 Allocator::Allocator(const fschar* const  pName)
 	: _pName(pName)

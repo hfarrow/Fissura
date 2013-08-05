@@ -2,11 +2,11 @@
 #include <core/trace.h>
 #include <iostream>
 
-using namespace fissura;
+using namespace fs;
 
 const u32 gDebugStrBufferSize = 2048;
 
-void fissura::traceDebugStringFormatted(char* category, const char* format, ...)
+void fs::traceDebugStringFormatted(char* category, const char* format, ...)
 {
 	static char userMessage[gDebugStrBufferSize];
 	static char output[gDebugStrBufferSize];

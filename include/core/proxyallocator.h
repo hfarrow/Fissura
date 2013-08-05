@@ -4,7 +4,7 @@
 #include <core/types.h>
 #include <core/allocator.h>
 
-namespace fissura
+namespace fs
 {
 	class ProxyAllocator : public Allocator
 	{
@@ -12,15 +12,12 @@ namespace fissura
 		ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget = 0);
 		~ProxyAllocator();
 
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const;
-		void clear();
-
-	protected:
-		
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
+		virtual bool canDeallocate() const override;
+		virtual void clear() override;
 
 	private:
 		Allocator& _allocator;

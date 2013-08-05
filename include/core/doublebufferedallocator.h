@@ -4,7 +4,7 @@
 #include <core/allocator.h>
 #include <core/stackallocator.h>
 
-namespace fissura
+namespace fs
 {
 	class DoubleBufferedAllocator : public Allocator
 	{
@@ -12,13 +12,12 @@ namespace fissura
 		DoubleBufferedAllocator(const fschar* const  pName, StackAllocator& stackA, StackAllocator& stackB);
 		~DoubleBufferedAllocator();
 
-		void* allocate(size_t size, u8 alignment);
-		bool deallocate(void* p);
-
-		size_t getTotalUsedMemory() const;
-		u32 getTotalNumAllocations() const;
-		bool canDeallocate() const { return false; }
-		void clear();
+		virtual void* allocate(size_t size, u8 alignment) override;
+		virtual bool deallocate(void* p) override;
+		virtual void clear() override;
+		virtual bool canDeallocate() const override { return false; }
+		virtual size_t getTotalUsedMemory() const override;
+		virtual u32 getTotalNumAllocations() const override;
 
 		void swapBuffers();
 		void clearCurrentBuffer();

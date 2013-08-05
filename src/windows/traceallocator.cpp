@@ -1,23 +1,19 @@
 #include "stdafx.h"
-#include <core/traceallocator.h>
+#include <windows/traceallocator.h>
 #include <core/heapallocator.h>
 #include <core/globals.h>
 #include <core/assert.h>
 #include <core/trace.h>
 
-#if defined(_DEBUG) && defined(WIN32)
 // windows includes
 #include <DbgHelp.h>
 #pragma comment(lib,"dbghelp.lib")
-#endif
 
-using namespace fissura;
+using namespace fs;
 
-TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
-	:
-	ProxyAllocator(pName, allocator)
+windows::TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
+	: fs::TraceAllocator(pName, allocator)
 {
-#if defined(_DEBUG) && defined(WIN32)
 	// gpDebugHeap must have been provided by application.
 	FS_ASSERT(gpDebugHeap != nullptr);
 
@@ -25,12 +21,10 @@ TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 		[](AllocationMap* p) {FS_DELETE(p, gpDebugHeap);});
 
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);
-#endif
 }
 
-TraceAllocator::~TraceAllocator()
+windows::TraceAllocator::~TraceAllocator()
 {
-#if defined(_DEBUG) && defined(WIN32)
 	if(_pAllocationMap->size() > 0)
 	{
 		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
@@ -40,10 +34,9 @@ TraceAllocator::~TraceAllocator()
 		}
 	}
 	_pAllocationMap->clear();
-#endif
 }
 
-void* TraceAllocator::allocate(size_t size, u8 alignment)
+void* windows::TraceAllocator::allocate(size_t size, u8 alignment)
 {
 	void* pAllocation = ProxyAllocator::allocate(size, alignment);
 
@@ -59,19 +52,16 @@ void* TraceAllocator::allocate(size_t size, u8 alignment)
 	return pAllocation;
 }
 
-bool TraceAllocator::deallocate(void* p)
+bool windows::TraceAllocator::deallocate(void* p)
 {
 	if(!ProxyAllocator::deallocate(p))
 		return false;
 
-#if defined(_DEBUG) && defined(WIN32)
 	_pAllocationMap->erase((uptr)p);
-#endif
 	return true;
 }
 
-#if defined(_DEBUG) && defined(WIN32)
-void TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAllocation)
+void windows::TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAllocation)
 {
 	CONTEXT ctx;
 	RtlCaptureContext(&ctx);
@@ -131,7 +121,7 @@ void TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAllocation)
 	//UNREFERENCED_PARAMETER(pInfo);
 }
 
-const char* TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
+const char* windows::TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
 {
 	const size_t bufferSize = 512;
 	char pFileName[bufferSize];
@@ -172,7 +162,8 @@ const char* TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
 			if(strncmp(pSymbol->Name, "PMemory::", 9) == 0 ||
 			   strncmp(pSymbol->Name, "operator new", 12) == 0 ||
 			   strncmp(pSymbol->Name, "std::", 5) == 0 ||
-			   strncmp(pSymbol->Name, "fissura::TraceAllocator", 23) == 0)
+			   strncmp(pSymbol->Name, "fs::windows::TraceAllocator", 32) == 0 ||
+			   strncmp(pSymbol->Name, "fs::TraceAllocator", 23) == 0)
 			{
 				// keep going...
 			}
@@ -212,5 +203,3 @@ const char* TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
 	sprintf_s(pBuffer, "%s:%d(%s)", pFileName, lineNumber, pFuncName);
 	return pBuffer;
 }
-
-#endif

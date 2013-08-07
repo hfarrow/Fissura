@@ -2,7 +2,9 @@
 
 #include <Windows.h>
 
+#include <core/traceallocator.h>
 #include <windows/traceallocator.h>
+#include <core/heapallocator.h>
 #include <core/globals.h>
 #include <core/assert.h>
 #include <core/trace.h>

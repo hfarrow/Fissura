@@ -1,9 +1,12 @@
 #include "stdafx.h"
+
+#include <Windows.h>
+
 #include <windows/traceallocator.h>
-#include <core/heapallocator.h>
 #include <core/globals.h>
 #include <core/assert.h>
 #include <core/trace.h>
+#include <core/util.h>
 
 // windows includes
 #include <DbgHelp.h>
@@ -11,19 +14,19 @@
 
 using namespace fs;
 
-windows::TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
-	: fs::TraceAllocator(pName, allocator)
+TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
+	: ProxyAllocator(pName, allocator)
 {
 	// gpDebugHeap must have been provided by application.
 	FS_ASSERT(gpDebugHeap != nullptr);
 
 	_pAllocationMap = AllocationMapPointer(FS_NEW(AllocationMap, gpDebugHeap)(*gpDebugHeap),
-		[](AllocationMap* p) {FS_DELETE(p, gpDebugHeap);});
+		[](AllocationMap* p){FS_DELETE(p, gpDebugHeap);});
 
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);
 }
 
-windows::TraceAllocator::~TraceAllocator()
+TraceAllocator::~TraceAllocator()
 {
 	if(_pAllocationMap->size() > 0)
 	{
@@ -36,24 +39,22 @@ windows::TraceAllocator::~TraceAllocator()
 	_pAllocationMap->clear();
 }
 
-void* windows::TraceAllocator::allocate(size_t size, u8 alignment)
+void* TraceAllocator::allocate(size_t size, u8 alignment)
 {
 	void* pAllocation = ProxyAllocator::allocate(size, alignment);
 
-#if defined(_DEBUG) && defined(WIN32)
 	if(pAllocation != nullptr)
 	{
 		AllocationInfo info;
 		getStackTrace(&info, pAllocation);
 		_pAllocationMap->insert(std::make_pair((uptr)pAllocation, info));
 	}
-#endif
 
 	return pAllocation;
 }
 
-bool windows::TraceAllocator::deallocate(void* p)
-{
+bool TraceAllocator::deallocate(void* p)
+{	
 	if(!ProxyAllocator::deallocate(p))
 		return false;
 
@@ -61,7 +62,7 @@ bool windows::TraceAllocator::deallocate(void* p)
 	return true;
 }
 
-void windows::TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAllocation)
+void TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAllocation)
 {
 	CONTEXT ctx;
 	RtlCaptureContext(&ctx);
@@ -121,7 +122,7 @@ void windows::TraceAllocator::getStackTrace(AllocationInfo* pInfo, void* pAlloca
 	//UNREFERENCED_PARAMETER(pInfo);
 }
 
-const char* windows::TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
+const char* TraceAllocator::getCaller(const AllocationInfo* const pInfo) const
 {
 	const size_t bufferSize = 512;
 	char pFileName[bufferSize];
@@ -162,7 +163,7 @@ const char* windows::TraceAllocator::getCaller(const AllocationInfo* const pInfo
 			if(strncmp(pSymbol->Name, "PMemory::", 9) == 0 ||
 			   strncmp(pSymbol->Name, "operator new", 12) == 0 ||
 			   strncmp(pSymbol->Name, "std::", 5) == 0 ||
-			   strncmp(pSymbol->Name, "fs::windows::TraceAllocator", 32) == 0 ||
+			   strncmp(pSymbol->Name, "fs::internal::TraceAllocator", 28) == 0 ||
 			   strncmp(pSymbol->Name, "fs::TraceAllocator", 23) == 0)
 			{
 				// keep going...

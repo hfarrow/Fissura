@@ -1,8 +1,12 @@
 #include "stdafx.h"
-#include <core/pageallocator.h>
-#include <core/util.h>
-#include <windows.h>
+
+#include <Windows.h>
+
+#include <windows/pageallocator.h>
+#include <core/platforms.h>
+#include <core/globals.h>
 #include <core/assert.h>
+#include <core/trace.h>
 
 using namespace fs;
 
@@ -71,6 +75,13 @@ bool PageAllocator::deallocate(void* p)
 	return true;
 }
 
+void PageAllocator::clear()
+{
+	FS_ASSERT(!"PageAllocator cannot be cleared.");
+	// To implement this, the allocator would need to keep a list
+	// of allocations and deallocate each one.
+}
+
 size_t PageAllocator::getTotalUsedMemory() const
 {
 	return _totalUsedMemory;
@@ -98,11 +109,4 @@ u32 PageAllocator::calcRequiredPages(size_t size) const
 size_t PageAllocator::getPageSize() const
 {
 	return _pageSize;
-}
-
-void PageAllocator::clear()
-{
-	FS_ASSERT(!"PageAllocator cannot be cleared.");
-	// To implement this, the allocator would need to keep a list
-	// of allocations and deallocate each one.
 }

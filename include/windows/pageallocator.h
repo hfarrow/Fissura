@@ -1,25 +1,22 @@
-#ifndef FS_PAGE_ALLOCATOR_H
-#define FS_PAGE_ALLOCATOR_H
+#ifndef FS_WINDOWS_PAGE_ALLOCATOR_H
+#define FS_WINDOWS_PAGE_ALLOCATOR_H
 
 #include <core/platforms.h>
 #include <core/types.h>
+#include <core/pageallocator.h>
 #include <core/allocator.h>
-#include <core/util.h>
-#include <core/assert.h>
-
-#include <windows.h>
+#include <core/stlallocator.h>
+#include <memory>
 
 namespace fs
 {
 namespace internal
 {
-	// Platform specific implementation must be provided in order for page allocator
-	// to compile. There is no suitable default implementation.
-	template<int PlatformID>
-	class PageAllocator : public Allocator
+	template<>
+	class PageAllocator<PLATFORM_WINDOWS> : public Allocator
 	{
 	public:
-		PageAllocator(const fschar* const pName);
+		PageAllocator(const fschar* const  pName);
 		~PageAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;
@@ -31,12 +28,16 @@ namespace internal
 
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;
+
+		// Windows only function. Compiler error if referenced from other platform.
+		void* allocateWithFlags(size_t size, u32 allocationTypeFlag, u32 protecFlag);
+
+	private:
+		u32 _totalNumAllocations;
+		size_t _totalUsedMemory;
+		size_t _pageSize;
 	};
 }
-	typedef internal::PageAllocator<PLATFORM_ID> PageAllocator;
 }
-
-// Include platform specific headers if they exist
-#include <windows/pageallocator.h>
 
 #endif

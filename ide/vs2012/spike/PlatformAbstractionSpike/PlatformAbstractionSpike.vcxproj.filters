@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\allocators">
-      <UniqueIdentifier>{9c36c319-0fa8-411f-8e4c-6e66819f528e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\allocators">
-      <UniqueIdentifier>{fb07d8bf-fe10-4319-bbeb-da2f4d4505c3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,22 +24,24 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\windows\traceallocator.h">
-      <Filter>Header Files\allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\windows\pageallocator.h">
-      <Filter>Header Files\allocators</Filter>
+    <ClInclude Include="..\..\..\..\spike\PlatformAbstractionSpike\platforminterface.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\windows\traceallocator.cpp">
-      <Filter>Source Files\allocators</Filter>
+    <ClCompile Include="PlatformAbstractionSpike.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\windows\pageallocator.cpp">
-      <Filter>Source Files\allocators</Filter>
+    <ClCompile Include="..\..\..\..\spike\PlatformAbstractionSpike\platforminterface.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\spike\PlatformAbstractionSpike\platforminterface.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

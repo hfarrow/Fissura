@@ -15,6 +15,7 @@ namespace fs
 		virtual void* allocate(size_t size, u8 alignment) override;
 		virtual bool deallocate(void* p) override;
 		virtual void clear() override;
+
 		virtual bool canDeallocate() const override { return true; }
 		virtual size_t getTotalUsedMemory() const override;
 		virtual u32 getTotalNumAllocations() const override;

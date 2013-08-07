@@ -3,12 +3,11 @@
 
 #include <core/types.h>
 #include <core/allocator.h>
+#include <core/pageallocator.h>
 #include <dlmalloc/malloc.h>
 
 namespace fs
 {
-	class PageAllocator;
-
 	class HeapAllocator : public Allocator
 	{
 	public:

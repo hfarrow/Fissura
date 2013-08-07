@@ -1,8 +1,9 @@
 #include <boost/test/unit_test.hpp>
 
+#include <core/platforms.h>
 #include <core/poolallocator.h>
 #include <core/heapallocator.h>
-#include <windows/traceallocator.h>
+#include <core/traceallocator.h>
 #include <core/types.h>
 #include <exception>
 
@@ -58,7 +59,7 @@ BOOST_FIXTURE_TEST_SUITE(trace_allocator, traceallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(record_stack_trace)
 {
-	windows::TraceAllocator proxy = windows::TraceAllocator(nullptr, *pAllocator);
+	TraceAllocator proxy = TraceAllocator(nullptr, *pAllocator);
 	void* p = proxy.allocate(8, 8);
 	BOOST_REQUIRE(p != nullptr);
 	proxy.deallocate(p);

@@ -1,19 +1,19 @@
 #ifndef FS_WIN_TRACE_ALLOCATOR_H
 #define FS_WIN_TRACE_ALLOCATOR_H
 
-#include <Windows.h>
+#include <core/platforms.h>
 #include <core/types.h>
-#include <core/allocator.h>
 #include <core/proxyallocator.h>
-#include <core/stlallocator.h>
 #include <core/traceallocator.h>
+#include <core/stlallocator.h>
 #include <memory>
 
 namespace fs
 {
-namespace windows
+namespace internal
 {
-	class TraceAllocator : public fs::TraceAllocator
+	template<>
+	class TraceAllocator<PLATFORM_WINDOWS> : public ProxyAllocator
 	{
 	public:
 		TraceAllocator(const fschar* const  pName, Allocator& allocator);
@@ -22,9 +22,19 @@ namespace windows
 		virtual void* allocate(size_t size, u8 alignment) override;
 		virtual bool deallocate(void* p) override;
 
-	protected:
-		virtual void getStackTrace(AllocationInfo* pInfo, void* pAllocation) override;
-		virtual const char* getCaller(const AllocationInfo* const pInfo) const override;
+	private:
+		struct AllocationInfo
+		{
+			static const size_t maxStackFrames = 10;
+			size_t offsets[maxStackFrames];
+		};
+
+		void getStackTrace(AllocationInfo* pInfo, void* pAllocation);
+		const char* getCaller(const AllocationInfo* const pInfo) const;
+
+		typedef FS_DECL_MAP(uptr, AllocationInfo) AllocationMap;
+		typedef FS_DECL_UNIQUE_PTR(AllocationMap) AllocationMapPointer;
+		AllocationMapPointer _pAllocationMap;
 	};
 }
 }

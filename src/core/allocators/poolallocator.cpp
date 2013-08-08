@@ -2,7 +2,7 @@
 
 #include <core/types.h>
 #include <core/util.h>
-#include <core/poolallocator.h>
+#include <core/allocators/poolallocator.h>
 #include <core/assert.h>
 
 using namespace fs;

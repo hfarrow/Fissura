@@ -13,16 +13,16 @@
 #include <core/types.h>
 #include <core/util.h>
 #include <core/globals.h>
-#include <core/IAllocator.h>
-#include <core/allocator.h>
-#include <core/stackallocator.h>
-#include <core/doublebufferedallocator.h>
-#include <core/doublestackallocator.h>
-#include <core/poolallocator.h>
-#include <core/heapallocator.h>
-#include <core/pageallocator.h>
-#include <core/traceallocator.h>
-#include <core/proxyallocator.h>
+#include <core/allocators/allocator.h>
+#include <core/allocators/stackallocator.h>
+#include <core/allocators/doublebufferedallocator.h>
+#include <core/allocators/doublestackallocator.h>
+#include <core/allocators/poolallocator.h>
+#include <core/allocators/heapallocator.h>
+#include <core/allocators/pageallocator.h>
+#include <core/allocators/traceallocator.h>
+#include <core/allocators/proxyallocator.h>
+#include <core/allocators/stlallocator.h>
 
 #include <new>
 #include <memory>

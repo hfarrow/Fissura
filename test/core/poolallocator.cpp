@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/poolallocator.h>
+#include <core/allocators/poolallocator.h>
 #include <core/types.h>
 #include <exception>
 

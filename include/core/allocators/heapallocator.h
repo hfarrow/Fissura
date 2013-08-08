@@ -2,9 +2,9 @@
 #define FS_HEAP_ALLOCATOR_H
 
 #include <core/types.h>
-#include <core/allocator.h>
-#include <core/pageallocator.h>
-#include <dlmalloc/malloc.h>
+#include <core/allocators/allocator.h>
+#include <core/allocators/pageallocator.h>
+#include <core/dlmalloc/malloc.h>
 
 namespace fs
 {

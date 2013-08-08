@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/heapallocator.h>
-#include <core/allocator.h>
+#include <core/allocators/heapallocator.h>
+#include <core/allocators/allocator.h>
 #include <core/types.h>
 #include <exception>
 

@@ -4,9 +4,9 @@
 #include <core/platforms.h>
 #include <core/types.h>
 #include <core/trace.h>
-#include <core/allocator.h>
-#include <core/proxyallocator.h>
-#include <core/stlallocator.h>
+#include <core/allocators/allocator.h>
+#include <core/allocators/proxyallocator.h>
+#include <core/allocators/stlallocator.h>
 #include <memory>
 
 /*
@@ -18,7 +18,7 @@ namespace fs
 {
 namespace internal
 {
-	template<int PlatformID>
+	template<u32 PlatformID>
 	class TraceAllocator : public ProxyAllocator
 	{
 	public:
@@ -29,12 +29,12 @@ namespace internal
 		virtual bool deallocate(void* p) override;
 	};
 
-	#include <core/traceallocator.inl>
+	#include <core/allocators/traceallocator.inl>
 }
 	typedef internal::TraceAllocator<PLATFORM_ID> TraceAllocator;
 }
 
 // Include platform specific headers if they exist
-#include <windows/traceallocator.h>
+#include <windows/allocators/traceallocator.h>
 
 #endif

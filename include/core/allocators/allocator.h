@@ -3,12 +3,25 @@
 
 #include <core/types.h>
 #include <core/util.h>
-#include <core/IAllocator.h>
 #include <new>
 #include <memory>
 
 namespace fs
 {
+	class IAllocator
+	{
+	public:
+		virtual ~IAllocator(){}
+
+		virtual void* allocate(size_t size, u8 alignment) = 0;
+		virtual bool deallocate(void* p) = 0;
+		virtual void clear() = 0;
+		virtual bool canDeallocate() const = 0;
+		virtual size_t getTotalUsedMemory() const = 0;
+		virtual u32 getTotalNumAllocations() const = 0;
+		virtual const fschar* const getName() const = 0;
+	};
+
 	class Allocator : public IAllocator, public Uncopyable
 	{
 	public:
@@ -40,7 +53,7 @@ namespace fs
 	inline u8 alignAdjustment(void* pAddress, u8 alignment);
 	inline u8 alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 headerSize);
 
-	#include <core/allocator.inl>
+	#include <core/allocators/allocator.inl>
 }
 
 #endif

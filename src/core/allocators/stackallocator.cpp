@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <core/stackallocator.h>
+#include <core/allocators/stackallocator.h>
 #include <core/util.h>
 #include <core/assert.h>
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include <dlmalloc/malloc.h>
-#include <core/pageallocator.h>
+#include <core/dlmalloc/malloc.h>
+#include <core/allocators/pageallocator.h>
 
 /*------------------------------ internal #includes ---------------------- */
 

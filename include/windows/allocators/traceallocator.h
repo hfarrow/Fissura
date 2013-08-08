@@ -3,9 +3,9 @@
 
 #include <core/platforms.h>
 #include <core/types.h>
-#include <core/proxyallocator.h>
-#include <core/traceallocator.h>
-#include <core/stlallocator.h>
+#include <core/allocators/proxyallocator.h>
+#include <core/allocators/traceallocator.h>
+#include <core/allocators/stlallocator.h>
 #include <memory>
 
 namespace fs

@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <dlmalloc/malloc.h>
-#include <core/heapallocator.h>
-#include <core/pageallocator.h>
+#include <core/dlmalloc/malloc.h>
+#include <core/allocators/heapallocator.h>
+#include <core/allocators/pageallocator.h>
 #include <core/util.h>
 #include <core/assert.h>
 

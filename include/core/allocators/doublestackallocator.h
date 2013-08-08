@@ -2,8 +2,8 @@
 #define FS_DOUBLE_STACK_ALLOCATOR_H
 
 #include <core/types.h>
-#include <core/allocator.h>
-#include <core/stackallocator.h>
+#include <core/allocators/allocator.h>
+#include <core/allocators/stackallocator.h>
 
 namespace fs
 {

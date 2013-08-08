@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/stackallocator.h>
+#include <core/allocators/stackallocator.h>
 #include <core/types.h>
 #include <exception>
 

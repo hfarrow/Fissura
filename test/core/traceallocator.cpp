@@ -1,9 +1,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include <core/platforms.h>
-#include <core/poolallocator.h>
-#include <core/heapallocator.h>
-#include <core/traceallocator.h>
+#include <core/allocators/poolallocator.h>
+#include <core/allocators/heapallocator.h>
+#include <core/allocators/traceallocator.h>
 #include <core/types.h>
 #include <exception>
 

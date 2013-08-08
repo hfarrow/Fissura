@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/stackallocator.h>
-#include <core/doublebufferedallocator.h>
+#include <core/allocators/stackallocator.h>
+#include <core/allocators/doublebufferedallocator.h>
 #include <core/types.h>
 #include <exception>
 

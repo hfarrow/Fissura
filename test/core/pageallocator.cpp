@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/pageallocator.h>
+#include <core/allocators/pageallocator.h>
 #include <core/types.h>
 #include <exception>
 

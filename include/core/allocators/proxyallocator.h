@@ -2,7 +2,7 @@
 #define FS_PROXY_ALLOCATOR_H
 
 #include <core/types.h>
-#include <core/allocator.h>
+#include <core/allocators/allocator.h>
 
 namespace fs
 {

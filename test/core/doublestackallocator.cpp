@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/doublestackallocator.h>
+#include <core/allocators/doublestackallocator.h>
 #include <core/types.h>
 #include <exception>
 

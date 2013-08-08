@@ -3,7 +3,7 @@
 // traces in the debug heap.
 #include "stdafx.h"
 //#include <core/globals.h>
-//#include <core/heapallocator.h>
+//#include <core/allocators/heapallocator.h>
 
 //using namespace fs;
 //HeapAllocator* gDebugHeap = nullptr;

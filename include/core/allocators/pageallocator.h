@@ -3,11 +3,7 @@
 
 #include <core/platforms.h>
 #include <core/types.h>
-#include <core/allocator.h>
-#include <core/util.h>
-#include <core/assert.h>
-
-#include <windows.h>
+#include <core/allocators/allocator.h>
 
 namespace fs
 {
@@ -15,7 +11,7 @@ namespace internal
 {
 	// Platform specific implementation must be provided in order for page allocator
 	// to compile. There is no suitable default implementation.
-	template<int PlatformID>
+	template<u32 PlatformID>
 	class PageAllocator : public Allocator
 	{
 	public:
@@ -37,6 +33,6 @@ namespace internal
 }
 
 // Include platform specific headers if they exist
-#include <windows/pageallocator.h>
+#include <windows/allocators/pageallocator.h>
 
 #endif

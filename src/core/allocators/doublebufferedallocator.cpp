@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <core/doublebufferedallocator.h>
+#include <core/allocators/doublebufferedallocator.h>
 #include <core/util.h>
 #include <core/assert.h>
 

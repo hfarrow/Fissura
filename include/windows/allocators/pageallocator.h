@@ -3,9 +3,9 @@
 
 #include <core/platforms.h>
 #include <core/types.h>
-#include <core/pageallocator.h>
-#include <core/allocator.h>
-#include <core/stlallocator.h>
+#include <core/allocators/pageallocator.h>
+#include <core/allocators/allocator.h>
+#include <core/allocators/stlallocator.h>
 #include <memory>
 
 namespace fs

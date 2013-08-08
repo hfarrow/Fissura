@@ -30,10 +30,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\windows\traceallocator.h">
+    <ClInclude Include="..\..\..\include\windows\allocators\pageallocator.h">
       <Filter>Header Files\allocators</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\windows\pageallocator.h">
+    <ClInclude Include="..\..\..\include\windows\allocators\traceallocator.h">
       <Filter>Header Files\allocators</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,10 +41,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\windows\traceallocator.cpp">
+    <ClCompile Include="..\..\..\src\windows\allocators\pageallocator.cpp">
       <Filter>Source Files\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\windows\pageallocator.cpp">
+    <ClCompile Include="..\..\..\src\windows\allocators\traceallocator.cpp">
       <Filter>Source Files\allocators</Filter>
     </ClCompile>
   </ItemGroup>

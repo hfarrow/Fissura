@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <core/allocators/doublebufferedallocator.h>
-#include <core/util.h>
-#include <core/assert.h>
+#include "core/allocators/double_buffered_allocator.h"
+#include "core/util.h"
+#include "core/assert.h"
 
 using namespace fs;
 

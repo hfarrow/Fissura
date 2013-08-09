@@ -115,39 +115,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\core\allocators\allocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\doublebufferedallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\doublestackallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\heapallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\pageallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\poolallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\proxyallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\stackallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\stlallocator.h" />
-    <ClInclude Include="..\..\..\include\core\allocators\traceallocator.h" />
-    <ClInclude Include="..\..\..\include\core\assert.h" />
-    <ClInclude Include="..\..\..\include\core\dlmalloc\malloc.h" />
-    <ClInclude Include="..\..\..\include\core\framework\gameapp.h" />
-    <ClInclude Include="..\..\..\include\core\globals.h" />
-    <ClInclude Include="..\..\..\include\core\platforms.h" />
-    <ClInclude Include="..\..\..\include\core\trace.h" />
-    <ClInclude Include="..\..\..\include\core\types.h" />
-    <ClInclude Include="..\..\..\include\core\util.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\double_buffered_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\double_stack_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\heap_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\page_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\pool_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\proxy_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\stack_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\stl_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\allocators\trace_allocator.h" />
+    <ClInclude Include="..\..\..\src\core\assert.h" />
+    <ClInclude Include="..\..\..\src\core\dlmalloc\malloc.h" />
+    <ClInclude Include="..\..\..\src\core\framework\game_app.h" />
+    <ClInclude Include="..\..\..\src\core\globals.h" />
+    <ClInclude Include="..\..\..\src\core\platforms.h" />
+    <ClInclude Include="..\..\..\src\core\trace.h" />
+    <ClInclude Include="..\..\..\src\core\types.h" />
+    <ClInclude Include="..\..\..\src\core\util.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\core\allocators\allocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\doublebufferedallocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\doublestackallocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\heapallocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\poolallocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\proxyallocator.cpp" />
-    <ClCompile Include="..\..\..\src\core\allocators\stackallocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\double_buffered_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\double_stack_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\heap_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\pool_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\proxy_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\core\allocators\stack_allocator.cpp" />
     <ClCompile Include="..\..\..\src\core\assert.cpp" />
     <ClCompile Include="..\..\..\src\core\dlmalloc\malloc.cpp" />
-    <ClCompile Include="..\..\..\src\core\framework\gameapp.cpp" />
-    <ClCompile Include="..\..\..\src\core\globals.cpp" />
+    <ClCompile Include="..\..\..\src\core\framework\game_app.cpp" />
     <ClCompile Include="..\..\..\src\core\trace.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -156,8 +155,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\include\core\allocators\allocator.inl" />
-    <None Include="..\..\..\include\core\allocators\traceallocator.inl" />
+    <None Include="..\..\..\src\core\allocators\allocator.inl" />
+    <None Include="..\..\..\src\core\allocators\trace_allocator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/allocators/pageallocator.h>
-#include <core/types.h>
+#include "core/allocators/page_allocator.h"
+#include "core/types.h"
 #include <exception>
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes

@@ -2,13 +2,13 @@
 
 #include <Windows.h>
 
-#include <core/allocators/traceallocator.h>
-#include <windows/allocators/traceallocator.h>
-#include <core/allocators/heapallocator.h>
-#include <core/globals.h>
-#include <core/assert.h>
-#include <core/trace.h>
-#include <core/util.h>
+#include "core/allocators/trace_allocator.h"
+#include "windows/allocators/trace_allocator.h"
+#include "core/allocators/heap_allocator.h"
+#include "core/globals.h"
+#include "core/assert.h"
+#include "core/trace.h"
+#include "core/util.h"
 
 // windows includes
 #include <DbgHelp.h>

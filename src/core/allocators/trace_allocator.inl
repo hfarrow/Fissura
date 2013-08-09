@@ -1,3 +1,10 @@
+#ifndef FS_TRACE_ALLOCATOR_INL
+#define FS_TRACE_ALLOCATOR_INL
+
+namespace fs
+{
+namespace internal
+{
 // Default implementation if not platform specialization is provided.
 
 template<u32 PlatformID>
@@ -10,7 +17,7 @@ TraceAllocator<PlatformID>::TraceAllocator(const fschar* const  pName, Allocator
 template<u32 PlatformID>
 TraceAllocator<PlatformID>::~TraceAllocator()
 {
-	FS_TRACE("DEFAULT TraceAllocator ~ctor");
+	FS_TRACE("DEFAULsT TraceAllocator ~ctor");s
 }
 
 template<u32 PlatformID>
@@ -26,3 +33,8 @@ bool TraceAllocator<PlatformID>::deallocate(void* p)
 	FS_TRACE("DEFAULT TraceAllocator deallocate");
 	return ProxyAllocator::deallocate(p);
 }
+
+}
+}
+
+#endif

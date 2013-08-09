@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include <core/allocators/doublestackallocator.h>
-#include <core/assert.h>
+#include "core/allocators/double_stack_allocator.h"
+#include "core/assert.h"
 
 using namespace fs;
 

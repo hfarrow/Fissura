@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/allocators/doublestackallocator.h>
-#include <core/types.h>
+#include "core/allocators/double_stack_allocator.h"
+#include "core/types.h"
 #include <exception>
 
 #define DEFAULT_STACK_MEM_SIZE  256 // bytes

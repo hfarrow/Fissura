@@ -1,9 +1,9 @@
 #ifndef FS_GAME_APP_H
 #define FS_GAME_APP_H
 
-#include <core/platforms.h>
-#include <core/types.h>
-#include <core/assert.h>
+#include "core/platforms.h"
+#include "core/types.h"
+#include "core/assert.h"
 
 namespace fs
 {

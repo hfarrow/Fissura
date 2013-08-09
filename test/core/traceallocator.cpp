@@ -1,10 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/platforms.h>
-#include <core/allocators/poolallocator.h>
-#include <core/allocators/heapallocator.h>
-#include <core/allocators/traceallocator.h>
-#include <core/types.h>
+#include "core/platforms.h"
+#include "core/allocators/pool_allocator.h"
+#include "core/allocators/heap_allocator.h"
+#include "core/allocators/trace_allocator.h"
+#include "core/types.h"
 #include <exception>
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(record_stack_trace)
 	BOOST_REQUIRE(p != nullptr);
 	proxy.deallocate(p);
 
-	// Currently cannot test the stack trace of traceallocator becuase it is internal and does
+	// Currently cannot test the stack trace of trace_allocator becuase it is internal and does
 	// not expose a public interface. This test case will simply ensure that the trace
 	// allocator will not throw an exception or assert when allocating and deallocating.
 }

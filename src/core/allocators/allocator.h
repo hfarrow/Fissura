@@ -1,8 +1,8 @@
 #ifndef FS_ALLOCATOR_H
 #define FS_ALLOCATOR_H
 
-#include <core/types.h>
-#include <core/util.h>
+#include "core/types.h"
+#include "core/util.h"
 #include <new>
 #include <memory>
 
@@ -52,8 +52,8 @@ namespace fs
 	inline void* nextAlignedAddress(void* pAddress, u8 alignment);
 	inline u8 alignAdjustment(void* pAddress, u8 alignment);
 	inline u8 alignAdjustmentWithHeader(void* pAddress, u8 alignment, u8 headerSize);
-
-	#include <core/allocators/allocator.inl>
 }
+
+#include "core/allocators/allocator.inl"
 
 #endif

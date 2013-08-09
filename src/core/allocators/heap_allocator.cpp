@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include <core/dlmalloc/malloc.h>
-#include <core/allocators/heapallocator.h>
-#include <core/allocators/pageallocator.h>
-#include <core/util.h>
-#include <core/assert.h>
+#include "core/dlmalloc/malloc.h"
+#include "core/allocators/heap_allocator.h"
+#include "core/allocators/page_allocator.h"
+#include "core/util.h"
+#include "core/assert.h"
 
 using namespace fs;
 

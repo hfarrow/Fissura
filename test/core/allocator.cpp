@@ -1,8 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/allocators/heapallocator.h>
-#include <core/allocators/allocator.h>
-#include <core/types.h>
+#include "core/allocators/heap_allocator.h"
+#include "core/allocators/allocator.h"
+#include "core/types.h"
 #include <exception>
 
 #define DEFAULT_STACK_MEM_SIZE  (64 * 1024) // bytes

@@ -1,13 +1,14 @@
 #ifndef FS_TRACE_ALLOCATOR_H
 #define FS_TRACE_ALLOCATOR_H
 
-#include <core/platforms.h>
-#include <core/types.h>
-#include <core/trace.h>
-#include <core/allocators/allocator.h>
-#include <core/allocators/proxyallocator.h>
-#include <core/allocators/stlallocator.h>
 #include <memory>
+
+#include "core/platforms.h"
+#include "core/types.h"
+#include "core/trace.h"
+#include "core/allocators/allocator.h"
+#include "core/allocators/proxy_allocator.h"
+#include "core/allocators/stl_allocator.h"
 
 /*
 TraceAllocator is a platform specific class that extends ProxyAllocator.
@@ -28,13 +29,12 @@ namespace internal
 		virtual void* allocate(size_t size, u8 alignment) override;
 		virtual bool deallocate(void* p) override;
 	};
-
-	#include <core/allocators/traceallocator.inl>
 }
 	typedef internal::TraceAllocator<PLATFORM_ID> TraceAllocator;
 }
+#include "core/allocators/trace_allocator.inl"
 
 // Include platform specific headers if they exist
-#include <windows/allocators/traceallocator.h>
+#include "windows/allocators/trace_allocator.h"
 
 #endif

@@ -1,8 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
-#include <core/allocators/poolallocator.h>
-#include <core/allocators/proxyallocator.h>
-#include <core/types.h>
+#include "core/allocators/pool_allocator.h"
+#include "core/allocators/proxy_allocator.h"
+#include "core/types.h"
 #include <exception>
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes

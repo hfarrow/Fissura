@@ -1,12 +1,13 @@
 #ifndef FS_WIN_TRACE_ALLOCATOR_H
 #define FS_WIN_TRACE_ALLOCATOR_H
 
-#include <core/platforms.h>
-#include <core/types.h>
-#include <core/allocators/proxyallocator.h>
-#include <core/allocators/traceallocator.h>
-#include <core/allocators/stlallocator.h>
 #include <memory>
+
+#include "core/platforms.h"
+#include "core/types.h"
+#include "core/allocators/proxy_allocator.h"
+#include "core/allocators/trace_allocator.h"
+#include "core/allocators/stl_allocator.h"
 
 namespace fs
 {

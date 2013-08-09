@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <core/assert.h>
-#include <core/types.h>
-#include <core/trace.h>
+#include "core/assert.h"
+#include "core/types.h"
+#include "core/trace.h"
 
 using namespace fs;
 

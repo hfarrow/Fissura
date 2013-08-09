@@ -1,3 +1,10 @@
+#ifndef FS_TRACE_ALLOCATOR_INL
+#define FS_TRACE_ALLOCATOR_INL
+
+
+namespace fs
+{
+
 // Calculate how many array elements for the specified type are
 // required to store the array header. The only time this
 // function returns something other than 1 is when sizeof(T)
@@ -129,3 +136,7 @@ void Allocator::deallocateArrayDestruct(T* pArray)
 		deallocate(pArray - headerSize);
 	}
 }
+
+}
+
+#endif

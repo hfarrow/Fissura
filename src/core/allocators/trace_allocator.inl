@@ -34,7 +34,7 @@ bool TraceAllocator<PlatformID>::deallocate(void* p)
 	return ProxyAllocator::deallocate(p);
 }
 
-}
-}
+} // fs
+} // internal
 
 #endif

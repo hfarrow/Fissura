@@ -29,34 +29,34 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\test\fissura.cpp">
+    <ClCompile Include="..\..\..\test\fissura.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\allocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\allocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\doublebufferedallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\doublebufferedallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\doublestackallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\doublestackallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\heapallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\heapallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\poolallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\pageallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\proxyallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\poolallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\stackallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\proxyallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\pageallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\stackallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\test\core\traceallocator.cpp">
+    <ClCompile Include="..\..\..\test\core\allocators\traceallocator.cpp">
       <Filter>Source Files\core\allocators</Filter>
     </ClCompile>
   </ItemGroup>

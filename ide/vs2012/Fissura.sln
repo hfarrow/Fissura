@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraCore", "FissuraCore\FissuraCore.vcxproj", "{19AEC263-D5CE-419F-A45B-2B3AAFA5F875}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraTest", "test\FissuraTest\FissuraTest.vcxproj", "{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissureWindows", "FissureWindows\FissureWindows.vcxproj", "{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FissuraTest", "FissuraTest\FissuraTest.vcxproj", "{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,19 +35,6 @@ Global
 		{19AEC263-D5CE-419F-A45B-2B3AAFA5F875}.Release|Win32.ActiveCfg = Release|x64
 		{19AEC263-D5CE-419F-A45B-2B3AAFA5F875}.Release|x64.ActiveCfg = Release|x64
 		{19AEC263-D5CE-419F-A45B-2B3AAFA5F875}.Release|x64.Build.0 = Release|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Win32.ActiveCfg = Debug|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|x64.ActiveCfg = Debug|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Mixed Platforms.ActiveCfg = DebugTestable|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Mixed Platforms.Build.0 = DebugTestable|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Win32.ActiveCfg = DebugTestable|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.ActiveCfg = DebugTestable|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.Build.0 = DebugTestable|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Mixed Platforms.Build.0 = Release|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Win32.ActiveCfg = Release|x64
-		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|x64.ActiveCfg = Release|x64
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Debug|Mixed Platforms.Build.0 = Debug|x64
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Debug|Win32.ActiveCfg = Debug|x64
@@ -63,6 +50,21 @@ Global
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Release|Win32.ActiveCfg = Release|x64
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Release|x64.ActiveCfg = Release|x64
 		{32D4EC75-029E-4C97-9D3D-3ACD333EE9C4}.Release|x64.Build.0 = Release|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|Win32.ActiveCfg = Debug|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|x64.ActiveCfg = Debug|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Debug|x64.Build.0 = Debug|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Mixed Platforms.ActiveCfg = DebugTestable|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Mixed Platforms.Build.0 = DebugTestable|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|Win32.ActiveCfg = DebugTestable|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.ActiveCfg = DebugTestable|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.DebugTestable|x64.Build.0 = DebugTestable|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Mixed Platforms.Build.0 = Release|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|Win32.ActiveCfg = Release|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|x64.ActiveCfg = Release|x64
+		{1B8924A9-FA3E-425F-B06E-C11E0CBF9D10}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

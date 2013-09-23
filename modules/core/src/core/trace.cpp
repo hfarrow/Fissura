@@ -22,7 +22,7 @@ void fs::traceDebugStringFormatted(const char* category, const char* format, ...
 #ifdef WIN32
 	OutputDebugStringA(output);
 #endif
-	std::clog << output;
+	std::cout << output;
 
 	va_end(arg);
 }

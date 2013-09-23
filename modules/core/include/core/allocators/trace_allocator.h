@@ -34,7 +34,9 @@ namespace internal
 }
 #include "core/allocators/trace_allocator.inl"
 
+#ifdef WIN32
 // Include platform specific headers if they exist
 #include "windows/allocators/trace_allocator.h"
+#endif
 
 #endif

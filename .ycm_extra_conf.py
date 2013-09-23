@@ -41,7 +41,7 @@ flags = [
 #'-Wc++98-compat',
 #'-Wno-long-long',
 #'-Wno-variadic-macros',
-#'-fexceptions',
+'-fexceptions',
 '-DNDEBUG',
 '-DUSE_CLANG_COMPLETER',
 # THIS IS IMPORTANT! Without a "-std=<something>" flag, clang won't know which
@@ -69,6 +69,8 @@ flags = [
 #'../llvm/tools/clang/include',
 '-I',
 './modules/core/include',
+'-isystem',
+'/usr/local/boost_1_54_0'
 #'-I',
 #'-isystem',
 #'./tests/gmock/gtest',

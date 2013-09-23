@@ -21,6 +21,7 @@ bool fs::reportAssertFailure(const char* condition,
 	vsprintf(userMessage, format, arg);
 	sprintf(output, "ASSERT FAILED: ( %s ) Line %i in %s -> %s", condition, nLine, strFile, userMessage);
 #ifdef FS_TESTABLE
+//#ifdef __linux__
 	throw AssertException(output);
 #else
 	FS_TRACE_ERR(output);

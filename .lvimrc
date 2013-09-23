@@ -1,0 +1,13 @@
+" Fissura vimrc
+"
+" Run make passing the parent directory of this script as the base path.
+" This script should be located in the root project directory where the
+" 'build' directory is found.
+compiler clang
+let g:fissura_build_path = expand("%:p:h") . "/build"
+nmap <Leader>bd :exe ":make -C " . g:fissura_build_path . "/Debug all"<CR> :copen<CR>
+nmap <Leader>bt :exe ":make -C " . g:fissura_build_path . "/DebugTestable all test"<CR> :copen<CR>
+nmap <Leader>br :exe ":make -C " . g:fissura_build_path . "/Release all"<CR> :copen<CR>
+nmap <Leader>by :exe ":make -C " . g:fissura_build_path . "/ReleaseTestable all test"<CR> :copen<CR>
+nmap <Leader>bi :exe ":make -C " . g:fissura_build_path . "/RelWithDebInfo all"<CR> :copen<CR>
+nmap <Leader>bo :exe ":make -C " . g:fissura_build_path . "/MinSizeRel all"<CR> :copen<CR>

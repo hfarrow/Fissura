@@ -1,6 +1,8 @@
 export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
+rm -rf build
+
 mkdir -p build/Debug
 mkdir -p build/DebugTestable
 mkdir -p build/Release

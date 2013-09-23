@@ -6,7 +6,7 @@
 
 namespace fs
 {
-    class AssertException : exception
+    class AssertException : public exception
     {
         public:
             AssertException(const char* pMessage)
@@ -31,7 +31,7 @@ namespace fs
 
 #define FS_HALT() __debugbreak()
 
-#ifdef _DEBUG
+#if defined (_DEBUG) || defined (FS_TESTABLE)
 	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
 	do \
 	{ \

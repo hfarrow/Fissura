@@ -24,6 +24,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(modules/core)
+add_subdirectory(spikes)
 
 enable_testing()
-add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/FissuraCoreTest)
+add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/coreTest)

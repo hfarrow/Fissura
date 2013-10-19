@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+project(template)
+
+set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(PROJECT_TEST_DIR ${PROJECT_SOURCE_DIR}/tests)
+set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+
+include_directories(${PROJECT_INCLUDE_DIR})
+
+file(GLOB_RECURSE PROJECT_SOURCE_FILES 
+    "${PROJECT_SOURCE_DIR}/*.cpp"
+    "${PROJECT_SOURCE_DIR}/*.c")
+
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
+
+include_directories(${FissuraCore_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT_NAME} core)

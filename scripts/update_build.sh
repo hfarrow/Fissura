@@ -4,7 +4,6 @@ export CXX=/usr/bin/clang++
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd $DIR/..
 
-rm -rf build
 mkdir build
 mkdir build/Debug
 mkdir build/Release

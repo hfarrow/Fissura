@@ -180,7 +180,7 @@ namespace fs
 	template<typename T1, typename T2>
 	inline bool operator!=(const StlAllocator<T1>& a, const StlAllocator<T2>& b)
 	{
-		return return &a.getAllocator() != &b.getAllocator();;
+		return &a.getAllocator() != &b.getAllocator();
 	}
  
 	/// Another allocator of the another type cannot deallocate from this one

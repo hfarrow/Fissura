@@ -14,7 +14,7 @@
 #elif defined(__linux__)
 	#define PLATFORM_ID		PLATFORM_LINUX
 #elif defined(__MACH__)
-	#include <TargetConditionals.h"
+	#include <TargetConditionals.h>
 	#if (TARGET_OS_IPHONE == 1)
 		#define PLATFORM_ID		PLATFORM_IOS
 	#else

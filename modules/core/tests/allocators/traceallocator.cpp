@@ -1,5 +1,9 @@
 #include <exception>
+#include <signal.h>
+#include <memory.h>
 
+#include <boost/test/execution_monitor.hpp> 
+#include <boost/test/unit_test_monitor.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include "core/assert.h"
@@ -14,7 +18,6 @@
 
 using namespace fs;
 HeapAllocator* gpDebugHeap = nullptr;
-
 
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocation)
@@ -66,9 +69,11 @@ BOOST_AUTO_TEST_CASE(record_stack_trace)
 	BOOST_REQUIRE(p != nullptr);
 	proxy.deallocate(p);
 
-	// Currently cannot test the stack trace of trace_allocator becuase it is internal and does
-	// not expose a public interface. This test case will simply ensure that the trace
-	// allocator will not throw an exception or assert when allocating and deallocating.
+    p = proxy.allocate(8,8);
+    auto& monitor = boost::unit_test::unit_test_monitor_t::instance();
+    BOOST_TEST_MESSAGE("TraceAllocator assert expected below here.");
+    BOOST_REQUIRE_THROW(monitor.execute([&proxy](){proxy.reportMemoryLeaks(); return 0;}), boost::execution_exception);
+    proxy.deallocate(p);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -26,6 +26,8 @@ namespace internal
  		TraceAllocator(const fschar* const  pName, Allocator& allocator);
 		~TraceAllocator();
 
+        virtual void reportMemoryLeaks();
+
 		virtual void* allocate(size_t size, u8 alignment) override;
 		virtual bool deallocate(void* p) override;
 	};
@@ -34,9 +36,10 @@ namespace internal
 }
 #include "core/allocators/trace_allocator.inl"
 
-#ifdef WIN32
-// Include platform specific headers if they exist
-#include "windows/allocators/trace_allocator.h"
+#if PLATFORM_ID == PLATFORM_WINDOWS
+    #include "core/allocators/trace_allocator_windows.h"
+#elif PLATFORM_ID == PLATFORM_LINUX
+    #include "core/allocators/trace_allocator_linux.h"
 #endif
 
 #endif

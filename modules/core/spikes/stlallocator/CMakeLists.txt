@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(spike-template)
+project(fsCore-stlallocator)
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PROJECT_TEST_DIR ${PROJECT_SOURCE_DIR}/tests)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 include_directories(${PROJECT_INCLUDE_DIR})

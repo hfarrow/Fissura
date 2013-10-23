@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <signal.h>
 
 #include "core/assert.h"
 #include "core/types.h"
@@ -20,10 +21,6 @@ bool fs::reportAssertFailure(const char* condition,
 
 	vsprintf(userMessage, format, arg);
 	sprintf(output, "ASSERT FAILED: ( %s ) Line %i in %s -> %s", condition, nLine, strFile, userMessage);
-#ifdef FS_TESTABLE
-//#ifdef __linux__
-	throw AssertException(output);
-#else
 	FS_TRACE_ERR(output);
 
 	sprintf(output,
@@ -42,6 +39,21 @@ bool fs::reportAssertFailure(const char* condition,
 #else
     return true;
 #endif
-#endif
 	return false;
 }
+
+namespace fs
+{
+    bool abortOnAssert = false;
+}
+
+void fs::setAbortOnAssert(bool abort)
+{
+    fs::abortOnAssert = abort;
+}
+
+bool fs::getAbortOnAssert()
+{
+    return fs::abortOnAssert;
+}
+

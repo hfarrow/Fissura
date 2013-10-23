@@ -25,6 +25,8 @@ namespace internal
 		virtual size_t getTotalUsedMemory() const override;
 		virtual u32 getTotalNumAllocations() const override;
 
+        virtual bool deallocate(void* p, size_t size);
+
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;
 	};
@@ -33,8 +35,10 @@ namespace internal
 }
 
 // Include platform specific headers if they exist
-#ifdef WIN32
-#include "windows/allocators/page_allocator.h"
+#if PLATFORM_ID == PLATFORM_WINDOWS
+    #include "core/allocators/page_allocator_windows.h"
+#elif PLATFORM_ID == PLATFORM_LINUX
+    #include "core/allocators/page_allocator_linux.h"
 #endif
 
 #endif

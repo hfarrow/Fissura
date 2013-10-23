@@ -6,7 +6,7 @@
 #define ONLY_MSPACES 1
 
 // HSF: FIX Undeclared identifier for EINVAL
-#include <errno.h>
+//#include <errno.h>
 
 // END CUSTOM CONFIG
 ///////////////////////////////////////////////////

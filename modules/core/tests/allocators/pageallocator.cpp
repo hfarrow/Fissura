@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 1);
 	BOOST_CHECK(pAllocator->getTotalUsedMemory() == pAllocator->getPageSize());
 
-	pAllocator->deallocate(p);
+	pAllocator->deallocate(p, pAllocator->getPageSize());
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 	BOOST_CHECK(pAllocator->getTotalUsedMemory() == 0);
 }

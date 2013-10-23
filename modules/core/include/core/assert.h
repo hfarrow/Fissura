@@ -6,30 +6,13 @@
 
 namespace fs
 {
-    class AssertException : public exception
-    {
-        public:
-            AssertException(const char* pMessage)
-            {
-                _pMessage = pMessage;
-            }
-
-            virtual const char* what() const throw() override
-            {
-                return _pMessage;
-            }
-
-        private:
-            const char* _pMessage;
-    };
-
 	bool reportAssertFailure(const char* condition,
 							 const char* strFile,
 							 u32 nLine,
 							 const char* format, ...);
+    void setAbortOnAssert(bool abort);
+    bool getAbortOnAssert();
 }
-
-#define FS_HALT() __debugbreak()
 
 #if defined (_DEBUG) || defined (FS_TESTABLE)
 	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
@@ -39,7 +22,7 @@ namespace fs
 		{ \
 			if(fs::reportAssertFailure(#condition, __FILE__, __LINE__, format, __VA_ARGS__)) \
 			{ \
-				FS_HALT(); \
+                fs::getAbortOnAssert() ? abort() : __debugbreak(); \
 			} \
 		} \
 	} \

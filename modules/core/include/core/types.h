@@ -16,11 +16,20 @@ namespace fs
 	// alias declarations not support by VS11
 	// Defer to using the DECL macro below for now.
 	// Once supported, replace all FS_DECL_UNIQUE_PTR(T) with
-	// UniquePtr<T>.
-		//template<typename T>
-		//using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
+	//UniquePtr<T>.
+    template<typename T>
+    using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
+
+    template<typename K, typename V>
+    using MapAllocator = StlAllocator<std::pair<const K, V>>;
+
+    template<typename K, typename V>
+    using Map = std::map<K, V, std::less<K>, MapAllocator<K, V>>;
+    
+    // Pre C++11... Use above template alaises if possible.
 	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
-	#define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<K ,V>>>
+	#define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>>>
+	#define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
 	#define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
 
 	template<typename T> class StlAllocator;

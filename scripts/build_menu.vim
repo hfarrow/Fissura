@@ -64,32 +64,30 @@
     function! BuildAll(config_name)
         call SaveLastConfig(a:config_name)
         call SaveLastProject('all')
-        exe ':make -C "' . g:fs_build_path . a:config_name . '" ' . g:fs_last_project
-        exe ':copen'
+        call BuildProject(g:fs_last_config, g:fs_last_project)
     endfunction
 
     function! BuildAllAndTest(config_name)
         call SaveLastConfig(a:config_name)
         call SaveLastProject('all test')
-        exe ':make -C "' . g:fs_build_path . a:config_name . '" ' . g:fs_last_project
-        exe ':copen'
+        call ExecuteMakeTargets(a:config_name, g:fs_last_project)
     endfunction
 
     function! BuildProject(config_name, project_name)
         call SaveLastConfig(a:config_name)
         call SaveLastProject(a:project_name)
-        let g:fs_last_config = a:config_name
-        let g:fs_last_project = a:project_name
-        exe ':make -C "' . g:fs_build_path . a:config_name . '" ' . a:project_name
-        exe ':copen'
+        call ExecuteMakeTargets(a:config_name, a:project_name)
     endfunction
 
     function! BuildAndTestProject(config_name, project_name)
         let a:make_targets = a:project_name . ' ' . a:project_name . 'Test' . ' test'
         call SaveLastConfig(a:config_name)
         call SaveLastProject(a:make_targets)
-        let g:fs_last_config = a:config_name
-        let g:fs_last_project = a:project_name
+        call ExecuteMakeTargets(a:config_name, a:make_targets)
+    endfunction
+
+    function! ExecuteMakeTargets(config_name, make_targets)
+        exe 'let $CTEST_OUTPUT_ON_FAILURE = 1'
         exe ':make -C "' . g:fs_build_path . a:config_name . '" ' . a:make_targets
         exe ':copen'
     endfunction
@@ -217,8 +215,12 @@
         endfor
 
         call add(g:unite_source_menu_menus.build.command_candidates,
-                    \ ['Generate/Clean Build Directory ',
-                    \ 'exe "!' . g:fs_scripts_path . 'setup.sh" | exe GenerateMenus()'])
+                    \ ['Setup Build Directory ',
+                    \ 'exe "!' . g:fs_scripts_path . 'setup_build.sh" | exe GenerateMenus()'])
+
+        call add(g:unite_source_menu_menus.build.command_candidates,
+                    \ ['Update Build Directory ',
+                    \ 'exe "!' . g:fs_scripts_path . 'update_build.sh" | exe GenerateMenus()'])
     " }}}
 
     " Debug Menu {{{

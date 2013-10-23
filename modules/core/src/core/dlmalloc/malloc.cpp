@@ -210,14 +210,48 @@ unsigned char _BitScanReverse(unsigned long *index, unsigned long mask);
 #if HAVE_MMAP
 
 #ifndef WIN32
-#define MUNMAP_DEFAULT(a, s)  munmap((a), (s))
+
+
+#define MUNMAP_DEFAULT(a, s)  fsmunmap((a), (s))
+//#define MUNMAP_DEFAULT(a, s)  munmap((a), (s))
 #define MMAP_PROT            (PROT_READ|PROT_WRITE)
 #if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
 #define MAP_ANONYMOUS        MAP_ANON
 #endif /* MAP_ANON */
 #ifdef MAP_ANONYMOUS
 #define MMAP_FLAGS           (MAP_PRIVATE|MAP_ANONYMOUS)
-#define MMAP_DEFAULT(s)       mmap(0, (s), MMAP_PROT, MMAP_FLAGS, -1, 0)
+#define MMAP_DEFAULT(s)       fsmmap((s))
+//#define MMAP_DEFAULT(s)       mmap(0, (s), MMAP_PROT, MMAP_FLAGS, -1, 0)
+fs::PageAllocator* gpVirtualAllocator = nullptr;
+
+static FORCEINLINE void* fsmmap(size_t size)
+{
+    void* ptr;
+    if(gpVirtualAllocator)
+    {
+        ptr = gpVirtualAllocator->allocate(size, 0);
+    }
+    else
+    {
+        ptr = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    }
+
+    return ptr;
+}
+
+static FORCEINLINE void* fsmunmap(void* ptr, size_t size)
+{
+    if(gpVirtualAllocator)
+    {
+        gpVirtualAllocator->deallocate(ptr, size);
+    }
+    else
+    {
+        munmap(ptr, size);
+    }
+
+    return ptr;
+}
 #else /* MAP_ANONYMOUS */
 /*
    Nearly all versions of mmap support MAP_ANONYMOUS, so the following

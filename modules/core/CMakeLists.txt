@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-project(fsCore)
+project(fscore)
 
+set(PROJECT_TEST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/tests/src)
+set(PROJECT_TEST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests/include)
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PROJECT_TEST_DIR ${PROJECT_SOURCE_DIR}/tests)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -23,8 +24,9 @@ add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 # Unit testing
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${PROJECT_TEST_INCLUDE_DIR})
 
-file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_DIR}/*.cpp")
+file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
 #list(REMOVE_ITEM PROJECT_TEST_FILES "${PROJECT_TEST_DIR}/core/allocators/traceallocator.cpp")
 
 add_definitions(-DBOOST_TEST_DYN_LINK)

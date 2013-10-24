@@ -7,7 +7,7 @@ using namespace fs;
 
 PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:
-	Allocator(nullptr),
+	Allocator(pName),
 	_objectSize(objectSize),
 	_objectAlignment(objectAlignment),
 	_memorySize(memorySize),

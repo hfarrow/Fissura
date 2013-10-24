@@ -80,7 +80,7 @@
     endfunction
 
     function! BuildAndTestProject(config_name, project_name)
-        let a:make_targets = a:project_name . ' ' . a:project_name . 'Test' . ' test'
+        let a:make_targets = a:project_name . ' ' . a:project_name . ' test'
         call SaveLastConfig(a:config_name)
         call SaveLastProject(a:make_targets)
         call ExecuteMakeTargets(a:config_name, a:make_targets)
@@ -231,7 +231,7 @@
             for config_name in a:config_names
                 call add(g:unite_source_menu_menus.debug.command_candidates,
                             \ ['Debug ' . module_name .'/test - '. config_name,
-                            \ 'exe DebugProject("' . config_name . '", "' . module_name . 'Test")'])
+                            \ 'exe DebugProject("' . config_name . '", "fs' . module_name . '-test")'])
             endfor
         endfor
 
@@ -240,7 +240,7 @@
                 for config_name in a:config_names
                     call add(g:unite_source_menu_menus.debug.command_candidates,
                                 \ ['Debug ' . module_name . '/spike/' . spike_name .' - '. config_name,
-                                \ 'exe DebugProject("' . config_name . '", "' . module_name . '-' . spike_name . '")'])
+                                \ 'exe DebugProject("' . config_name . '", "fs' . module_name . '-' . spike_name . '")'])
                 endfor
             endfor
         endfor
@@ -249,7 +249,7 @@
             for config_name in a:config_names
                 call add(g:unite_source_menu_menus.debug.command_candidates,
                             \ ['Debug ' . 'spike/' . spike_name .' - '. config_name,
-                            \ 'exe DebugProject("' . config_name . '", "' . spike_name . '")'])
+                            \ 'exe DebugProject("' . config_name . '", "spike-' . spike_name . '")'])
             endfor
         endfor
 
@@ -265,7 +265,7 @@
             for config_name in a:config_names
                 call add(g:unite_source_menu_menus.test.command_candidates,
                             \ ['Test ' . module_name . ' - '. config_name,
-                            \ 'exe BuildAndTestProject("' . config_name . '", "' . module_name . '")'])
+                            \ 'exe BuildAndTestProject("' . config_name . '", "fs' . module_name . '-test")'])
             endfor
         endfor
     " }}}

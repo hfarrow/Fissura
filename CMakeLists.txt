@@ -3,7 +3,7 @@ project(Fissura)
 
 include(CMakeFindBinUtils)
 
-SET (CMAKE_C_FLAGS                 "-Wall -std=c99")
+SET (CMAKE_C_FLAGS                 "-Wall -std=c++11")
 SET (CMAKE_C_FLAGS_DEBUG           "-g -D_DEBUG")
 SET (CMAKE_C_FLAGS_MINSIZEREL      "-Os -DNDEBUG")
 SET (CMAKE_C_FLAGS_RELEASE         "-O4 -DNDEBUG")
@@ -23,4 +23,4 @@ add_subdirectory(modules/core)
 add_subdirectory(spikes)
 
 enable_testing()
-add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fsCore-test --log_level=warning)
+add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fscore-test --log_level=warning)

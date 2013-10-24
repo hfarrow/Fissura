@@ -2,16 +2,15 @@
 #include <signal.h>
 #include <memory.h>
 
-#include <boost/test/execution_monitor.hpp> 
-#include <boost/test/unit_test_monitor.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include "global_context.h"
 #include "core/assert.h"
+#include "core/types.h"
 #include "core/platforms.h"
 #include "core/allocators/pool_allocator.h"
 #include "core/allocators/heap_allocator.h"
 #include "core/allocators/trace_allocator.h"
-#include "core/types.h"
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
 #define DEBUG_MEM_SIZE 1048576 // 1mb
@@ -70,9 +69,7 @@ BOOST_AUTO_TEST_CASE(record_stack_trace)
 	proxy.deallocate(p);
 
     p = proxy.allocate(8,8);
-    auto& monitor = boost::unit_test::unit_test_monitor_t::instance();
-    BOOST_TEST_MESSAGE("TraceAllocator assert expected below here.");
-    BOOST_REQUIRE_THROW(monitor.execute([&proxy](){proxy.reportMemoryLeaks(); return 0;}), boost::execution_exception);
+    fs::test::GlobalContext::instance()->requireAssert([&proxy](){proxy.reportMemoryLeaks();});
     proxy.deallocate(p);
 }
 

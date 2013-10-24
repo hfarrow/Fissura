@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(fsCore-stlallocator)
+project(fscore-stlallocator)
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -13,4 +13,4 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
 include_directories(${core_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} fsCore)
+target_link_libraries(${PROJECT_NAME} fscore)

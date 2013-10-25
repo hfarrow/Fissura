@@ -19,7 +19,6 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/modules/fscore/include)
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})

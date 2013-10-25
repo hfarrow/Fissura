@@ -1,8 +1,6 @@
 #include <boost/test/unit_test_monitor.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "fscore.h"
-
 #include "fstest/global_context.h"
 
 using namespace fs::test;
@@ -12,7 +10,6 @@ GlobalContext* GlobalContext::_pInstance = nullptr;
 GlobalContext::GlobalContext()
 {
     _pInstance = this;
-    fs::setAbortOnAssert(true);
 }
 
 GlobalContext::~GlobalContext()
@@ -27,7 +24,8 @@ GlobalContext* GlobalContext::instance()
 
 void GlobalContext::requireAssert(std::function<void()> func)
 {
-    BOOST_TEST_MESSAGE("GlobalContext requireAssert - Assert expected below this point.");
+    BOOST_TEST_MESSAGE("\nGlobalContext requireAssert - Assert expected below this point.");
     auto& monitor = boost::unit_test::unit_test_monitor_t::instance();
     BOOST_REQUIRE_THROW(monitor.execute([&func](){func(); return 0;}), boost::execution_exception);
+    BOOST_TEST_MESSAGE("GlobalContext requireAssert - End of expected assert above this point.\n");
 }

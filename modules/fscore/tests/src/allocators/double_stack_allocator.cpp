@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "fstest.h"
 #include "fscore.h"
 
 #define DEFAULT_STACK_MEM_SIZE  256 // bytes
@@ -105,19 +106,18 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_lower)
 	BOOST_CHECK(marker.allocationIndex == begin.allocationIndex);
 }
 
-// Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(allocate_out_of_memory_in_middle)
-// {
-// 	pStack->allocateLower(DEFAULT_STACK_MEM_SIZE / 2, 4);
-// 	pStack->allocateUpper(DEFAULT_STACK_MEM_SIZE / 2, 4);
-// 
-// 	BOOST_CHECK(pStack->getTotalNumAllocations() == 2);
-// 	BOOST_CHECK(pStack->getTotalUsedMemory() == DEFAULT_STACK_MEM_SIZE);
-// 
-// 	void* pAllocation = nullptr;
-// 	BOOST_REQUIRE_THROW(pAllocation = pStack->allocateLower(4, 4), fs::AssertException);
-// 	BOOST_CHECK(pAllocation == nullptr);
-// }
+BOOST_AUTO_TEST_CASE(allocate_out_of_memory_in_middle)
+{
+	pStack->allocateLower(DEFAULT_STACK_MEM_SIZE / 2, 4);
+	pStack->allocateUpper(DEFAULT_STACK_MEM_SIZE / 2, 4);
+
+	BOOST_CHECK(pStack->getTotalNumAllocations() == 2);
+	BOOST_CHECK(pStack->getTotalUsedMemory() == DEFAULT_STACK_MEM_SIZE);
+
+	void* pAllocation = nullptr;
+	FS_REQUIRE_ASSERT([&](){pAllocation = pStack->allocateLower(4, 4);});
+	BOOST_CHECK(pAllocation == nullptr);
+}
 
 BOOST_AUTO_TEST_CASE(get_totals)
 {

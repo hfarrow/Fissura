@@ -5,8 +5,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "fscore.h"
-
-#include "global_context.h"
+#include "fstest.h"
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
 #define DEBUG_MEM_SIZE 1048576 // 1mb
@@ -65,7 +64,7 @@ BOOST_AUTO_TEST_CASE(record_stack_trace)
 	proxy.deallocate(p);
 
     p = proxy.allocate(8,8);
-    fs::test::GlobalContext::instance()->requireAssert([&proxy](){proxy.reportMemoryLeaks();});
+    FS_REQUIRE_ASSERT([&proxy](){proxy.reportMemoryLeaks();});
     proxy.deallocate(p);
 }
 

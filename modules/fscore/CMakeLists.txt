@@ -24,6 +24,7 @@ add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 # Unit testing
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${fstest_SOURCE_DIR}/include)
 include_directories(${PROJECT_TEST_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
@@ -34,6 +35,7 @@ add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})
 target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      fstest
                       )
 set_target_properties(${PROJECT_NAME}-test PROPERTIES COMPILE_FLAGS "-fexceptions")
 

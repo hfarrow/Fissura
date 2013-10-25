@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "fstest.h"
 #include "fscore.h"
 
 #define DEFAULT_STACK_MEM_SIZE  256 // bytes
@@ -74,45 +75,42 @@ BOOST_AUTO_TEST_CASE(allocate_memory_available)
 	BOOST_CHECK(pStack->getTotalNumAllocations() == totalAllocations);
 	BOOST_CHECK(pStack->getTotalUsedMemory() == totalAllocations * sizeof(u32));
 
-// Cannot test assert fails
-	// void* pAllocation = nullptr;
-	// BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(sizeof(u32), __alignof(u32)), fs::AssertException);
-	// BOOST_CHECK(pAllocation == nullptr);
+	void* pAllocation = nullptr;
+    FS_REQUIRE_ASSERT([&](){pAllocation = pStack->allocate(sizeof(u32), __alignof(u32));});
+	BOOST_CHECK(pAllocation == nullptr);
 
-	// auto marker = pStack->getMarker();
-	// BOOST_CHECK(marker.allocationIndex == totalAllocations);
-	// BOOST_CHECK(marker.position == (size_t)pStackData + pStack->getTotalUsedMemory());
+	auto marker = pStack->getMarker();
+	BOOST_CHECK(marker.allocationIndex == totalAllocations);
+	BOOST_CHECK(marker.position == (size_t)pStackData + pStack->getTotalUsedMemory());
 }
 
-// Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
-// {
-// 	auto marker = pStack->getMarker();
-// 
-// 	void* pAllocation = nullptr;
-// 	BOOST_REQUIRE_THROW(pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), fs::AssertException);
-// 	BOOST_CHECK(pAllocation == nullptr);
-// 
-// 	auto newMarker = pStack->getMarker();
-// 	BOOST_CHECK(newMarker.position == marker.position);
-// 	BOOST_CHECK(newMarker.allocationIndex == marker.allocationIndex);
-// 	
-// }
+BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
+{
+	auto marker = pStack->getMarker();
 
-// Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(deallocate_not_allowed)
-// {
-// 	void* pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE, 4);
-// 	auto end = pStack->getMarker();
-// 	BOOST_CHECK(pAllocation != nullptr);
-// 
-// 	BOOST_REQUIRE_THROW(pStack->deallocate(pAllocation), fs::AssertException);
-// 	auto marker = pStack->getMarker();
-// 	BOOST_CHECK(marker.position == end.position);
-// 	BOOST_CHECK(marker.allocationIndex == 1);
-// 	BOOST_CHECK(pStack->getTotalUsedMemory() == DEFAULT_STACK_MEM_SIZE);
-// 	BOOST_CHECK(pStack->getTotalNumAllocations() == 1);
-// }
+	void* pAllocation = nullptr;
+    FS_REQUIRE_ASSERT([&](){pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4);});
+	BOOST_CHECK(pAllocation == nullptr);
+
+	auto newMarker = pStack->getMarker();
+	BOOST_CHECK(newMarker.position == marker.position);
+	BOOST_CHECK(newMarker.allocationIndex == marker.allocationIndex);
+	
+}
+
+BOOST_AUTO_TEST_CASE(deallocate_not_allowed)
+{
+	void* pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE, 4);
+	auto end = pStack->getMarker();
+	BOOST_CHECK(pAllocation != nullptr);
+
+    FS_REQUIRE_ASSERT([&](){pStack->deallocate(pAllocation);});
+	auto marker = pStack->getMarker();
+	BOOST_CHECK(marker.position == end.position);
+	BOOST_CHECK(marker.allocationIndex == 1);
+	BOOST_CHECK(pStack->getTotalUsedMemory() == DEFAULT_STACK_MEM_SIZE);
+	BOOST_CHECK(pStack->getTotalNumAllocations() == 1);
+}
 
 BOOST_AUTO_TEST_CASE(deallocate_to_begin_marker)
 {
@@ -159,23 +157,22 @@ BOOST_AUTO_TEST_CASE(deallocate_to_end_marker)
 	BOOST_CHECK(marker.allocationIndex == end.allocationIndex);
 }
 
-// Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(deallocate_to_old_invalid_marker)
-// {
-// 	auto begin = pStack->getMarker();
-// 	void* pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE, 4);
-// 	auto end = pStack->getMarker();
-// 	BOOST_CHECK(pAllocation != nullptr);
-// 
-// 	pStack->deallocateToMarker(begin);
-// 	BOOST_REQUIRE_THROW(pStack->deallocateToMarker(end), fs::AssertException);
-// 	BOOST_CHECK(pStack->getTotalUsedMemory() == 0);
-// 	BOOST_CHECK(pStack->getTotalNumAllocations() == 0);
-// 
-// 	auto marker = pStack->getMarker();
-// 	BOOST_CHECK(marker.position == begin.position);
-// 	BOOST_CHECK(marker.allocationIndex == begin.allocationIndex);
-// }
+BOOST_AUTO_TEST_CASE(deallocate_to_old_invalid_marker)
+{
+	auto begin = pStack->getMarker();
+	void* pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE, 4);
+	auto end = pStack->getMarker();
+	BOOST_CHECK(pAllocation != nullptr);
+
+	pStack->deallocateToMarker(begin);
+    FS_REQUIRE_ASSERT([&](){pStack->deallocateToMarker(end);});
+	BOOST_CHECK(pStack->getTotalUsedMemory() == 0);
+	BOOST_CHECK(pStack->getTotalNumAllocations() == 0);
+
+	auto marker = pStack->getMarker();
+	BOOST_CHECK(marker.position == begin.position);
+	BOOST_CHECK(marker.allocationIndex == begin.allocationIndex);
+}
 
 BOOST_AUTO_TEST_CASE(clear_with_no_allocations_made)
 {
@@ -226,19 +223,18 @@ BOOST_AUTO_TEST_CASE(allocate_memory_downwards)
 	BOOST_CHECK(begin.position == (size_t)pStackData + currentStackSize);
 }
 
-// Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(allocate_out_of_memory_downwards)
-// {
-// 	auto begin = pReverseStack->getMarker();
-// 
-// 	void* pAllocation = nullptr;
-// 	BOOST_REQUIRE_THROW(pAllocation = pReverseStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4), fs::AssertException);
-// 	BOOST_CHECK(pAllocation == nullptr);
-// 
-// 	auto newMarker = pReverseStack->getMarker();
-// 	BOOST_CHECK(newMarker.position == begin.position);
-// 	BOOST_CHECK(newMarker.allocationIndex == begin.allocationIndex);
-// }
+BOOST_AUTO_TEST_CASE(allocate_out_of_memory_downwards)
+{
+	auto begin = pReverseStack->getMarker();
+
+	void* pAllocation = nullptr;
+    FS_REQUIRE_ASSERT([&](){pAllocation = pReverseStack->allocate(DEFAULT_STACK_MEM_SIZE + 4, 4);});
+	BOOST_CHECK(pAllocation == nullptr);
+
+	auto newMarker = pReverseStack->getMarker();
+	BOOST_CHECK(newMarker.position == begin.position);
+	BOOST_CHECK(newMarker.allocationIndex == begin.allocationIndex);
+}
 
 BOOST_AUTO_TEST_CASE(allocate_downwards_and_clear)
 {

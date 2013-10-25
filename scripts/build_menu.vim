@@ -190,9 +190,11 @@
 
         for module_name in g:fs_module_names
             for config_name in a:config_names
-                call add(g:unite_source_menu_menus.build.command_candidates,
-                            \ ['Build ' . module_name .'/test - '. config_name,
-                            \ 'exe BuildProject("' . config_name . '", "' . module_name . 'Test")'])
+                if isdirectory(expand(g:fs_module_path . module_name . '/tests'))
+                    call add(g:unite_source_menu_menus.build.command_candidates,
+                                \ ['Build ' . module_name .'/test - '. config_name,
+                                \ 'exe BuildProject("' . config_name . '", "' . module_name . '-test")'])
+                endif
             endfor
         endfor
 
@@ -210,7 +212,7 @@
             for config_name in a:config_names
                 call add(g:unite_source_menu_menus.build.command_candidates,
                             \ ['Build ' . 'spike/' . spike_name .' - '. config_name,
-                            \ 'exe BuildProject("' . config_name . '", "' . spike_name . '")'])
+                            \ 'exe BuildProject("' . config_name . '", "spike-' . spike_name . '")'])
             endfor
         endfor
 
@@ -229,9 +231,11 @@
 
         for module_name in g:fs_module_names
             for config_name in a:config_names
-                call add(g:unite_source_menu_menus.debug.command_candidates,
-                            \ ['Debug ' . module_name .'/test - '. config_name,
-                            \ 'exe DebugProject("' . config_name . '", "fs' . module_name . '-test")'])
+                if isdirectory(expand(g:fs_module_path . module_name . '/tests'))
+                    call add(g:unite_source_menu_menus.debug.command_candidates,
+                                \ ['Debug ' . module_name .'/test - '. config_name,
+                                \ 'exe DebugProject("' . config_name . '", "' . module_name . '-test")'])
+                endif
             endfor
         endfor
 
@@ -240,7 +244,7 @@
                 for config_name in a:config_names
                     call add(g:unite_source_menu_menus.debug.command_candidates,
                                 \ ['Debug ' . module_name . '/spike/' . spike_name .' - '. config_name,
-                                \ 'exe DebugProject("' . config_name . '", "fs' . module_name . '-' . spike_name . '")'])
+                                \ 'exe DebugProject("' . config_name . '", "' . module_name . '-' . spike_name . '")'])
                 endfor
             endfor
         endfor
@@ -265,7 +269,7 @@
             for config_name in a:config_names
                 call add(g:unite_source_menu_menus.test.command_candidates,
                             \ ['Test ' . module_name . ' - '. config_name,
-                            \ 'exe BuildAndTestProject("' . config_name . '", "fs' . module_name . '-test")'])
+                            \ 'exe BuildAndTestProject("' . config_name . '", "' . module_name . '-test")'])
             endfor
         endfor
     " }}}
@@ -284,8 +288,13 @@
         for module_name in g:fs_module_names
             call add(g:unite_source_menu_menus.select_project.command_candidates,
                         \ ['Select ' . module_name, 'exe SaveLastProject("' . module_name . '")'])
-            call add(g:unite_source_menu_menus.select_project.command_candidates,
-                        \ ['Select ' . module_name . '/test', 'exe SaveLastProject("' . module_name . 'Test")'])
+            
+            " tests are optional. Only add test target if it exists.
+            if isdirectory(expand(g:fs_module_path . module_name . '/tests'))
+                call add(g:unite_source_menu_menus.select_project.command_candidates,
+                            \ ['Select ' . module_name . '/test', 'exe SaveLastProject("' . module_name . '-test")'])
+            endif
+
             for spike_name in g:fs_module_spike_names[module_name]
                 call add(g:unite_source_menu_menus.select_project.command_candidates,
                             \ ['Select ' . module_name . '/spike/' . spike_name,
@@ -296,7 +305,7 @@
         for spike_name in g:fs_spike_names
             call add(g:unite_source_menu_menus.select_project.command_candidates,
                         \ ['Select spike/' . spike_name,
-                        \ 'exe SaveLastProject("' . spike_name . '")'])
+                        \ 'exe SaveLastProject("spike-' . spike_name . '")'])
         endfor
     " }}}
     

@@ -3,6 +3,8 @@
 
 #include <functional>
 
+#define FS_REQUIRE_ASSERT(x) fs::test::GlobalContext::instance()->requireAssert((x))
+
 namespace fs
 {
 namespace test

@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "fstest.h"
 #include "fscore.h"
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes

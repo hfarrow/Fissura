@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "fstest.h"
 #include "fscore.h"
 
 #define DEFAULT_STACK_MEM_SIZE  256 // bytes

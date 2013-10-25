@@ -1,9 +1,9 @@
 #include <boost/test/unit_test_monitor.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "fscore/assert.h"
+#include "fscore.h"
 
-#include "global_context.h"
+#include "fstest/global_context.h"
 
 using namespace fs::test;
 

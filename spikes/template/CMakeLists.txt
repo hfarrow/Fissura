@@ -13,5 +13,5 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
-include_directories(${core_SOURCE_DIR}/include)
+include_directories(${fscore_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} fscore)

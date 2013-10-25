@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "fstest.h"
 #include "fscore.h"
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
@@ -75,17 +76,17 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate_large)
 }
 
 // Cannot test assert fails
-// BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
-// {
-// 	void* p = nullptr;
-// 	BOOST_REQUIRE_THROW(p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4), fs::AssertException);
-// 
-// 	// In Release, p will still be allocated. This is because dlmalloc will expand
-// 	// the mspace if more space is needed. Fissura will assert to notify that
-// 	// this allocation excedes the initial budget of the allocator.
-// 	//BOOST_REQUIRE(p == nullptr);
-// 	//BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
-// }
+BOOST_AUTO_TEST_CASE(allocate_out_of_memory)
+{
+	void* p = nullptr;
+	FS_REQUIRE_ASSERT([&](){p = pAllocator->allocate(DEFAULT_MEM_SIZE * 2, 4);});
+
+	// In Release, p will still be allocated. This is because dlmalloc will expand
+	// the mspace if more space is needed. Fissura will assert to notify that
+	// this allocation excedes the initial budget of the allocator.
+	//BOOST_REQUIRE(p == nullptr);
+	//BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -71,6 +71,8 @@ flags = [
 './modules/fscore/include',
 '-I',
 './modules/fscore/tests/include',
+'-I',
+'./modules/fstest/include',
 '-isystem',
 '/usr/local/boost_1_54_0'
 #'-I',

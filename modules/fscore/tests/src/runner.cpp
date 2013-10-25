@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "global_context.h"
+#include "fstest.h"
 
 using namespace fs::test;
 

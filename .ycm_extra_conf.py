@@ -68,9 +68,9 @@ flags = [
 #'-isystem',
 #'../llvm/tools/clang/include',
 '-I',
-'./modules/core/include',
+'./modules/fscore/include',
 '-I',
-'./modules/core/tests/include',
+'./modules/fscore/tests/include',
 '-isystem',
 '/usr/local/boost_1_54_0'
 #'-I',

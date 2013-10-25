@@ -19,7 +19,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-add_subdirectory(modules/core)
+add_subdirectory(modules/fscore)
 add_subdirectory(spikes)
 
 enable_testing()

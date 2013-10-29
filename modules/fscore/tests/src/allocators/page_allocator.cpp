@@ -6,11 +6,12 @@
 #include "fscore.h"
 
 #define DEFAULT_MEM_SIZE  64 * 1024 // bytes
+#define DEBUG_MEM_SIZE 1048576 // 1mb
 
 using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
-BOOST_AUTO_TEST_SUITE(allocation)
+BOOST_AUTO_TEST_SUITE(allocators)
 
 struct pageallocator_fixture
 {
@@ -18,6 +19,8 @@ struct pageallocator_fixture
 	{
 		pAllocator = nullptr;
 		pMemory = nullptr;
+		pDebugMemory = nullptr;
+        gpDebugHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -30,10 +33,15 @@ struct pageallocator_fixture
 	{
 		delete pAllocator;
 		delete[] (u8*)pMemory;
+		delete gpDebugHeap;
+        gpDebugHeap = nullptr;
+		delete[] (u8*)pDebugMemory;
 
 		currentMemorySize = size;
 		if(size > 0)
 		{
+			pDebugMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
+			gpDebugHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pDebugMemory);
 			pMemory = new u8[size];
 			pAllocator = new PageAllocator(nullptr);
 		}
@@ -42,6 +50,7 @@ struct pageallocator_fixture
 	size_t currentMemorySize;
 	PageAllocator* pAllocator;
 	void* pMemory;
+	void* pDebugMemory;
 };
 
 BOOST_FIXTURE_TEST_SUITE(page_allocator, pageallocator_fixture)

@@ -239,18 +239,16 @@ static FORCEINLINE void* fsmmap(size_t size)
     return ptr;
 }
 
-static FORCEINLINE void* fsmunmap(void* ptr, size_t size)
+static FORCEINLINE int fsmunmap(void* ptr, size_t size)
 {
     if(gpVirtualAllocator)
     {
-        gpVirtualAllocator->deallocate(ptr, size);
+        return gpVirtualAllocator->deallocate(ptr, size);
     }
     else
     {
-        munmap(ptr, size);
+        return munmap(ptr, size);
     }
-
-    return ptr;
 }
 #else /* MAP_ANONYMOUS */
 /*

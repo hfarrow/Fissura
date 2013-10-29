@@ -33,14 +33,13 @@ HeapAllocator::HeapAllocator(const fschar* const pName, PageAllocator& backingAl
 HeapAllocator::~HeapAllocator()
 {
 	FS_ASSERT(_totalNumAllocations == 0);
-	gpVirtualAllocator = _pBackingAllocator;
+	gpVirtualAllocator = _pBackingAllocator != nullptr ? _pBackingAllocator : gpVirtualAllocator;
 	destroy_mspace(_mspace);
-	gpVirtualAllocator = nullptr;
 }
 
 void HeapAllocator::createHeap()
 {
-	gpVirtualAllocator = _pBackingAllocator;
+	gpVirtualAllocator = _pBackingAllocator != nullptr ? _pBackingAllocator : gpVirtualAllocator;
 	if(_pBackingAllocator == nullptr)
 	{
 		_mspace = create_mspace_with_base(_pMemory, _memorySize, 0);
@@ -52,12 +51,11 @@ void HeapAllocator::createHeap()
 
 	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
 
-	gpVirtualAllocator = nullptr;
 }
 
 void* HeapAllocator::allocate(size_t size, u8 alignment)
 {
-	gpVirtualAllocator = _pBackingAllocator;
+	gpVirtualAllocator = _pBackingAllocator != nullptr ? _pBackingAllocator : gpVirtualAllocator;
 	void* p = mspace_memalign(_mspace, alignment, size);
 	if(p == nullptr)
 	{
@@ -74,27 +72,24 @@ void* HeapAllocator::allocate(size_t size, u8 alignment)
 #endif
 
 	_totalNumAllocations += 1;
-	gpVirtualAllocator = nullptr;
 	return p;
 }
 
 bool HeapAllocator::deallocate(void* p)
 {
-	gpVirtualAllocator = _pBackingAllocator;
+	gpVirtualAllocator = _pBackingAllocator != nullptr ? _pBackingAllocator : gpVirtualAllocator;
 	mspace_free(_mspace, p);
 	FS_ASSERT(_totalNumAllocations > 0);
 	_totalNumAllocations -= 1;
-	gpVirtualAllocator = nullptr;
 
 	return true;
 }
 
 void HeapAllocator::clear()
 {
-	gpVirtualAllocator = _pBackingAllocator;
+	gpVirtualAllocator = _pBackingAllocator != nullptr ? _pBackingAllocator : gpVirtualAllocator;
 	destroy_mspace(_mspace);
 	createHeap();
-	gpVirtualAllocator = nullptr;
 }
 
 size_t HeapAllocator::getTotalUsedMemory() const

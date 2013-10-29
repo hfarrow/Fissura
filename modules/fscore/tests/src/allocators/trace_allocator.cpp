@@ -11,10 +11,9 @@
 #define DEBUG_MEM_SIZE 1048576 // 1mb
 
 using namespace fs;
-HeapAllocator* gpDebugHeap = nullptr;
 
 BOOST_AUTO_TEST_SUITE(core)
-BOOST_AUTO_TEST_SUITE(allocation)
+BOOST_AUTO_TEST_SUITE(allocators)
 
 struct traceallocator_fixture
 {
@@ -23,6 +22,7 @@ struct traceallocator_fixture
 		pAllocator = nullptr;
 		pMemory = nullptr;
 		pDebugMemory = nullptr;
+        gpDebugHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -36,6 +36,7 @@ struct traceallocator_fixture
 		delete pAllocator;
 		delete[] (u8*)pMemory;
 		delete gpDebugHeap;
+        gpDebugHeap = nullptr;
 		delete[] (u8*)pDebugMemory;
 
 		currentMemorySize = size;

@@ -10,7 +10,7 @@
 using namespace fs;
 
 BOOST_AUTO_TEST_SUITE(core)
-BOOST_AUTO_TEST_SUITE(allocation)
+BOOST_AUTO_TEST_SUITE(allocators)
 
 struct doublebufferedallocator_fixture
 {

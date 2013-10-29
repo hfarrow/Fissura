@@ -36,6 +36,11 @@ namespace internal
 		u32 _totalNumAllocations;
 		size_t _totalUsedMemory;
 		size_t _pageSize;
+
+		typedef Map<uptr, size_t> AllocationMap;
+        typedef MapAllocator<uptr, size_t> AllocationMapAllocator;
+		UniquePtr<AllocationMap> _pAllocationMap;
+        AllocationMapAllocator _allocationMapAllocator;
 	};
 }
 }

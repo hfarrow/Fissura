@@ -4,6 +4,7 @@
 
 #include "fscore/allocators/page_allocator_linux.h"
 #include "fscore/platforms.h"
+#include "fscore/allocators/heap_allocator.h"
 #include "fscore/globals.h"
 #include "fscore/assert.h"
 #include "fscore/trace.h"
@@ -14,29 +15,44 @@ PageAllocator::PageAllocator(const fschar* const pName)
 	:
 	Allocator(pName),
 	_totalNumAllocations(0),
-	_totalUsedMemory(0)
+	_totalUsedMemory(0),
+    _allocationMapAllocator(*gpDebugHeap)
 {
 	_pageSize = sysconf(_SC_PAGE_SIZE);
+
+	// gpDebugHeap must have been provided by application.
+	FS_ASSERT(gpDebugHeap != nullptr);
+
+	 _pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpDebugHeap)
+            (std::less<uptr>(), _allocationMapAllocator),
+            [](AllocationMap* p){FS_DELETE(p, gpDebugHeap);});
 }
 
 PageAllocator::~PageAllocator()
 {
 	FS_ASSERT(_totalNumAllocations == 0);
 	FS_ASSERT(_totalUsedMemory == 0);
+    _pAllocationMap->clear();
 }
 
 void* PageAllocator::allocate(size_t size, u8 alignment)
 {
 	FS_ASSERT_MSG(alignment == 0, "PageAllocator is aligned by default. Please pass 0 for alignment.");
 
-    void* ptr = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-    FS_ASSERT_MSG(ptr != MAP_FAILED, "Failed to mmap request size.");
+    void* pAllocation = mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    if(pAllocation == MAP_FAILED)
+    {
+        FS_ASSERT_MSG(false, "Failed to mmap request size. pAllocation == MAP_FAILED");
+        return nullptr;
+    }
 
 	u32 numPagesRequired = calcRequiredPages(size);
 	_totalUsedMemory += (size_t)numPagesRequired * _pageSize;
     _totalNumAllocations += 1;
 
-    return ptr;
+    _pAllocationMap->insert(std::make_pair((uptr)pAllocation, size));
+
+    return pAllocation;
 }
 
 bool PageAllocator::deallocate(void* p, size_t size)
@@ -47,20 +63,36 @@ bool PageAllocator::deallocate(void* p, size_t size)
     if(munmap(p, size))
     {
         FS_ASSERT_MSG_FORMATTED(false, "Failed to munmap pointer. errno: %i.", errno);
-        return false;
+        return true; // error
     }
 
     _totalNumAllocations -= 1;
     _totalUsedMemory -= size;
 
-    return true;
+    if(_pAllocationMap->find((uptr)p) == _pAllocationMap->end())
+    {
+        FS_ASSERT(!"Failed to remove allocation from AllocationMap. Was intHeader allocated by this allocator?");
+    }
+    else
+    {
+        _pAllocationMap->erase((uptr)p);
+    }
+
+    return false;
 }
 
-bool PageAllocator::deallocate(void*)
+bool PageAllocator::deallocate(void* p)
 {
-	FS_ASSERT(!"On linux you must use PageAllocator::deallocate(p, size)");
-    // To improve this, a map of all allocations and their sizes would need to be kept.
-    return false;
+    if(_pAllocationMap->find((uptr)p) == _pAllocationMap->end())
+    {
+        FS_ASSERT("Failed to deallocate memory. Size not found. Was it allocated by this allocator?");
+        return true; // error
+    }
+    else
+    {
+       size_t size = _pAllocationMap->at((uptr)p);
+       return deallocate(p, size);
+    }
 }
 
 void PageAllocator::clear()

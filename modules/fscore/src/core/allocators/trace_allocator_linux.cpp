@@ -38,6 +38,7 @@ void TraceAllocator::reportMemoryLeaks()
 		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
 		{
             auto pStackTrace = getCaller(&it->second);
+            (void)pStackTrace; // clang completer was complaining that pStackTrace was unused.
 			FS_ASSERT_MSG_FORMATTED(false, "TraceAllocator memory leak:\n%s", pStackTrace);
 		}
 	}

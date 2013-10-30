@@ -97,9 +97,16 @@ bool PageAllocator::deallocate(void* p)
 
 void PageAllocator::clear()
 {
-	FS_ASSERT(!"PageAllocator cannot be cleared.");
-	// To implement this, the allocator would need to keep a list
-	// of allocations and deallocate each one.
+	if(_pAllocationMap->size() > 0)
+	{
+		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
+		{
+            void* pAllocation = (void*)it->first;
+            size_t allocationSize = it->second;
+            deallocate(pAllocation, allocationSize);
+		}
+        _pAllocationMap->clear();;
+	}
 }
 
 size_t PageAllocator::getTotalUsedMemory() const

@@ -81,6 +81,18 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 	BOOST_CHECK(pAllocator->getTotalUsedMemory() == 0);
 }
 
+BOOST_AUTO_TEST_CASE(clear_all_allocation)
+{
+    pAllocator->allocate(pAllocator->getPageSize(), 0);
+    pAllocator->allocate(pAllocator->getPageSize(), 0);
+    pAllocator->allocate(pAllocator->getPageSize(), 0);
+    pAllocator->allocate(pAllocator->getPageSize(), 0);
+    BOOST_CHECK(pAllocator->getTotalNumAllocations() == 4);
+    pAllocator->clear();
+    BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
+    BOOST_CHECK(pAllocator->getTotalUsedMemory() == 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

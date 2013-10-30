@@ -20,12 +20,17 @@ typedef Map<uptr, AllocationInfo> AllocationMap;
 typedef MapAllocator<uptr, AllocationInfo> AllocationMapAllocator;
 UniquePtr<AllocationMap> _pAllocationMap;
 
+HeapAllocator* gpDebugHeap = nullptr;
+
 void print_trace(void)
 {
     void* array[10];
     size_t size;
     char** strings;
     size_t i;
+    
+    PageAllocator pageAllocator(L"DebugPageAllocator");
+    gpDebugHeap = new HeapAllocator(L"gpDebugHeap", pageAllocator);
 
     size = backtrace(array, 10);
     strings = backtrace_symbols(array, size);

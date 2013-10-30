@@ -4,7 +4,9 @@
 #include "fscore/types.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/page_allocator.h"
+#include "fscore/allocators/stl_allocator.h"
 #include "fscore/dlmalloc/malloc.h"
+#include <vector>
 
 namespace fs
 {
@@ -38,6 +40,13 @@ namespace fs
 		mspace _mspace;
 		u32 _totalNumAllocations;
 		PageAllocator* _pBackingAllocator;
+
+        static void pushVirtualAllocator(PageAllocator* _pBackingAllocator);
+        static void popVirtualAllocator(PageAllocator* _pBackingAllocator);
+        typedef std::vector<PageAllocator*, StlAllocator<PageAllocator>> VirtualAllocatorStack;
+        static StlAllocator<PageAllocator>* _pStlAllocator;
+        static VirtualAllocatorStack* _pVirtualAllocatorStack;
+        static u32 _instanceCount;
 	};
 }
 

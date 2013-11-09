@@ -24,4 +24,4 @@ add_subdirectory(modules/fscore)
 add_subdirectory(spikes)
 
 enable_testing()
-add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fscore-test --log_level=warning)
+add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fscore-test --log_level=all)

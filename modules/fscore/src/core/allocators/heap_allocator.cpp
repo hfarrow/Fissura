@@ -41,8 +41,8 @@ HeapAllocator::~HeapAllocator()
 {
     if(--HeapAllocator::_instanceCount == 0)
     {
-        FS_DELETE(HeapAllocator::_pVirtualAllocatorStack, gpDebugHeap);
-        FS_DELETE(HeapAllocator::_pStlAllocator, gpDebugHeap);
+        FS_DELETE(HeapAllocator::_pVirtualAllocatorStack, gpFsDebugHeap);
+        FS_DELETE(HeapAllocator::_pStlAllocator, gpFsDebugHeap);
         HeapAllocator::_pVirtualAllocatorStack = nullptr;
         HeapAllocator::_pStlAllocator = nullptr;
     }
@@ -131,8 +131,8 @@ void HeapAllocator::pushVirtualAllocator(PageAllocator* _pBackingAllocator)
 
     if(!_pVirtualAllocatorStack)
     {
-        _pStlAllocator = FS_NEW(StlAllocator<PageAllocator>, gpDebugHeap)(*gpDebugHeap);
-        _pVirtualAllocatorStack = FS_NEW(VirtualAllocatorStack, gpDebugHeap)(*_pStlAllocator);
+        _pStlAllocator = FS_NEW(StlAllocator<PageAllocator>, gpFsDebugHeap)(*gpFsDebugHeap);
+        _pVirtualAllocatorStack = FS_NEW(VirtualAllocatorStack, gpFsDebugHeap)(*_pStlAllocator);
     }
     _pVirtualAllocatorStack->push_back(_pBackingAllocator);
     gpVirtualAllocator = _pBackingAllocator;

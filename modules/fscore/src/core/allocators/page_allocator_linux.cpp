@@ -16,16 +16,16 @@ PageAllocator::PageAllocator(const fschar* const pName)
 	Allocator(pName),
 	_totalNumAllocations(0),
 	_totalUsedMemory(0),
-    _allocationMapAllocator(*gpDebugHeap)
+    _allocationMapAllocator(*gpFsMainHeap)
 {
 	_pageSize = sysconf(_SC_PAGE_SIZE);
 
-	// gpDebugHeap must have been provided by application.
-	FS_ASSERT(gpDebugHeap != nullptr);
+	// gpFsMainHeap must have been provided by application.
+	FS_ASSERT(gpFsMainHeap != nullptr);
 
-	 _pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpDebugHeap)
+	 _pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpFsMainHeap)
             (std::less<uptr>(), _allocationMapAllocator),
-            [](AllocationMap* p){FS_DELETE(p, gpDebugHeap);});
+            [](AllocationMap* p){FS_DELETE(p, gpFsMainHeap);});
 }
 
 PageAllocator::~PageAllocator()
@@ -62,7 +62,7 @@ bool PageAllocator::deallocate(void* p, size_t size)
 
     if(munmap(p, size))
     {
-        FS_ASSERT_MSG_FORMATTED(false, "Failed to munmap pointer. errno: %i.", errno);
+        FS_ASSERT_MSG_FORMATTED(false, "Failed to munmap pointer %p of size %u. errno: %i", p, size, errno);
         return true; // error
     }
 
@@ -71,7 +71,7 @@ bool PageAllocator::deallocate(void* p, size_t size)
 
     if(_pAllocationMap->find((uptr)p) == _pAllocationMap->end())
     {
-        FS_ASSERT(!"Failed to remove allocation from AllocationMap. Was intHeader allocated by this allocator?");
+        FS_ASSERT(!"Failed to remove allocation from AllocationMap. Was it allocated by this allocator?");
     }
     else
     {
@@ -99,13 +99,16 @@ void PageAllocator::clear()
 {
 	if(_pAllocationMap->size() > 0)
 	{
-		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
+        AllocationMap copy = *_pAllocationMap;
+
+		for(auto it = copy.begin(); it != copy.end(); ++it)
 		{
             void* pAllocation = (void*)it->first;
             size_t allocationSize = it->second;
             deallocate(pAllocation, allocationSize);
 		}
-        _pAllocationMap->clear();;
+        
+        _pAllocationMap->clear();
 	}
 }
 

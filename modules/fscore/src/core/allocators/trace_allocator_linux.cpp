@@ -15,14 +15,14 @@ using namespace fs;
 
 TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator),
-    _allocationMapAllocator(*gpDebugHeap)
+    _allocationMapAllocator(*gpFsDebugHeap)
 {
-	// gpDebugHeap must have been provided by application.
-	FS_ASSERT(gpDebugHeap != nullptr);
+	// gpFsDebugHeap must have been provided by application.
+	FS_ASSERT(gpFsDebugHeap != nullptr);
     
-	_pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpDebugHeap)
+	_pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpFsDebugHeap)
             (std::less<uptr>(), _allocationMapAllocator),
-            [](AllocationMap* p){FS_DELETE(p, gpDebugHeap);});
+            [](AllocationMap* p){FS_DELETE(p, gpFsDebugHeap);});
 }
 
 TraceAllocator::~TraceAllocator()

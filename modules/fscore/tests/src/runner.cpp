@@ -6,7 +6,8 @@
 #include "fscore.h"
 
 using namespace fs;
-HeapAllocator* gpDebugHeap;
+HeapAllocator* gpFsDebugHeap;
+HeapAllocator* gpFsMainHeap;
 
 class GlobalFixture
 {
@@ -14,7 +15,8 @@ public:
     GlobalFixture()
     {
         fs::setAbortOnAssert(true);
-        gpDebugHeap = nullptr;
+        gpFsDebugHeap = nullptr;
+        gpFsMainHeap = nullptr;
     }
 
     ~GlobalFixture()

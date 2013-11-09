@@ -18,9 +18,10 @@ struct pageallocator_fixture
 	pageallocator_fixture()
 	{
 		pAllocator = nullptr;
-		pMemory = nullptr;
 		pDebugMemory = nullptr;
-        gpDebugHeap = nullptr;
+        pMainMemory = nullptr;
+        gpFsDebugHeap = nullptr;
+        gpFsMainHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -32,25 +33,27 @@ struct pageallocator_fixture
 	void resizeMemory(u32 size)
 	{
 		delete pAllocator;
-		delete[] (u8*)pMemory;
-		delete gpDebugHeap;
-        gpDebugHeap = nullptr;
+		delete gpFsDebugHeap;
+        delete gpFsMainHeap;
+        gpFsDebugHeap = nullptr;
+        gpFsMainHeap = nullptr;
 		delete[] (u8*)pDebugMemory;
 
 		currentMemorySize = size;
 		if(size > 0)
 		{
 			pDebugMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
-			gpDebugHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pDebugMemory);
-			pMemory = new u8[size];
+			pMainMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
+			gpFsDebugHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pDebugMemory);
+			gpFsMainHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pMainMemory);
 			pAllocator = new PageAllocator(nullptr);
 		}
 	}
 
 	size_t currentMemorySize;
 	PageAllocator* pAllocator;
-	void* pMemory;
 	void* pDebugMemory;
+    void* pMainMemory;
 };
 
 BOOST_FIXTURE_TEST_SUITE(page_allocator, pageallocator_fixture)

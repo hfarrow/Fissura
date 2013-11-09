@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fscore/types.h"
-#include "fscore/allocators/stl_allocator.h"
-#include "fscore/allocators/heap_allocator.h"
+#include "fscore.h"
 
 using namespace fs;
 
@@ -20,7 +18,8 @@ typedef Map<uptr, AllocationInfo> AllocationMap;
 typedef MapAllocator<uptr, AllocationInfo> AllocationMapAllocator;
 UniquePtr<AllocationMap> _pAllocationMap;
 
-HeapAllocator* gpDebugHeap = nullptr;
+HeapAllocator* gpFsDebugHeap = nullptr;
+HeapAllocator* gpFsMainHeap = nullptr;
 
 void print_trace(void)
 {
@@ -28,9 +27,6 @@ void print_trace(void)
     size_t size;
     char** strings;
     size_t i;
-    
-    PageAllocator pageAllocator(L"DebugPageAllocator");
-    gpDebugHeap = new HeapAllocator(L"gpDebugHeap", pageAllocator);
 
     size = backtrace(array, 10);
     strings = backtrace_symbols(array, size);
@@ -50,14 +46,19 @@ void dummy_function(void)
 
 int main( int, char **)
 {
-    u8* pMemory = new u8[32768];
-    HeapAllocator heap(nullptr, 32768, pMemory);
-    StlAllocator<HeapAllocator> allocator(heap);
-
-    AllocationMap allocMap(std::less<uptr>(), allocator);
+    const u32 mainHeapSize = 1048576;
+    u8 mainHeapMemory[mainHeapSize];
+    u8 debugHeapMemory[mainHeapSize];
+    gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
+    gpFsDebugHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
 
     dummy_function();
+    
+    gpFsDebugHeap->clear();
+    gpFsMainHeap->clear();
 
-    delete[] pMemory;
+    delete gpFsDebugHeap;
+    delete gpFsMainHeap;
+
     return 0;
 }

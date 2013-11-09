@@ -105,8 +105,10 @@ struct pageheapallocator_fixture
 
 		pPageAllocator = nullptr;
 		pAllocator = nullptr;
+		pMainMemory = nullptr;
 		pDebugMemory = nullptr;
-        gpDebugHeap = nullptr;
+        gpFsMainHeap = nullptr;
+        gpFsDebugHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -119,15 +121,20 @@ struct pageheapallocator_fixture
 	{
 		delete pAllocator;
 		delete pPageAllocator;
-		delete gpDebugHeap;
-        gpDebugHeap = nullptr;
+		delete gpFsMainHeap;
+		delete gpFsDebugHeap;
+        gpFsMainHeap = nullptr;
+        gpFsDebugHeap = nullptr;
+		delete[] (u8*)pMainMemory;
 		delete[] (u8*)pDebugMemory;
 
 		currentMemorySize = size;
 		if(size > 0)
 		{
+			pMainMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
 			pDebugMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
-			gpDebugHeap = new HeapAllocator(L"gpDebugHeap", DEBUG_MEM_SIZE, pDebugMemory);
+			gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", DEBUG_MEM_SIZE, pMainMemory);
+			gpFsDebugHeap = new HeapAllocator(L"gpFsDebugHeap", DEBUG_MEM_SIZE, pDebugMemory);
 			pPageAllocator = new PageAllocator(L"PageAllocator");
 			pAllocator = new HeapAllocator(nullptr, *pPageAllocator);
 		}
@@ -137,6 +144,7 @@ struct pageheapallocator_fixture
 	PageAllocator* pPageAllocator;
 	HeapAllocator* pAllocator;
 	size_t granularity;
+	void* pMainMemory;
 	void* pDebugMemory;
 };
 

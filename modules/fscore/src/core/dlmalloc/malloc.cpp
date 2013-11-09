@@ -243,7 +243,7 @@ static FORCEINLINE int fsmunmap(void* ptr, size_t size)
 {
     if(gpVirtualAllocator)
     {
-        return gpVirtualAllocator->deallocate(ptr, size);
+        return gpVirtualAllocator->deallocate(ptr);
     }
     else
     {

@@ -19,11 +19,11 @@ using namespace fs;
 TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator)
 {
-	// gpDebugHeap must have been provided by application.
-	FS_ASSERT(gpDebugHeap != nullptr);
+	// gpFsDebugHeap must have been provided by application.
+	FS_ASSERT(gpFsDebugHeap != nullptr);
 
-	_pAllocationMap = AllocationMapPointer(FS_NEW(AllocationMap, gpDebugHeap)(*gpDebugHeap),
-		[](AllocationMap* p){FS_DELETE(p, gpDebugHeap);});
+	_pAllocationMap = AllocationMapPointer(FS_NEW(AllocationMap, gpFsDebugHeap)(*gpFsDebugHeap),
+		[](AllocationMap* p){FS_DELETE(p, gpFsDebugHeap);});
 
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);
 }

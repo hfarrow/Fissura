@@ -4,5 +4,6 @@ namespace fs
 {
 	class HeapAllocator;
 }
-extern fs::HeapAllocator* gpDebugHeap;
+extern fs::HeapAllocator* gpFsDebugHeap;
+extern fs::HeapAllocator* gpFsMainHeap;
 #endif

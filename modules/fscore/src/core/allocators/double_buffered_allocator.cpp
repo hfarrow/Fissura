@@ -26,7 +26,7 @@ void* DoubleBufferedAllocator::allocate(size_t size, u8 alignment)
 	return _stacks[_currentStack]->allocate(size, alignment);
 }
 
-bool DoubleBufferedAllocator::deallocate(void* p)
+bool DoubleBufferedAllocator::deallocate(void*)
 {
 	FS_ASSERT(!"Cannot deallocate from DoubleBufferedAllocator. Use clearCurrentBuffer instead.");
 	return false;

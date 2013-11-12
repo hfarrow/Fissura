@@ -62,10 +62,10 @@ BOOST_AUTO_TEST_CASE(allocate_deallocate_object)
 
 BOOST_AUTO_TEST_CASE(allocate_deallocate_object_macro)
 {
-	TestObject* pObj = FS_NEW(TestObject, pAllocator);
+	TestObject* pObj = FS_NEW_WITH(TestObject, pAllocator);
 	BOOST_CHECK(pObj != nullptr);
 
-	FS_DELETE(pObj, pAllocator);
+	FS_DELETE_WITH(pObj, pAllocator);
 	BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
 }
 

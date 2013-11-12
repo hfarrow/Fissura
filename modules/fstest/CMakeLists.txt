@@ -17,7 +17,6 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 #    "${PROJECT_SOURCE_DIR}/*_linux.c")
 #list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_definitions(-DBOOST_TEST_DYN_LINK)

@@ -22,8 +22,8 @@ TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	// gpFsDebugHeap must have been provided by application.
 	FS_ASSERT(gpFsDebugHeap != nullptr);
 
-	_pAllocationMap = AllocationMapPointer(FS_NEW(AllocationMap, gpFsDebugHeap)(*gpFsDebugHeap),
-		[](AllocationMap* p){FS_DELETE(p, gpFsDebugHeap);});
+	_pAllocationMap = AllocationMapPointer(FS_NEW_DEBUG(AllocationMap)(*gpFsDebugHeap),
+		[](AllocationMap* p){FS_DELETE(p);});
 
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);
 }
@@ -34,8 +34,7 @@ TraceAllocator::~TraceAllocator()
 	{
 		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
 		{
-			FS_TRACE_ERR_FORMATTED("%s: %s", "TraceAllocator memory leak", getCaller(&it->second));
-			FS_ASSERT(!"TraceAllocator memory leak. Please see above trace");
+			FS_ASSERT_MSG_FORMATTED(false, "TraceAllocator memory leak: %s", getCaller(&it->second));
 		}
 	}
 	_pAllocationMap->clear();

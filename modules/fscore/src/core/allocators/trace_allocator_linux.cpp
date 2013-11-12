@@ -20,14 +20,14 @@ TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	// gpFsDebugHeap must have been provided by application.
 	FS_ASSERT(gpFsDebugHeap != nullptr);
     
-	_pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpFsDebugHeap)
+	_pAllocationMap = UniquePtr<AllocationMap>(FS_NEW_DEBUG(AllocationMap)
             (std::less<uptr>(), _allocationMapAllocator),
-            [](AllocationMap* p){FS_DELETE(p, gpFsDebugHeap);});
+            [](AllocationMap* p){FS_DELETE_DEBUG(p);});
 }
 
 TraceAllocator::~TraceAllocator()
 {
-    // reportMemoryLeaks();
+    reportMemoryLeaks();
 	_pAllocationMap->clear();
 }
 

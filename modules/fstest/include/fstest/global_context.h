@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#define FS_REQUIRE_ASSERT(x) fs::test::GlobalContext::instance()->requireAssert((x))
+#define FS_REQUIRE_ASSERT(x) BOOST_CHECK(fs::test::GlobalContext::instance()->requireAssert((x)))
 
 namespace fs
 {
@@ -15,7 +15,7 @@ namespace test
         GlobalContext();
         ~GlobalContext();
         static GlobalContext* instance();
-        void requireAssert(std::function<void()> func);
+        bool requireAssert(std::function<void()> func);
 
     private:
         static GlobalContext* _pInstance;

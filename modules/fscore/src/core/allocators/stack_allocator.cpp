@@ -115,13 +115,23 @@ void StackAllocator::deallocateToMarker(const StackAllocator::Marker& marker)
 	{
 		FS_ASSERT((uptr)marker.position <= (uptr)_pCurrentPosition);
 		FS_ASSERT((uptr)marker.position >= (uptr)_pStack);
-		_totalUsedMemory = marker.position - (size_t)_pStack;
+        if((uptr)marker.position > (uptr)_pCurrentPosition ||
+           (uptr)marker.position < (uptr)_pStack)
+        {
+            return;
+        }
+        _totalUsedMemory = marker.position - (size_t)_pStack;
 	}
 	else
 	{
 		FS_ASSERT((uptr)marker.position >= (uptr)_pCurrentPosition);
 		FS_ASSERT((uptr)marker.position <= (uptr)_pStack + _stackSize);
-		_totalUsedMemory = (uptr)_pStack + _stackSize - marker.position;
+        if((uptr)marker.position < (uptr)_pCurrentPosition ||
+           (uptr)marker.position > (uptr)_pStack + _stackSize)
+        {
+            return;
+        }
+        _totalUsedMemory = (uptr)_pStack + _stackSize - marker.position;
 	}
 
 	_totalNumAllocations = marker.allocationIndex;

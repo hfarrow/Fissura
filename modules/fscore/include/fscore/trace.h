@@ -4,6 +4,7 @@
 namespace fs
 {
 	void traceDebugStringFormatted(const char* category, const char* format, ...);
+    extern bool tracesEnabled;
 }
 
 #ifdef FS_NO_TRACES

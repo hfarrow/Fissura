@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include <SDL.h>
+
 #include "fscore/assert.h"
 #include "fscore/types.h"
 #include "fscore/trace.h"
@@ -44,16 +46,27 @@ bool fs::reportAssertFailure(const char* condition,
 
 namespace fs
 {
-    bool abortOnAssert = false;
+    bool ignoreAsserts = false;
+    bool assertTriggered = false;
 }
 
-void fs::setAbortOnAssert(bool abort)
+SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* userdata)
 {
-    fs::abortOnAssert = abort;
+    FS_TRACE("Assertion Triggered... continuing execution.");
+    FS_TRACE_FORMATTED("at %s : %s : %d -> %s", data->condition, data->filename, data->linenum, data->condition);
+    // FS_TRACE_FORMATTED("at %s:%s:d -> %s", data->filename, data->function, data->linenum, data->condition);
+    fs::assertTriggered = true;
+    return SDL_ASSERTION_IGNORE;
 }
 
-bool fs::getAbortOnAssert()
+void fs::setIgnoreAsserts(bool ignore)
 {
-    return fs::abortOnAssert;
+    fs::ignoreAsserts = ignore;
+    SDL_SetAssertionHandler(ignore ? SdlAssertionHandler_Ignore : nullptr, nullptr);
+}
+
+bool fs::getIgnoreAsserts()
+{
+    return fs::ignoreAsserts;
 }
 

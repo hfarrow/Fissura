@@ -4,9 +4,14 @@
 #include "fscore/trace.h"
 #include "fscore/types.h"
 
+namespace fs
+{
+    bool tracesEnabled = true;
+}
+
 using namespace fs;
 
-const u32 gDebugStrBufferSize = 2048;
+const u32 gDebugStrBufferSize = 4096;
 
 void fs::traceDebugStringFormatted(const char* category, const char* format, ...)
 {
@@ -19,10 +24,13 @@ void fs::traceDebugStringFormatted(const char* category, const char* format, ...
 	vsprintf(userMessage, format, arg);
 	sprintf(output, "[%s] %s\n", category, userMessage);
 
+    if(fs::tracesEnabled)
+    {
 #ifdef WIN32
-	OutputDebugStringA(output);
+        OutputDebugStringA(output);
 #endif
-	std::cout << output;
+        std::cout << output;
+    }
 
 	va_end(arg);
 }

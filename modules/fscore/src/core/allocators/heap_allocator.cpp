@@ -41,8 +41,8 @@ HeapAllocator::~HeapAllocator()
 {
     if(--HeapAllocator::_instanceCount == 0)
     {
-        FS_DELETE(HeapAllocator::_pVirtualAllocatorStack, gpFsDebugHeap);
-        FS_DELETE(HeapAllocator::_pStlAllocator, gpFsDebugHeap);
+        FS_DELETE_DEBUG(HeapAllocator::_pVirtualAllocatorStack);
+        FS_DELETE_DEBUG(HeapAllocator::_pStlAllocator);
         HeapAllocator::_pVirtualAllocatorStack = nullptr;
         HeapAllocator::_pStlAllocator = nullptr;
     }
@@ -78,6 +78,7 @@ void* HeapAllocator::allocate(size_t size, u8 alignment)
 	if(p == nullptr)
 	{
 		FS_ASSERT(!"Failed to allocate memory from dlmalloc heap.");
+        popVirtualAllocator(_pBackingAllocator);
 		return nullptr;
 	}
 
@@ -131,8 +132,8 @@ void HeapAllocator::pushVirtualAllocator(PageAllocator* _pBackingAllocator)
 
     if(!_pVirtualAllocatorStack)
     {
-        _pStlAllocator = FS_NEW(StlAllocator<PageAllocator>, gpFsDebugHeap)(*gpFsDebugHeap);
-        _pVirtualAllocatorStack = FS_NEW(VirtualAllocatorStack, gpFsDebugHeap)(*_pStlAllocator);
+        _pStlAllocator = FS_NEW_DEBUG(StlAllocator<PageAllocator>)(*gpFsDebugHeap);
+        _pVirtualAllocatorStack = FS_NEW_DEBUG(VirtualAllocatorStack)(*_pStlAllocator);
     }
     _pVirtualAllocatorStack->push_back(_pBackingAllocator);
     gpVirtualAllocator = _pBackingAllocator;

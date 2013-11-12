@@ -72,9 +72,15 @@ flags = [
 '-I',
 './modules/fscore/tests/include',
 '-I',
+'./modules/fsgame/include',
+'-I',
+'./modules/fsgame/tests/include',
+'-I',
 './modules/fstest/include',
 '-isystem',
 '/usr/local/boost_1_54_0'
+'-isystem',
+'/usr/local/include/SLD2'
 #'-I',
 #'-isystem',
 #'./tests/gmock/gtest',

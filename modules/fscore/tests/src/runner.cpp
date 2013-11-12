@@ -1,5 +1,3 @@
-
-
 #define BOOST_TEST_MODULE FissuraCore
 
 #include <boost/test/unit_test.hpp>
@@ -14,7 +12,7 @@ class GlobalFixture
 public:
     GlobalFixture()
     {
-        fs::setAbortOnAssert(true);
+        fs::setIgnoreAsserts(true);
         gpFsDebugHeap = nullptr;
         gpFsMainHeap = nullptr;
     }

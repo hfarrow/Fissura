@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-project(fscore)
+project(fsgame)
 
 set(PROJECT_TEST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/tests/src)
 set(PROJECT_TEST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests/include)
@@ -17,18 +17,20 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS
 file(GLOB_RECURSE PROJECT_SOURCE_FILES_LINUX 
     "${PROJECT_SOURCE_DIR}/*_linux.cpp"
     "${PROJECT_SOURCE_DIR}/*_linux.c")
-list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
+
+#Uncomment below line if platform abstractions are added to project.
+#list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
 
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 
 # Unit testing
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${fscore_SOURCE_DIR}/include)
 include_directories(${fstest_SOURCE_DIR}/include)
 include_directories(${PROJECT_TEST_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
-#list(REMOVE_ITEM PROJECT_TEST_FILES "${PROJECT_TEST_DIR}/core/allocators/traceallocator.cpp")
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})

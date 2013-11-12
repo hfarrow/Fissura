@@ -23,9 +23,9 @@ PageAllocator::PageAllocator(const fschar* const pName)
 	// gpFsMainHeap must have been provided by application.
 	FS_ASSERT(gpFsMainHeap != nullptr);
 
-	 _pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap, gpFsMainHeap)
+	 _pAllocationMap = UniquePtr<AllocationMap>(FS_NEW(AllocationMap)
             (std::less<uptr>(), _allocationMapAllocator),
-            [](AllocationMap* p){FS_DELETE(p, gpFsMainHeap);});
+            [](AllocationMap* p){FS_DELETE(p);});
 }
 
 PageAllocator::~PageAllocator()

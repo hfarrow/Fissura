@@ -8,15 +8,18 @@
 
 namespace fs
 {
-	bool reportAssertFailure(const char* condition,
-							 const char* strFile,
-							 u32 nLine,
-							 const char* format, ...);
+	// bool reportAssertFailure(const char* condition,
+	// 						 const char* strFile,
+	// 						 u32 nLine,
+	// 						 const char* format, ...);
     void setIgnoreAsserts(bool ignore);
     bool getIgnoreAsserts();
     extern bool assertTriggered;
 }
 
+// The below is commented out because it is the custom assert functionality
+// wrote for Fissura. Fissura now uses SDL_assert behind FS_ASSERT instead.
+//
 // #if defined (_DEBUG)
 // 	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
 // 	do \
@@ -41,6 +44,8 @@ namespace fs
 
 #define FS_ASSERT(condition) SDL_assert(condition)
 #define FS_ASSERT_MSG(condition, message) SDL_assert((condition) && (message))
+
+// Kept for backwards compatibility. SDL_assert does not support a formatted message.
 #define FS_ASSERT_MSG_FORMATTED(condition, format, ...) SDL_assert((condition) && (format))
 
 #endif

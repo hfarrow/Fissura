@@ -12,19 +12,13 @@ namespace fs
 	public:
 		GameAppRunner();
 		~GameAppRunner();
-		/*
-		int runGameApp(HINSTANCE hInstance,
-					   HINSTANCE hPrevInstance,
-					   LPWSTR    lpCmdLine,
-					   int       nCmdShow);
-		*/
 
 		int runGameApp();
 	private:
 		bool _isRunning;
 	};
 
-	class GameApp
+	class GameApp : Uncopyable
 	{
 	public:
 		friend class GameAppRunner;

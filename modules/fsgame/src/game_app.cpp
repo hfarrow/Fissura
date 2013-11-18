@@ -1,12 +1,12 @@
-#include "fscore.h"
 #include "fsgame/game_app.h"
+#include "fscore.h"
 
 using namespace fs;
 
 GameApp* g_pApp;
 PageAllocator* gpGeneralPage = nullptr;
-HeapAllocator* gpGeneralHeap = nullptr;
-HeapAllocator* gpDebugHeap = nullptr;
+HeapAllocator* gpFsMainHeap = nullptr;
+HeapAllocator* gpFsDebugHeap = nullptr;
 
 GameAppRunner::GameAppRunner()
 	: _isRunning(false)
@@ -26,6 +26,7 @@ int GameAppRunner::runGameApp()
 
 	// Set up checks for memory leaks.
 #ifdef WINDOWS
+//#ifdef _DEBUG
 	int tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 
 	// set this flag to keep memory blocks around
@@ -41,21 +42,21 @@ int GameAppRunner::runGameApp()
 	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;					
 
 	_CrtSetDbgFlag(tmpDbgFlag);
+//#endif
 #endif
 
 	gpGeneralPage = new PageAllocator(L"gpGeneralPage");
-	gpGeneralHeap = new HeapAllocator(L"gpGeneralHeap", *gpGeneralPage);
-	gpDebugHeap = new HeapAllocator(L"gpDebugHeap", *gpGeneralPage);
+	gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
+	gpFsDebugHeap = new HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
 
 	// TODO: startup logger
-	// TODO: g_pApp->initOption("PlayrOptions.xml", lpCmdLine);
+	// TODO: g_pApp->initOption("PlayerOptions.xml", lpCmdLine);
 
 	int retCode = 0;
 	if(g_pApp->init())
 	{
 		g_pApp->run();
 		g_pApp->shutdown();
-		retCode = 0;
 	}
 	else
 	{
@@ -65,8 +66,8 @@ int GameAppRunner::runGameApp()
 
 	// TODO: shutdown logger
 
-	delete gpDebugHeap;
-	delete gpGeneralHeap;
+	delete gpFsDebugHeap;
+	delete gpFsMainHeap;
 	delete gpGeneralPage;
 
 	return retCode;
@@ -94,6 +95,12 @@ bool GameApp::init()
 							   800,
 							   600,
 							   SDL_WINDOW_OPENGL);
+
+    if(!pWindow)
+    {
+        FS_ASSERT_MSG_FORMATTED(false, "Failed to create window. Error: %s", SDL_GetError());
+        return false;
+    }
 
 	return onInit();
 }

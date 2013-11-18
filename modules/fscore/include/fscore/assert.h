@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 
+#include "fscore/trace.h"
 #include "fscore/util.h"
 #include "fscore/types.h"
 
@@ -46,6 +47,11 @@ namespace fs
 #define FS_ASSERT_MSG(condition, message) SDL_assert((condition) && (message))
 
 // Kept for backwards compatibility. SDL_assert does not support a formatted message.
-#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) SDL_assert((condition) && (format))
-
+#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
+    do \
+    { \
+        FS_TRACE_FORMATTED((format), __VA_ARGS__); \
+        SDL_assert((condition) && (format)); \
+    } \
+    while(0)
 #endif

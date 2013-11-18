@@ -86,12 +86,15 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 
 BOOST_AUTO_TEST_CASE(clear_all_allocation)
 {
-    pAllocator->allocate(pAllocator->getPageSize(), 0);
-    pAllocator->allocate(pAllocator->getPageSize(), 0);
-    pAllocator->allocate(pAllocator->getPageSize(), 0);
-    pAllocator->allocate(pAllocator->getPageSize(), 0);
+    void* p1 = pAllocator->allocate(pAllocator->getPageSize(), 0);
+    void* p2 = pAllocator->allocate(pAllocator->getPageSize(), 0);
+    void* p3 = pAllocator->allocate(pAllocator->getPageSize(), 0);
+    void* p4 = pAllocator->allocate(pAllocator->getPageSize(), 0);
     BOOST_CHECK(pAllocator->getTotalNumAllocations() == 4);
-    pAllocator->clear();
+    pAllocator->deallocate(p1, pAllocator->getPageSize());
+    pAllocator->deallocate(p2, pAllocator->getPageSize());
+    pAllocator->deallocate(p3, pAllocator->getPageSize());
+    pAllocator->deallocate(p4, pAllocator->getPageSize());
     BOOST_CHECK(pAllocator->getTotalNumAllocations() == 0);
     BOOST_CHECK(pAllocator->getTotalUsedMemory() == 0);
 }

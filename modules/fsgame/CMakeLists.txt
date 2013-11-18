@@ -38,6 +38,7 @@ target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       ${SDL2_LIBRARIES}
+                      fscore
                       fstest
                       )
 set_target_properties(${PROJECT_NAME}-test PROPERTIES COMPILE_FLAGS "-fexceptions")

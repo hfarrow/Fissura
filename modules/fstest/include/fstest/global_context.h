@@ -3,7 +3,13 @@
 
 #include <functional>
 
+#define FS_TEST_UNUSED(x)
+
+#if SDL_ASSERT_LEVEL == 2
 #define FS_REQUIRE_ASSERT(x) BOOST_CHECK(fs::test::GlobalContext::instance()->requireAssert((x)))
+#else
+#define FS_REQUIRE_ASSERT(x) FS_TEST_UNUSED(x)
+#endif
 
 namespace fs
 {

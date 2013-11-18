@@ -37,10 +37,12 @@ namespace internal
 		size_t _totalUsedMemory;
 		size_t _pageSize;
 
-		typedef Map<uptr, size_t> AllocationMap;
-        typedef MapAllocator<uptr, size_t> AllocationMapAllocator;
-		UniquePtr<AllocationMap> _pAllocationMap;
-        AllocationMapAllocator _allocationMapAllocator;
+        // See comment in deallocate(void* p) for explanation of
+        // why the below code is commented out.
+		// typedef Map<uptr, size_t> AllocationMap;
+        // typedef MapAllocator<uptr, size_t> AllocationMapAllocator;
+		// UniquePtr<AllocationMap> _pAllocationMap;
+        // AllocationMapAllocator _allocationMapAllocator;
 	};
 }
 }

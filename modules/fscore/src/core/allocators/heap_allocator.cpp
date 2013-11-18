@@ -41,22 +41,25 @@ HeapAllocator::~HeapAllocator()
 {
     if(--HeapAllocator::_instanceCount == 0)
     {
-        FS_DELETE_DEBUG(HeapAllocator::_pVirtualAllocatorStack);
-        FS_DELETE_DEBUG(HeapAllocator::_pStlAllocator);
+        FS_DELETE(HeapAllocator::_pVirtualAllocatorStack);
+        FS_DELETE(HeapAllocator::_pStlAllocator);
         HeapAllocator::_pVirtualAllocatorStack = nullptr;
         HeapAllocator::_pStlAllocator = nullptr;
     }
 
 	FS_ASSERT(_totalNumAllocations == 0);
-    pushVirtualAllocator(_pBackingAllocator);
+    // pushVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = _pBackingAllocator;
 	destroy_mspace(_mspace);
-    popVirtualAllocator(_pBackingAllocator);
+    // popVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = nullptr;
 
 }
 
 void HeapAllocator::createHeap()
 {
-    pushVirtualAllocator(_pBackingAllocator);
+    //pushVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = _pBackingAllocator;
 	if(_pBackingAllocator == nullptr)
 	{
 		_mspace = create_mspace_with_base(_pMemory, _memorySize, 0);
@@ -65,7 +68,8 @@ void HeapAllocator::createHeap()
 	{
 		_mspace = create_mspace(0, 0);
 	}
-    popVirtualAllocator(_pBackingAllocator);
+    //popVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = nullptr;
 
 	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
 
@@ -132,8 +136,8 @@ void HeapAllocator::pushVirtualAllocator(PageAllocator* _pBackingAllocator)
 
     if(!_pVirtualAllocatorStack)
     {
-        _pStlAllocator = FS_NEW_DEBUG(StlAllocator<PageAllocator>)(*gpFsDebugHeap);
-        _pVirtualAllocatorStack = FS_NEW_DEBUG(VirtualAllocatorStack)(*_pStlAllocator);
+        _pStlAllocator = FS_NEW(StlAllocator<PageAllocator>)(*gpFsMainHeap);
+        _pVirtualAllocatorStack = FS_NEW(VirtualAllocatorStack)(*_pStlAllocator);
     }
     _pVirtualAllocatorStack->push_back(_pBackingAllocator);
     gpVirtualAllocator = _pBackingAllocator;

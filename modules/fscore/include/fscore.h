@@ -8,6 +8,7 @@
 #include "fscore/trace.h"
 #include "fscore/types.h"
 #include "fscore/util.h"
+#include "fscore/clock.h"
 
 // Memory
 #include "fscore/dlmalloc/malloc.h"

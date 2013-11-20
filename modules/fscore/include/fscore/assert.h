@@ -50,7 +50,11 @@ namespace fs
 #define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
     do \
     { \
-        FS_TRACE_FORMATTED((format), __VA_ARGS__); \
+        if(!(condition)) \
+        { \
+            FS_TRACE_WARN("ASSERT:"); \
+            FS_TRACE_WARN_FORMATTED((format), __VA_ARGS__); \
+        } \
         SDL_assert((condition) && (format)); \
     } \
     while(0)

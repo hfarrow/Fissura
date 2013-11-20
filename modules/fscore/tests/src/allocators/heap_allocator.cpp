@@ -122,8 +122,8 @@ struct pageheapallocator_fixture
 	{
 		delete pAllocator;
 		delete pPageAllocator;
-		delete gpFsMainHeap;
 		delete gpFsDebugHeap;
+		delete gpFsMainHeap;
         gpFsMainHeap = nullptr;
         gpFsDebugHeap = nullptr;
 		delete[] (u8*)pMainMemory;
@@ -137,7 +137,7 @@ struct pageheapallocator_fixture
 			gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", DEBUG_MEM_SIZE, pMainMemory);
 			gpFsDebugHeap = new HeapAllocator(L"gpFsDebugHeap", DEBUG_MEM_SIZE, pDebugMemory);
 			pPageAllocator = new PageAllocator(L"PageAllocator");
-			pAllocator = new HeapAllocator(nullptr, *pPageAllocator);
+			pAllocator = new HeapAllocator(L"TestHeap", *pPageAllocator);
 		}
 	}
 

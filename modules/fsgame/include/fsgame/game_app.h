@@ -27,6 +27,7 @@ namespace fs
 		virtual ~GameApp();
 
 		void exit();
+        const Clock& getClock() const;
 
 		virtual const char* getGameTitle() const = 0;
 
@@ -44,6 +45,7 @@ namespace fs
 
 		bool _isRunning;
 		SDL_Window* pWindow;
+        Clock _clock;
 	};
 }
 

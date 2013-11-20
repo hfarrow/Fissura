@@ -45,6 +45,8 @@ int GameAppRunner::runGameApp()
 //#endif
 #endif
 
+    Clock::init();
+
 	gpGeneralPage = new PageAllocator(L"gpGeneralPage");
 	gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
 	gpFsDebugHeap = new HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
@@ -73,7 +75,8 @@ int GameAppRunner::runGameApp()
 	return retCode;
 }
 
-GameApp::GameApp()
+GameApp::GameApp() :
+    _clock(0)
 {
 	g_pApp = this;
 	_isRunning = false;
@@ -110,15 +113,39 @@ void GameApp::run()
 	_isRunning = true;
 
 	SDL_Event event;
+    
+    const f32 dt = 1.0f / 60.0f;
+    f32 accumulator = 0;
+    u64 currentTime = _clock.getTimeCycles();
 
 	while(_isRunning)
 	{
+        u64 newTime = SDL_GetPerformanceCounter();
+        f32 frameTime = (f32)(newTime - currentTime) / (f32)SDL_GetPerformanceFrequency();
+        if(frameTime > 1.0f / 10.0f)
+        {
+            // Long frame or resumed from breakpoint
+            frameTime = dt;
+        }
+
+        currentTime = newTime;
+
+        accumulator += frameTime;        
+
 		while(SDL_PollEvent(&event))
 		{
 			onEvent(&event);
 		}
 
-		onUpdate(0);
+        while(accumulator >= dt)
+        {
+            f32 dtScaled = _clock.update(dt);
+            onUpdate(dtScaled);
+            accumulator -= dt;
+        }
+
+        f32 percentage = accumulator / dt;
+        // render(percentage);
 	}
 }
 
@@ -133,6 +160,11 @@ void GameApp::onEvent(SDL_Event* pEvent)
 void GameApp::exit()
 {
 	_isRunning = false;
+}
+
+const Clock& GameApp::getClock() const
+{
+    return _clock;
 }
 
 void GameApp::shutdown()

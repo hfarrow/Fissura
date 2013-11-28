@@ -35,6 +35,10 @@ add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})
 target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      ${Boost_THREAD_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_CHRONO_LIBRARY}
+                      ${Boost_DATE_TIME_LIBRARY}
                       ${SDL2_LIBRARIES}
                       fstest
                       )

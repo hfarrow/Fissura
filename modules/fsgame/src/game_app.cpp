@@ -1,3 +1,5 @@
+#include <boost/thread.hpp>
+
 #include "fsgame/game_app.h"
 #include "fscore.h"
 
@@ -129,7 +131,6 @@ void GameApp::run()
         }
 
         currentTime = newTime;
-
         accumulator += frameTime;        
 
 		while(SDL_PollEvent(&event))

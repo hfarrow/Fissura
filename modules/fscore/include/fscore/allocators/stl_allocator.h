@@ -3,6 +3,8 @@
 
 #include <limits>
 
+#include "fscore/assert.h"
+#include "fscore/globals.h"
 #include "fscore/types.h"
 #include "fscore/util.h"
 #include "fscore/allocators/allocator.h"
@@ -25,8 +27,14 @@ namespace fs
 		typedef const T& const_reference;
 		typedef T value_type;
 
-		StlAllocator(Allocator& allocator)
-			: _pAllocator(&allocator)
+        StlAllocator()
+        {
+            FS_ASSERT(gpFsMainHeap != nullptr);
+            _pAllocator = gpFsMainHeap;
+        }
+
+		StlAllocator(Allocator& allocator) :
+            _pAllocator(&allocator)
 		{
 
 		}
@@ -40,13 +48,6 @@ namespace fs
 		StlAllocator(const StlAllocator<U>& other) throw()
 		{
 			*this = other;
-		}
-
-		StlAllocator(size_type size) throw()
-		{
-			FS_ASSERT(!"StlAllocator(size_type size) not implemented");
-			// Ugh what to do here...
-			// _pAllocator = &fs::globals::mainHeap;
 		}
  
 		~StlAllocator()

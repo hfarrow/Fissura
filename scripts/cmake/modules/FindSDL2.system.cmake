@@ -1,10 +1,5 @@
 # - Find SDL2 library and headers
-#
-# This script will not find a system installed version of SDL.
-# We only search for a build version of SDL2 in external/build/
-# SLD2 should be built with something like...
-#   cd external/SDL2; ./configure --prefix=/home/heathro/dev/fissura/external/build/; make; make install
-#
+# 
 # Find module for SDL 2.0 (http://www.libsdl.org/).
 # It defines the following variables:
 #  SDL2_INCLUDE_DIRS - The location of the headers, e.g., SDL.h.
@@ -26,13 +21,46 @@
 #   SDL2MAIN_LIBRARY - The location of the SDL2main library.
 #
 
-#find_package(PkgConfig QUIET)
-#pkg_check_modules(PC_SDL2 QUIET sdl2)
+#=============================================================================
+# Copyright 2013 Benjamin Eikel
+#
+# Distributed under the OSI-approved BSD License (the "License");
+# see accompanying file Copyright.txt for details.
+#
+# This software is distributed WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the License for more information.
+#=============================================================================
+# (To distribute this file outside of CMake, substitute the full
+#  License text for the above reference.)
 
-set(SDL2_INCLUDE_DIR ${EXTERNAL_LIBRARY_INSTALL_PATH}/include/SDL2/)
-set(SDL2_LIBRARY ${EXTERNAL_LIBRARY_INSTALL_PATH}/lib/libSDL2.so)
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_SDL2 QUIET sdl2)
+
+find_path(SDL2_INCLUDE_DIR
+  NAMES SDL.h
+  HINTS
+    ${PC_SDL2_INCLUDEDIR}
+    ${PC_SDL2_INCLUDE_DIRS}
+  PATH_SUFFIXES SDL2
+)
+
+find_library(SDL2_LIBRARY
+  NAMES SDL2
+  HINTS
+    ${PC_SDL2_LIBDIR}
+    ${PC_SDL2_LIBRARY_DIRS}
+  PATH_SUFFIXES x64 x86
+)
+
 if(NOT SDL2_BUILDING_LIBRARY)
-    set(SDL2MAIN_LIBRARY ${EXTERNAL_LIBRARY_INSTALL_PATH}/lib/libSDL2main.a)
+  find_library(SDL2MAIN_LIBRARY
+    NAMES SDL2main
+    HINTS
+      ${PC_SDL2_LIBDIR}
+      ${PC_SDL2_LIBRARY_DIRS}
+    PATH_SUFFIXES x64 x86
+  )
 endif()
 
 if(SDL2_INCLUDE_DIR AND EXISTS "${SDL2_INCLUDE_DIR}/SDL_version.h")

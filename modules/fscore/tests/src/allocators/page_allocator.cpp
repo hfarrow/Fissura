@@ -38,6 +38,7 @@ struct pageallocator_fixture
         gpFsDebugHeap = nullptr;
         gpFsMainHeap = nullptr;
 		delete[] (u8*)pDebugMemory;
+		delete[] (u8*)pMainMemory;
 
 		currentMemorySize = size;
 		if(size > 0)

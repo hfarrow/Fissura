@@ -162,6 +162,7 @@ BOOST_AUTO_TEST_CASE(deallocate_to_old_invalid_marker)
 	auto begin = pStack->getMarker();
 	void* pAllocation = pStack->allocate(DEFAULT_STACK_MEM_SIZE, 4);
 	auto end = pStack->getMarker();
+    (void)end;// unused var in release.
 	BOOST_CHECK(pAllocation != nullptr);
 
 	pStack->deallocateToMarker(begin);

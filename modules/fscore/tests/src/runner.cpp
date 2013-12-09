@@ -22,9 +22,6 @@ public:
         pNext += sizeof(HeapAllocator);
         gpFsDebugHeap = new(pNext) HeapAllocator(L"gpDebugHeap", *gpPageAllocator);
 
-        HeapAllocator::createVirtualAllocatorStack(gpFsMainHeap);
-        gpFsMainHeap->allocate(4, 8);
-
         fs::setIgnoreAsserts(true);
     }
 

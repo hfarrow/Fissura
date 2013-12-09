@@ -32,8 +32,6 @@ namespace fs
 		virtual size_t getTotalUsedMemory() const override;
 		virtual u32 getTotalNumAllocations() const override;		
 
-        static void createVirtualAllocatorStack(HeapAllocator* pCaller);
-
 	private:
 		void createHeap();
 
@@ -42,13 +40,6 @@ namespace fs
 		mspace _mspace;
 		u32 _totalNumAllocations;
 		PageAllocator* _pBackingAllocator;
-
-        static void pushVirtualAllocator(PageAllocator* _pBackingAllocator, HeapAllocator* pCaller);
-        static void popVirtualAllocator(PageAllocator* _pBackingAllocator);
-        typedef std::vector<PageAllocator*, StlAllocator<PageAllocator>> VirtualAllocatorStack;
-        static StlAllocator<PageAllocator>* _pStlAllocator;
-        static VirtualAllocatorStack* _pVirtualAllocatorStack;
-        static u32 _instanceCount;
 	};
 }
 

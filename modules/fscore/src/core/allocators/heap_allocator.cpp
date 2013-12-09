@@ -10,9 +10,6 @@
 using namespace fs;
 
 extern PageAllocator* gpVirtualAllocator;
-u32 HeapAllocator::_instanceCount = 0;
-HeapAllocator::VirtualAllocatorStack* HeapAllocator::_pVirtualAllocatorStack = nullptr;
-StlAllocator<PageAllocator>* HeapAllocator::_pStlAllocator = nullptr;
 
 HeapAllocator::HeapAllocator(const fswchar* const  pName, size_t memorySize, void* pMemory)
 	:
@@ -22,12 +19,7 @@ HeapAllocator::HeapAllocator(const fswchar* const  pName, size_t memorySize, voi
 	_totalNumAllocations(0),
 	_pBackingAllocator(nullptr)
 {
-    HeapAllocator::_instanceCount++;
 	createHeap();	
-    // if(!_pVirtualAllocatorStack)
-    // {
-    //     HeapAllocator::createVirtualAllocatorStack(this);
-    // }
 }
 
 HeapAllocator::HeapAllocator(const fswchar* const pName, PageAllocator& backingAllocator)
@@ -38,69 +30,22 @@ HeapAllocator::HeapAllocator(const fswchar* const pName, PageAllocator& backingA
 	_totalNumAllocations(0),
 	_pBackingAllocator(&backingAllocator)
 {
-    HeapAllocator::_instanceCount++;
 	createHeap();
 }
 
 HeapAllocator::~HeapAllocator()
 {
-    if(--HeapAllocator::_instanceCount == 0)
-    {
-        FS_DELETE(HeapAllocator::_pVirtualAllocatorStack);
-        FS_DELETE(HeapAllocator::_pStlAllocator);
-        HeapAllocator::_pVirtualAllocatorStack = nullptr;
-        HeapAllocator::_pStlAllocator = nullptr;
-    }
-
 	FS_ASSERT(_totalNumAllocations == 0);
-    // pushVirtualAllocator(_pBackingAllocator, this);
+    FS_ASSERT(!gpVirtualAllocator);
     gpVirtualAllocator = _pBackingAllocator;
 	destroy_mspace(_mspace);
-    // popVirtualAllocator(_pBackingAllocator);
     gpVirtualAllocator = nullptr;
 
 }
 
-void HeapAllocator::createVirtualAllocatorStack(HeapAllocator* pCaller)
-{
-    if(!gpFsMainHeap || pCaller == gpFsMainHeap)
-    {
-        if(HeapAllocator::_instanceCount > 0 && !HeapAllocator::_pVirtualAllocatorStack)
-        {
-            gpVirtualAllocator = pCaller->_pBackingAllocator;
-
-            void* p = mspace_memalign(pCaller->_mspace, alignof(PageAllocator), sizeof(PageAllocator));
-            if(p == nullptr)
-            {
-                FS_ASSERT("!Failed to allocate memory from dlmalloc heap");
-                gpVirtualAllocator = nullptr;
-                return;
-            }
-            pCaller->_totalNumAllocations += 1;
-            _pStlAllocator = new(p) StlAllocator<PageAllocator>(*pCaller);
-
-            p = mspace_memalign(pCaller->_mspace, alignof(VirtualAllocatorStack), sizeof(VirtualAllocatorStack));
-            if(p == nullptr)
-            {
-                FS_ASSERT("!Failed to allocate memory from dlmalloc heap");
-                gpVirtualAllocator = nullptr;
-            }
-            pCaller->_totalNumAllocations += 1;
-            _pVirtualAllocatorStack = new(p) VirtualAllocatorStack(*_pStlAllocator);
-
-            gpVirtualAllocator = nullptr;
-        }
-    }
-    else
-    {
-        _pStlAllocator = FS_NEW(StlAllocator<PageAllocator>)(*gpFsMainHeap);
-        _pVirtualAllocatorStack = FS_NEW(VirtualAllocatorStack)(*_pStlAllocator);
-    }
-}
-
 void HeapAllocator::createHeap()
 {
-    //pushVirtualAllocator(_pBackingAllocator, this);
+    FS_ASSERT(!gpVirtualAllocator);
     gpVirtualAllocator = _pBackingAllocator;
 	if(_pBackingAllocator == nullptr)
 	{
@@ -110,7 +55,6 @@ void HeapAllocator::createHeap()
 	{
 		_mspace = create_mspace(0, 0);
 	}
-    //popVirtualAllocator(_pBackingAllocator);
     gpVirtualAllocator = nullptr;
 
 	FS_ASSERT_MSG(_mspace != nullptr, "Failled to create dlmalloc heap.");
@@ -119,12 +63,13 @@ void HeapAllocator::createHeap()
 
 void* HeapAllocator::allocate(size_t size, u8 alignment)
 {
-    pushVirtualAllocator(_pBackingAllocator, this);
+    FS_ASSERT(!gpVirtualAllocator);
+    gpVirtualAllocator = _pBackingAllocator;
 	void* p = mspace_memalign(_mspace, alignment, size);
 	if(p == nullptr)
 	{
 		FS_ASSERT(!"Failed to allocate memory from dlmalloc heap.");
-        popVirtualAllocator(_pBackingAllocator);
+        gpVirtualAllocator = nullptr;
 		return nullptr;
 	}
 
@@ -137,17 +82,18 @@ void* HeapAllocator::allocate(size_t size, u8 alignment)
 #endif
 
 	_totalNumAllocations += 1;
-    popVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = nullptr;
 	return p;
 }
 
 bool HeapAllocator::deallocate(void* p)
 {
-    pushVirtualAllocator(_pBackingAllocator, this);
+    FS_ASSERT(!gpVirtualAllocator);
+    gpVirtualAllocator = _pBackingAllocator;
 	mspace_free(_mspace, p);
 	FS_ASSERT(_totalNumAllocations > 0);
 	_totalNumAllocations -= 1;
-    popVirtualAllocator(_pBackingAllocator);
+    gpVirtualAllocator = nullptr;
 
 	return true;
 }
@@ -167,31 +113,4 @@ size_t HeapAllocator::getTotalUsedMemory() const
 u32 HeapAllocator::getTotalNumAllocations() const
 {
 	return _totalNumAllocations;
-}
-
-void HeapAllocator::pushVirtualAllocator(PageAllocator* _pBackingAllocator, HeapAllocator* pCaller)
-{
-    if(!_pBackingAllocator)
-    {
-        return;
-    }
-
-    _pVirtualAllocatorStack->push_back(_pBackingAllocator);
-    gpVirtualAllocator = _pBackingAllocator;
-}
-
-void HeapAllocator::popVirtualAllocator(PageAllocator* _pBackingAllocator)
-{
-    if(!_pBackingAllocator)
-    {
-        return;
-    }
-
-    FS_ASSERT(_pVirtualAllocatorStack != nullptr);
-    FS_ASSERT(_pVirtualAllocatorStack->size() > 0);
-    _pVirtualAllocatorStack->pop_back();
-    if(_pVirtualAllocatorStack->size() > 0)
-    {
-        gpVirtualAllocator = _pVirtualAllocatorStack->back();
-    }
 }

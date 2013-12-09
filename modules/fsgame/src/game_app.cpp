@@ -49,7 +49,6 @@ int GameAppRunner::runGameApp()
 //#endif
 #endif
 
-    Clock::init();
 
     u8 pAllocatorMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
     u8* pNextAllocation = pAllocatorMemory;
@@ -61,7 +60,9 @@ int GameAppRunner::runGameApp()
 	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
 #endif
 
-	// TODO: startup logger
+    Clock::init();
+    Logger::init("logger.xml");
+
 	// TODO: g_pApp->initOption("PlayerOptions.xml", lpCmdLine);
 
 	int retCode = 0;

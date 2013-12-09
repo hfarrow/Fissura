@@ -5,6 +5,7 @@
 
 #include <boost/thread.hpp>
 #include <tinyxml.h>
+#include <SDL.h>
 
 #include "fscore/types.h"
 #include "fscore/memory.h"
@@ -189,6 +190,8 @@ void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string
         outOutputBuffer += sourceFile;
     }
     
+    outOutputBuffer += " t=";
+    outOutputBuffer += std::to_string((f64)SDL_GetPerformanceCounter() / (f64)SDL_GetPerformanceFrequency());
     outOutputBuffer += "\n";
 }
 

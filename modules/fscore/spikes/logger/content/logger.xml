@@ -1,0 +1,7 @@
+<Logging>
+    <Log tag="DEBUG" debugger="1" file="1"/>
+    <Log tag="INFO" debugger="1" file="1"/>
+    <Log tag="WARN" debugger="1" file="1"/>
+    <Log tag="ERROR" debugger="1" file="1"/>
+    <Log tag="FATAL" debugger="1" file="1"/>
+</Logging>

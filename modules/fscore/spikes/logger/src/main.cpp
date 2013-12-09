@@ -19,7 +19,7 @@ int main( int, char **)
     gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
     gpFsDebugHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
 
-    Logger::init("logger.xml");
+    Logger::init("fscore-logger-content/logger.xml");
     FS_DEBUG("TESTING FS_DEBUG");
     FS_INFO("TESTING FS_INFO");
     FS_WARN("TESTING FS_WARN");

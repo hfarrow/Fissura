@@ -95,7 +95,7 @@
     function! DebugProject(config_name, project_name)
         call SaveLastConfig(a:config_name)
         call SaveLastProject(a:project_name)
-        call StartPyclewn(g:fs_build_path . a:config_name . '/' . a:project_name, g:fs_debug_terminal_active)
+        call StartPyclewn(g:fs_build_path . a:config_name, a:project_name, g:fs_debug_terminal_active)
     endfunction
 
     function! SaveLastConfig(config_name)

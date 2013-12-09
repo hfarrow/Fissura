@@ -65,11 +65,13 @@ LogManager::~LogManager()
 
 void LogManager::init(const char* configFilename)
 {
+    FS_INFOF(boost::format("LogManager::init('%1%')") % configFilename);
     if(configFilename)
     {
         TiXmlDocument configFile(configFilename);
         if(configFile.LoadFile())
         {
+            FS_INFOF(boost::format("LogManager::init config xml loaded -> %1%") % configFile);
             TiXmlElement* pRoot = configFile.RootElement();
             if(!pRoot)
                 return;
@@ -91,6 +93,10 @@ void LogManager::init(const char* configFilename)
 
                 setDisplayFlags(tag, flags);
             }
+        }
+        else
+        {
+            FS_WARNF(boost::format("LogManager::init failed to load config xml: %1%") % configFile.ErrorDesc());
         }
     }
 }

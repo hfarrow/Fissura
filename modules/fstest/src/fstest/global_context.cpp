@@ -25,17 +25,20 @@ GlobalContext* GlobalContext::instance()
 namespace fs
 {
     extern bool assertTriggered;
-    extern bool tracesEnabled;
+    namespace Logger
+    {
+        extern bool surpressStdOutput;
+    }
 }
 bool GlobalContext::requireAssert(std::function<void()> func)
 {
-    bool tracesEnabledOld = fs::tracesEnabled;
-    fs::tracesEnabled = false;
+    bool surpressStdOutputOld = fs::Logger::surpressStdOutput;
+    fs::Logger::surpressStdOutput = true;
     fs::assertTriggered = false;
 
     func();
 
-    fs::tracesEnabled = tracesEnabledOld;
+    fs::Logger::surpressStdOutput = surpressStdOutputOld;
     return fs::assertTriggered;
     
     // If the assert results in an abort(), the below code would work.

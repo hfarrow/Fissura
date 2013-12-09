@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <xmmintrin.h>
 #include <memory>
+#include <string>
 #include <map>
 #include <vector>
 #include <functional>
@@ -13,10 +14,6 @@ namespace fs
 {
 	template<typename T> class StlAllocator;
 
-	// alias declarations not support by VS11
-	// Defer to using the DECL macro below for now.
-	// Once supported, replace all FS_DECL_UNIQUE_PTR(T) with
-	//UniquePtr<T>.
     template<typename T>
     using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
 
@@ -32,13 +29,12 @@ namespace fs
 	#define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
 	#define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
 
-	template<typename T> class StlAllocator;
-	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> string;
-
-	typedef wchar_t fschar;
+	typedef wchar_t fswchar;
+	typedef char fschar;
 	typedef unsigned char uchar;
 	typedef uintptr_t uptr;
 	typedef float f32;
+    typedef double f64;
 	typedef std::int8_t i8;
 	typedef std::int16_t i16;
 	typedef std::int32_t i32;

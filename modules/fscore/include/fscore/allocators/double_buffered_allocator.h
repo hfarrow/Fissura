@@ -9,7 +9,7 @@ namespace fs
 	class DoubleBufferedAllocator : public Allocator
 	{
 	public:
-		DoubleBufferedAllocator(const fschar* const  pName, StackAllocator& stackA, StackAllocator& stackB);
+		DoubleBufferedAllocator(const fswchar* const  pName, StackAllocator& stackA, StackAllocator& stackB);
 		~DoubleBufferedAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

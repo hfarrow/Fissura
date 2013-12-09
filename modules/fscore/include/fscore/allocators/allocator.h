@@ -2,7 +2,6 @@
 #define FS_ALLOCATOR_H
 
 #include "fscore/types.h"
-#include "fscore/util.h"
 #include <new>
 #include <memory>
 
@@ -19,13 +18,13 @@ namespace fs
 		virtual bool canDeallocate() const = 0;
 		virtual size_t getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
-		virtual const fschar* getName() const = 0;
+		virtual const fswchar* getName() const = 0;
 	};
 
 	class Allocator : public IAllocator, public Uncopyable
 	{
 	public:
-		Allocator(const fschar* const  pName);
+		Allocator(const fswchar* const  pName);
 		virtual ~Allocator();
 
 		virtual void* allocate(size_t size, u8 alignment) = 0;
@@ -35,7 +34,7 @@ namespace fs
 		virtual size_t getTotalUsedMemory() const = 0;
 		virtual u32 getTotalNumAllocations() const = 0;
 
-		const fschar* getName() const;
+		const fswchar* getName() const;
 
 		template <class T> T* allocateConstruct();
 		template <class T> T* allocateConstruct(const T& t);
@@ -45,7 +44,7 @@ namespace fs
 		template <class T> void deallocateArrayDestruct(T* pArray);
 
 	private:
-		const fschar* const _pName;
+		const fswchar* const _pName;
 	};
 
 	template <class T> inline u32 calcArrayHeaderSize();

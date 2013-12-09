@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(fsgame-basic_game_app)
+project(fscore-logger)
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -12,14 +12,9 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
-include_directories(${fscore_SOURCE_DIR}/include)
-include_directories(${fsgame_SOURCE_DIR}/include)
+include_directories(${core_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
-                      fsgame
                       fscore
+                      ${Boost_LIBRARIES}
                       ${SDL2_LIBRARIES}
-                      ${TINYXML_LIBRARIES}
-                      ${Boost_THREAD_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_CHRONO_LIBRARY}
-                      ${Boost_DATE_TIME_LIBRARY})
+                      ${TINYXML_LIBRARIES})

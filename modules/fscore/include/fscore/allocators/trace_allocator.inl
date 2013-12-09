@@ -14,32 +14,32 @@ template<u32 PlatformID>
 TraceAllocator<PlatformID>::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator)
 {
-	FS_TRACE("DEFAULT PLATFORM TraceAllocator ctor");
+	FS_LOG("DEFAULT PLATFORM TraceAllocator ctor");
 }
 
 template<u32 PlatformID>
 TraceAllocator<PlatformID>::~TraceAllocator()
 {
-	FS_TRACE("DEFAULT PLATFORM TraceAllocator ~ctor");
+	FS_LOG("DEFAULT PLATFORM TraceAllocator ~ctor");
 }
 
 template<u32 PlatformID>
 void TraceAllocator<PlatformID>::reportMemoryLeaks()
 {
-	FS_TRACE("DEFAULT PLATFORM TraceAllocator reportMemoryLeaks");
+	FS_LOG("DEFAULT PLATFORM TraceAllocator reportMemoryLeaks");
 }
 
 template<u32 PlatformID>
 void* TraceAllocator<PlatformID>::allocate(size_t size, u8 alignment)
 {
-	FS_TRACE_WARN("DEFAULT PLATFORM TraceAllocator allocate");
+	FS_WARN("DEFAULT PLATFORM TraceAllocator allocate");
 	return ProxyAllocator::allocate(size, alignment);
 }
 
 template<u32 PlatformID>
 bool TraceAllocator<PlatformID>::deallocate(void* p)
 {
-	FS_TRACE_WARN("DEFAULT PLATFORM TraceAllocator deallocate");
+	FS_WARN("DEFAULT PLATFORM TraceAllocator deallocate");
 	return ProxyAllocator::deallocate(p);
 }
 

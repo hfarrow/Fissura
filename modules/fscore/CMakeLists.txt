@@ -26,6 +26,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${fstest_SOURCE_DIR}/include)
 include_directories(${PROJECT_TEST_INCLUDE_DIR})
+include_directories(${TINYXML_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
 #list(REMOVE_ITEM PROJECT_TEST_FILES "${PROJECT_TEST_DIR}/core/allocators/traceallocator.cpp")
@@ -40,8 +41,10 @@ target_link_libraries(${PROJECT_NAME}-test
                       ${Boost_CHRONO_LIBRARY}
                       ${Boost_DATE_TIME_LIBRARY}
                       ${SDL2_LIBRARIES}
+                      ${TINYXML_LIBRARIES}
                       fstest
                       )
+
 set_target_properties(${PROJECT_NAME}-test PROPERTIES COMPILE_FLAGS "-fexceptions")
 
 # Spikes

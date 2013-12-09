@@ -17,7 +17,7 @@ namespace internal
 	class TraceAllocator<PLATFORM_LINUX> : public ProxyAllocator
 	{
 	public:
-		TraceAllocator(const fschar* const  pName, Allocator& allocator);
+		TraceAllocator(const fswchar* const  pName, Allocator& allocator);
 		~TraceAllocator();
 
         virtual void reportMemoryLeaks();

@@ -21,8 +21,6 @@ struct traceallocator_fixture
 	{
 		pAllocator = nullptr;
 		pMemory = nullptr;
-		pDebugMemory = nullptr;
-        gpFsDebugHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -35,15 +33,12 @@ struct traceallocator_fixture
 	{
 		delete pAllocator;
 		delete[] (u8*)pMemory;
-		delete gpFsDebugHeap;
-        gpFsDebugHeap = nullptr;
-		delete[] (u8*)pDebugMemory;
 
 		currentMemorySize = size;
+        gpFsDebugHeap->clear();
+        gpFsMainHeap->clear();
 		if(size > 0)
 		{
-			pDebugMemory = new u8[DEBUG_MEM_SIZE]; // 1mb
-			gpFsDebugHeap = new HeapAllocator(nullptr, DEBUG_MEM_SIZE, pDebugMemory);
 			pMemory = new u8[size];
 			pAllocator = new PoolAllocator(nullptr, 8, 8, size, pMemory);
 		}

@@ -5,7 +5,7 @@
 
 using namespace fs;
 
-PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
+PoolAllocator::PoolAllocator(const fswchar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:
 	Allocator(pName),
 	_objectSize(objectSize),
@@ -14,7 +14,7 @@ PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 
 	_pMemory(pMemory),
 	_totalNumAllocations(0)
 {
-	FS_ASSERT_MSG_FORMATTED(_objectSize >= sizeof(uptr), "Pool allocator can not allocate objects smaller than %i bytes", sizeof(uptr));
+	FS_ASSERT_MSG_FORMATTED(_objectSize >= sizeof(uptr), boost::format("Pool allocator can not allocate objects smaller than %i bytes") % sizeof(uptr));
 	FS_ASSERT(_objectAlignment >= sizeof(uptr));
 	FS_ASSERT(_memorySize >= sizeof(uptr));
 	FS_ASSERT(pMemory != nullptr);

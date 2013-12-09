@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-#include "fscore/trace.h"
+#include "fscore/logger.h"
 #include "fscore/util.h"
 #include "fscore/types.h"
 
@@ -47,15 +47,14 @@ namespace fs
 #define FS_ASSERT_MSG(condition, message) SDL_assert((condition) && (message))
 
 // Kept for backwards compatibility. SDL_assert does not support a formatted message.
-#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
+#define FS_ASSERT_MSG_FORMATTED(condition, formatObj) \
     do \
     { \
         if(!(condition)) \
         { \
-            FS_TRACE_WARN("ASSERT:"); \
-            FS_TRACE_WARN_FORMATTED((format), __VA_ARGS__); \
+            FS_WARNF(boost::format("ASSERT:\n%1%") % ((formatObj).str())); \
         } \
-        SDL_assert((condition) && (format)); \
+        SDL_assert((condition) && (formatObj).str().c_str()); \
     } \
     while(0)
 #endif

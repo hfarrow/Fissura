@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include <boost/format.hpp>
 #include <SDL.h>
 
 #include "fscore/assert.h"
 #include "fscore/types.h"
-#include "fscore/trace.h"
+#include "fscore/logger.h"
 
 using namespace fs;
 
@@ -52,12 +53,12 @@ namespace fs
 
 SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* userdata)
 {
-    FS_TRACE("Assertion Triggered... continuing execution.");
-    FS_TRACE_FORMATTED("at %s : %s : %d -> %s",
-                       data->condition,
-                       data->filename,
-                       data->linenum,
-                       data->condition);
+    FS_WARN("Assertion Triggered... continuing execution.");
+    FS_WARNF(boost::format("at %s : %s : %d -> %s")
+                       % data->condition
+                       % data->filename
+                       % data->linenum
+                       % data->condition);
     fs::assertTriggered = true;
     return SDL_ASSERTION_IGNORE;
 }

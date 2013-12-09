@@ -18,11 +18,11 @@ namespace fs
 		// will still be served using mmap and the application can continue if needed.
 		// If you want a heap that can grow without asserting use the ctor that requires
 		// a backing PageAllocator.
-		HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory);
+		HeapAllocator(const fswchar* const  pName, size_t memorySize, void* pMemory);
 
 		// Using a backing page allocator will allow the heap to grow and be tracked
 		// through the backing allocator.
-		HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator);
+		HeapAllocator(const fswchar* const pName, PageAllocator& backingAllocator);
 		~HeapAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;
@@ -31,6 +31,8 @@ namespace fs
 		virtual bool canDeallocate() const override { return true; }
 		virtual size_t getTotalUsedMemory() const override;
 		virtual u32 getTotalNumAllocations() const override;		
+
+        static void createVirtualAllocatorStack(HeapAllocator* pCaller);
 
 	private:
 		void createHeap();
@@ -41,7 +43,7 @@ namespace fs
 		u32 _totalNumAllocations;
 		PageAllocator* _pBackingAllocator;
 
-        static void pushVirtualAllocator(PageAllocator* _pBackingAllocator);
+        static void pushVirtualAllocator(PageAllocator* _pBackingAllocator, HeapAllocator* pCaller);
         static void popVirtualAllocator(PageAllocator* _pBackingAllocator);
         typedef std::vector<PageAllocator*, StlAllocator<PageAllocator>> VirtualAllocatorStack;
         static StlAllocator<PageAllocator>* _pStlAllocator;

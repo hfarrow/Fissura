@@ -3,7 +3,7 @@
 
 using namespace fs;
 
-ProxyAllocator::ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget)
+ProxyAllocator::ProxyAllocator(const fswchar* const  pName, Allocator& allocator, size_t budget)
 	:
 	Allocator(pName),
 	_allocator(allocator),
@@ -31,7 +31,7 @@ void* ProxyAllocator::allocate(size_t size, u8 alignment)
 	_totalUsedMemory += _allocator.getTotalUsedMemory() - oldTotalMemory;
 	_totalNumAllocations += 1;
 
-	FS_ASSERT_MSG_FORMATTED(_budget == 0 || _totalUsedMemory <= _budget, "ProxyAllocator named '%s' exceded memory budget.", getName());
+	FS_ASSERT_MSG_FORMATTED(_budget == 0 || _totalUsedMemory <= _budget, boost::format("ProxyAllocator named '%s' exceded memory budget.") % getName());
 
 	return pAllocation;
 }

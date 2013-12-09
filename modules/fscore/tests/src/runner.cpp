@@ -4,21 +4,35 @@
 #include "fscore.h"
 
 using namespace fs;
+PageAllocator* gpPageAllocator;
 HeapAllocator* gpFsDebugHeap;
 HeapAllocator* gpFsMainHeap;
+
+u8 pMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
 
 class GlobalFixture
 {
 public:
     GlobalFixture()
     {
+        u8* pNext = pMemory;
+        gpPageAllocator = new(pNext) PageAllocator(L"(gpPageAllocator");
+        pNext += sizeof(PageAllocator);
+        gpFsMainHeap = new(pNext) HeapAllocator(L"gpMainHeap", *gpPageAllocator);
+        pNext += sizeof(HeapAllocator);
+        gpFsDebugHeap = new(pNext) HeapAllocator(L"gpDebugHeap", *gpPageAllocator);
+
+        HeapAllocator::createVirtualAllocatorStack(gpFsMainHeap);
+        gpFsMainHeap->allocate(4, 8);
+
         fs::setIgnoreAsserts(true);
-        gpFsDebugHeap = nullptr;
-        gpFsMainHeap = nullptr;
     }
 
     ~GlobalFixture()
     {
+        gpFsDebugHeap->~HeapAllocator();
+        gpFsMainHeap->~HeapAllocator();
+        gpPageAllocator->~PageAllocator();
     }
 };
 

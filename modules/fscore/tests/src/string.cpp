@@ -15,10 +15,6 @@ struct string_fixture
 {
 	string_fixture()
 	{
-		pDebugMemory = nullptr;
-        pMainMemory = nullptr;
-        gpFsDebugHeap = nullptr;
-        gpFsMainHeap = nullptr;
 		resizeMemory(DEFAULT_MEM_SIZE);
 	}
 
@@ -29,20 +25,11 @@ struct string_fixture
 
 	void resizeMemory(u32 size)
 	{
-		delete gpFsDebugHeap;
-        delete gpFsMainHeap;
-        gpFsDebugHeap = nullptr;
-        gpFsMainHeap = nullptr;
-		delete[] (u8*)pDebugMemory;
-		delete[] (u8*)pMainMemory;
-
 		currentMemorySize = size;
+        gpFsDebugHeap->clear();
+        gpFsMainHeap->clear();
 		if(size > 0)
 		{
-			pDebugMemory = new u8[size]; // 1mb
-			pMainMemory = new u8[size]; // 1mb
-			gpFsDebugHeap = new HeapAllocator(nullptr, size, pDebugMemory);
-			gpFsMainHeap = new HeapAllocator(nullptr, size, pMainMemory);
 		}
 	}
 
@@ -60,13 +47,13 @@ BOOST_AUTO_TEST_CASE(general_string_test)
 {
     {
         BOOST_REQUIRE(gpFsMainHeap->getTotalNumAllocations() == 0);
-        fs::string s = "Hello";
+        fsstring s = "Hello";
         BOOST_REQUIRE(gpFsMainHeap->getTotalNumAllocations() > 0);
 
         s += " World";
         BOOST_CHECK(strcmp(s.c_str(), "Hello World") == 0);
-        BOOST_CHECK(s.compare(fs::string("Hello World")) == 0);
-        BOOST_CHECK(s.compare(fs::string("Wrong")) != 0);
+        BOOST_CHECK(s.compare(fsstring("Hello World")) == 0);
+        BOOST_CHECK(s.compare(fsstring("Wrong")) != 0);
     }
 
     // Ensure strings were deallocated when they left scope.

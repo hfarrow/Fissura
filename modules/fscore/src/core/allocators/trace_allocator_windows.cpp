@@ -16,7 +16,7 @@
 
 using namespace fs;
 
-TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
+TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator)
 {
 	// gpFsDebugHeap must have been provided by application.

@@ -17,7 +17,7 @@ namespace internal
 	class PageAllocator<PLATFORM_LINUX> : public Allocator
 	{
 	public:
-		PageAllocator(const fschar* const  pName);
+		PageAllocator(const fswchar* const  pName);
 		~PageAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

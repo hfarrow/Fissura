@@ -3,7 +3,7 @@
 
 using namespace fs;
 
-Allocator::Allocator(const fschar* const  pName)
+Allocator::Allocator(const fswchar* const  pName)
 	: _pName(pName)
 {
 	
@@ -16,7 +16,7 @@ Allocator::~Allocator()
 	// do so are virtual.
 }
 
-const fschar* Allocator::getName() const
+const fswchar* Allocator::getName() const
 {
 	return _pName;
 }

@@ -36,12 +36,14 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})
 target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      ${Boost_LIBRARIES}
                       ${SDL2_LIBRARIES}
+                      ${TINYXML_LIBRARIES}
                       fscore
                       fstest
                       )
-set_target_properties(${PROJECT_NAME}-test PROPERTIES COMPILE_FLAGS "-fexceptions")
+set_target_properties(${PROJECT_NAME}-test 
+                      PROPERTIES COMPILE_FLAGS "-fexceptions -DFS_CUSTOM_GLOBAL_NEW_DELETE")
 
 # Spikes
 add_subdirectory(spikes)

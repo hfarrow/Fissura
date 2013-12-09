@@ -9,7 +9,7 @@ namespace fs
 	class PoolAllocator : public Allocator
 	{
 	public:
-		PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
+		PoolAllocator(const fswchar* const  pName, size_t objectSize, u32 objAlignment, size_t memorySize, void* pMemory);
 		~PoolAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

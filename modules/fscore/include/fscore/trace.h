@@ -1,16 +1,18 @@
 #ifndef FS_TRACE_H
 #define FS_TRACE_H
 
+#include <boost/format.hpp>
+
 namespace fs
 {
-	void traceDebugStringFormatted(const char* category, const char* format, ...);
-    extern bool tracesEnabled;
+	void printStringFormatted(const char* category, boost::format);
+    extern bool surpressStdOutput;
 }
 
 #ifdef FS_NO_TRACES
 	#define FS_TRACE_FORMATTED_CAT(category, format, ...) FS_UNUSED(category)
 #else
-	#define FS_TRACE_FORMATTED_CAT(category, format, ...) fs::traceDebugStringFormatted(category, format, __VA_ARGS__)
+	#define FS_TRACE_FORMATTED_CAT(category, format, ...) fs::printStringFormatted(category, format, __VA_ARGS__)
 #endif
 
 #define FS_TRACE_FORMATTED(format, ...) FS_TRACE_FORMATTED_CAT("FISSURA", format, __VA_ARGS__)

@@ -81,6 +81,8 @@ flags = [
 '/usr/local/boost_1_54_0'
 '-isystem',
 '/usr/local/include/SLD2'
+'-isystem',
+'/usr/include/'
 #'-I',
 #'-isystem',
 #'./tests/gmock/gtest',

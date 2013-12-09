@@ -2,16 +2,19 @@
 #define FS_CORE_H
 
 // General
+#include "fscore/types.h"
+#include "fscore/string.h"
 #include "fscore/assert.h"
 #include "fscore/globals.h"
 #include "fscore/platforms.h"
 #include "fscore/trace.h"
-#include "fscore/types.h"
 #include "fscore/util.h"
 #include "fscore/clock.h"
+#include "fscore/logger.h"
 
 // Memory
 #include "fscore/dlmalloc/malloc.h"
+#include "fscore/memory.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/double_buffered_allocator.h"
 #include "fscore/allocators/double_stack_allocator.h"

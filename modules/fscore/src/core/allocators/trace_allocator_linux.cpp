@@ -9,20 +9,19 @@
 #include "fscore/assert.h"
 #include "fscore/trace.h"
 #include "fscore/util.h"
+#include "fscore/memory.h"
 
 
 using namespace fs;
 
-TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
+TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator),
     _allocationMapAllocator(*gpFsDebugHeap)
 {
 	// gpFsDebugHeap must have been provided by application.
 	FS_ASSERT(gpFsDebugHeap != nullptr);
     
-	_pAllocationMap = UniquePtr<AllocationMap>(FS_NEW_DEBUG(AllocationMap)
-            (std::less<uptr>(), _allocationMapAllocator),
-            [](AllocationMap* p){FS_DELETE_DEBUG(p);});
+    FS_ALLOCATE_UNIQUE(AllocationMap, _pAllocationMap, gpFsDebugHeap, std::less<uptr>(), _allocationMapAllocator);
 }
 
 TraceAllocator::~TraceAllocator()
@@ -38,8 +37,10 @@ void TraceAllocator::reportMemoryLeaks()
 		for(auto it = _pAllocationMap->begin(); it != _pAllocationMap->end(); ++it)
 		{
             auto pStackTrace = getCaller(&it->second);
-            (void)pStackTrace; // clang completer was complaining that pStackTrace was unused.
-			FS_ASSERT_MSG_FORMATTED(false, "TraceAllocator memory leak:\n%s", pStackTrace);
+            if(pStackTrace)
+            {
+			    FS_ASSERT_MSG_FORMATTED(false, boost::format("TraceAllocator memory leak:\n%s") % pStackTrace);
+            }
 		}
 	}
 }

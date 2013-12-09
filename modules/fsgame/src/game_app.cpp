@@ -8,7 +8,9 @@ using namespace fs;
 GameApp* g_pApp;
 PageAllocator* gpGeneralPage = nullptr;
 HeapAllocator* gpFsMainHeap = nullptr;
+#ifdef _DEBUG
 HeapAllocator* gpFsDebugHeap = nullptr;
+#endif
 
 GameAppRunner::GameAppRunner()
 	: _isRunning(false)
@@ -49,9 +51,15 @@ int GameAppRunner::runGameApp()
 
     Clock::init();
 
-	gpGeneralPage = new PageAllocator(L"gpGeneralPage");
-	gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
-	gpFsDebugHeap = new HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
+    u8 pAllocatorMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
+    u8* pNextAllocation = pAllocatorMemory;
+	gpGeneralPage = new(pNextAllocation) PageAllocator(L"gpGeneralPage");
+    pNextAllocation += u8(sizeof(PageAllocator));
+	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
+#ifdef _DEBUG
+    pNextAllocation += u8(sizeof(HeapAllocator));
+	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
+#endif
 
 	// TODO: startup logger
 	// TODO: g_pApp->initOption("PlayerOptions.xml", lpCmdLine);
@@ -70,9 +78,11 @@ int GameAppRunner::runGameApp()
 
 	// TODO: shutdown logger
 
-	delete gpFsDebugHeap;
-	delete gpFsMainHeap;
-	delete gpGeneralPage;
+#ifdef _DEBUG
+	gpFsDebugHeap->~HeapAllocator();
+#endif
+	gpFsMainHeap->~HeapAllocator();
+	gpGeneralPage->~PageAllocator();
 
 	return retCode;
 }
@@ -103,7 +113,7 @@ bool GameApp::init()
 
     if(!pWindow)
     {
-        FS_ASSERT_MSG_FORMATTED(false, "Failed to create window. Error: %s", SDL_GetError());
+        FS_ASSERT_MSG_FORMATTED(false, boost::format("Failed to create window. Error: %s") % SDL_GetError());
         return false;
     }
 
@@ -145,7 +155,7 @@ void GameApp::run()
             accumulator -= dt;
         }
 
-        f32 percentage = accumulator / dt;
+        //f32 percentage = accumulator / dt;
         // render(percentage);
 	}
 }

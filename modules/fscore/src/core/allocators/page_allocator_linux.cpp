@@ -11,7 +11,7 @@
 
 using namespace fs;
 
-PageAllocator::PageAllocator(const fschar* const pName)
+PageAllocator::PageAllocator(const fswchar* const pName)
 	:
 	Allocator(pName),
 	_totalNumAllocations(0),
@@ -64,7 +64,8 @@ bool PageAllocator::deallocate(void* p, size_t size)
 
     if(munmap(p, size))
     {
-        FS_ASSERT_MSG_FORMATTED(false, "Failed to munmap pointer %p of size %u. errno: %i", p, size, errno);
+        FS_ASSERT_MSG_FORMATTED(false, boost::format("Failed to munmap pointer %p of size %u. errno: %i")
+                                % p % size % errno);
         return true; // error
     }
 

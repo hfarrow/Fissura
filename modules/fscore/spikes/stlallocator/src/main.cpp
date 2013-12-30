@@ -18,8 +18,8 @@ typedef Map<uptr, AllocationInfo> AllocationMap;
 typedef MapAllocator<uptr, AllocationInfo> AllocationMapAllocator;
 UniquePtr<AllocationMap> _pAllocationMap;
 
-HeapAllocator* gpFsDebugHeap = nullptr;
-HeapAllocator* gpFsMainHeap = nullptr;
+Allocator* gpFsDebugHeap = nullptr;
+Allocator* gpFsMainHeap = nullptr;
 
 void print_trace(void)
 {

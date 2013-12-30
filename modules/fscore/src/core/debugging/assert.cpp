@@ -4,9 +4,9 @@
 #include <boost/format.hpp>
 #include <SDL.h>
 
-#include "fscore/assert.h"
-#include "fscore/types.h"
-#include "fscore/logger.h"
+#include "fscore/debugging/assert.h"
+#include "fscore/utils/types.h"
+#include "fscore/debugging/logger.h"
 
 using namespace fs;
 
@@ -51,7 +51,7 @@ namespace fs
     bool assertTriggered = false;
 }
 
-SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* userdata)
+SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* /*userdata*/)
 {
     FS_WARN("Assertion Triggered... continuing execution.");
     FS_WARNF(boost::format("at %s : %s : %d -> %s")

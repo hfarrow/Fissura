@@ -5,8 +5,8 @@
 #include "fscore.h"
 
 using namespace fs;
-HeapAllocator* gpFsDebugHeap;
-HeapAllocator* gpFsMainHeap;
+Allocator* gpFsDebugHeap;
+Allocator* gpFsMainHeap;
 
 class GlobalFixture
 {

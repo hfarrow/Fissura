@@ -4,8 +4,8 @@
 #include <SDL.h>
 #include <boost/format.hpp>
 
-#include "fscore/types.h"
-#include "fscore/string.h"
+#include "fscore/utils/types.h"
+#include "fscore/utils/string.h"
 
 namespace fs
 {

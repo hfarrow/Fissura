@@ -1,16 +1,16 @@
-#ifndef FS_MEMORY_H
-#define FS_MEMORY_H
+#ifndef FS_NEW_H
+#define FS_NEW_H 
 
 #include <functional>
 #include <memory>
 #include <new>
 
-#include "fscore/types.h"
-#include "fscore/util.h"
-#include "fscore/assert.h"
+#include "fscore/utils/types.h"
+#include "fscore/utils/utils.h"
+#include "fscore/utils/globals.h"
+#include "fscore/debugging/assert.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/heap_allocator.h"
-#include "fscore/globals.h"
 
 
 #define FS_NEW_WITH(T, allocator) new((allocator)->allocate(sizeof(T), __alignof(T))) T

@@ -1,6 +1,6 @@
 #include "fscore/allocators/stack_allocator.h"
-#include "fscore/util.h"
-#include "fscore/assert.h"
+#include "fscore/utils/utils.h"
+#include "fscore/debugging/assert.h"
 
 using namespace fs;
 

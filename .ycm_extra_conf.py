@@ -77,10 +77,10 @@ flags = [
 './modules/fsgame/tests/include',
 '-I',
 './modules/fstest/include',
+'-I',
+'./external/SDL2/include',
 '-isystem',
-'/usr/local/boost_1_54_0'
-'-isystem',
-'/usr/local/include/SLD2'
+'/usr/local/boost_1_54_0',
 '-isystem',
 '/usr/include/'
 #'-I',

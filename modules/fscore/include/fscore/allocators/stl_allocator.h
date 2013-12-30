@@ -3,12 +3,11 @@
 
 #include <limits>
 
-#include "fscore/assert.h"
-#include "fscore/globals.h"
-#include "fscore/types.h"
-#include "fscore/util.h"
+#include "fscore/debugging/assert.h"
+#include "fscore/utils/globals.h"
+#include "fscore/utils/types.h"
+#include "fscore/utils/utils.h"
 #include "fscore/allocators/allocator.h"
-#include "fscore/assert.h"
 
 namespace fs
 {

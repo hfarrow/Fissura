@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include "fscore/platforms.h"
-#include "fscore/types.h"
-#include "fscore/trace.h"
+#include "fscore/utils/platforms.h"
+#include "fscore/utils/types.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/proxy_allocator.h"
 #include "fscore/allocators/stl_allocator.h"

@@ -3,9 +3,9 @@
 
 #include <SDL.h>
 
-#include "fscore/logger.h"
-#include "fscore/util.h"
-#include "fscore/types.h"
+#include "fscore/debugging/logger.h"
+#include "fscore/utils/utils.h"
+#include "fscore/utils/types.h"
 
 namespace fs
 {

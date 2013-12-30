@@ -1,7 +1,7 @@
 #include <SDL.h>
 
-#include "fscore/types.h"
-#include "fscore/clock.h"
+#include "fscore/utils/types.h"
+#include "fscore/utils/clock.h"
 
 using namespace fs;
 

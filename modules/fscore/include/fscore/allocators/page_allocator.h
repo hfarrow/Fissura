@@ -1,8 +1,8 @@
 #ifndef FS_PAGE_ALLOCATOR_H
 #define FS_PAGE_ALLOCATOR_H
 
-#include "fscore/platforms.h"
-#include "fscore/types.h"
+#include "fscore/utils/platforms.h"
+#include "fscore/utils/types.h"
 #include "fscore/allocators/allocator.h"
 
 namespace fs

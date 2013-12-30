@@ -1,9 +1,10 @@
 #ifndef FS_ALLOCATOR_H
 #define FS_ALLOCATOR_H
 
-#include "fscore/types.h"
 #include <new>
 #include <memory>
+
+#include "fscore/utils/types.h"
 
 namespace fs
 {

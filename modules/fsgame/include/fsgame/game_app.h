@@ -40,6 +40,8 @@ namespace fs
 
 	private:
 		bool init();
+        bool initConfig();
+        bool initWindow();
 		void run();
 		void shutdown();
 

@@ -1,5 +1,5 @@
-#include "fscore/memory.h"
-#include "fscore/globals.h"
+#include "fscore/memory/new.h"
+#include "fscore/utils/globals.h"
 
 using namespace fs;
 

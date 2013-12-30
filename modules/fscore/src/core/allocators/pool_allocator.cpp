@@ -1,7 +1,7 @@
-#include "fscore/types.h"
-#include "fscore/util.h"
+#include "fscore/utils/types.h"
+#include "fscore/utils/utils.h"
 #include "fscore/allocators/pool_allocator.h"
-#include "fscore/assert.h"
+#include "fscore/debugging/assert.h"
 
 using namespace fs;
 

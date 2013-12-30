@@ -5,8 +5,8 @@
 
 using namespace fs;
 PageAllocator* gpPageAllocator;
-HeapAllocator* gpFsDebugHeap;
-HeapAllocator* gpFsMainHeap;
+Allocator* gpFsDebugHeap;
+Allocator* gpFsMainHeap;
 
 u8 pMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
 
@@ -27,8 +27,8 @@ public:
 
     ~GlobalFixture()
     {
-        gpFsDebugHeap->~HeapAllocator();
-        gpFsMainHeap->~HeapAllocator();
+        static_cast<HeapAllocator*>(gpFsDebugHeap)->~HeapAllocator();
+        static_cast<HeapAllocator*>(gpFsMainHeap)->~HeapAllocator();
         gpPageAllocator->~PageAllocator();
     }
 };

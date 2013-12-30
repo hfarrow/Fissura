@@ -5,11 +5,10 @@
 #include "fscore/allocators/trace_allocator.h"
 #include "fscore/allocators/heap_allocator.h"
 #include "fscore/allocators/stl_allocator.h"
-#include "fscore/globals.h"
-#include "fscore/assert.h"
-#include "fscore/trace.h"
-#include "fscore/util.h"
-#include "fscore/memory.h"
+#include "fscore/utils/globals.h"
+#include "fscore/debugging/assert.h"
+#include "fscore/utils/utils.h"
+#include "fscore/memory/new.h"
 
 
 using namespace fs;
@@ -39,7 +38,18 @@ void TraceAllocator::reportMemoryLeaks()
             auto pStackTrace = getCaller(&it->second);
             if(pStackTrace)
             {
-			    FS_ASSERT_MSG_FORMATTED(false, boost::format("TraceAllocator memory leak:\n%s") % pStackTrace);
+                std::string name;
+                const fswchar* wname = getName();
+                if(wname)
+                {
+                    std::wstring ws(wname);
+                    name = std::string(ws.begin(), ws.end());
+                }
+                else
+                {
+                    name = "Unkown";
+                }
+			    FS_ASSERT_MSG_FORMATTED(false, boost::format("TraceAllocator(%s) memory leak:\n%s") % name % pStackTrace);
             }
 		}
 	}

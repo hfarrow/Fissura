@@ -7,9 +7,9 @@ using namespace fs;
 
 GameApp* g_pApp;
 PageAllocator* gpGeneralPage = nullptr;
-HeapAllocator* gpFsMainHeap = nullptr;
+Allocator* gpFsMainHeap = nullptr;
 #ifdef _DEBUG
-HeapAllocator* gpFsDebugHeap = nullptr;
+Allocator* gpFsDebugHeap = nullptr;
 #endif
 
 GameAppRunner::GameAppRunner()
@@ -53,12 +53,12 @@ int GameAppRunner::runGameApp()
     u8 pAllocatorMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
     u8* pNextAllocation = pAllocatorMemory;
 	gpGeneralPage = new(pNextAllocation) PageAllocator(L"gpGeneralPage");
-    pNextAllocation += u8(sizeof(PageAllocator));
-	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
 #ifdef _DEBUG
     pNextAllocation += u8(sizeof(HeapAllocator));
 	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
 #endif
+    pNextAllocation += u8(sizeof(PageAllocator));
+	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
 
     Clock::init();
     Logger::init("logger.xml");
@@ -77,12 +77,12 @@ int GameAppRunner::runGameApp()
 		retCode = 1;
 	}
 
-	// TODO: shutdown logger
+    Logger::destroy();
 
+	static_cast<HeapAllocator*>(gpFsMainHeap)->~HeapAllocator();
 #ifdef _DEBUG
-	gpFsDebugHeap->~HeapAllocator();
+	static_cast<HeapAllocator*>(gpFsDebugHeap)->~HeapAllocator();
 #endif
-	gpFsMainHeap->~HeapAllocator();
 	gpGeneralPage->~PageAllocator();
 
 	return retCode;
@@ -104,7 +104,24 @@ GameApp::~GameApp()
 bool GameApp::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE);
+    
+    if(!initConfig())
+        return false;
 
+    if(!initWindow())
+        return false;
+    
+	return onInit();
+}
+
+bool GameApp::initConfig()
+{
+
+    return true;
+}
+
+bool GameApp::initWindow()
+{
 	pWindow = SDL_CreateWindow(getGameTitle(),
 							   SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED,
@@ -118,7 +135,7 @@ bool GameApp::init()
         return false;
     }
 
-	return onInit();
+    return true;
 }
 
 void GameApp::run()

@@ -1,20 +1,23 @@
 #ifndef FS_CORE_H
 #define FS_CORE_H
 
-// General
-#include "fscore/types.h"
-#include "fscore/string.h"
-#include "fscore/assert.h"
-#include "fscore/globals.h"
-#include "fscore/platforms.h"
-#include "fscore/trace.h"
-#include "fscore/util.h"
-#include "fscore/clock.h"
-#include "fscore/logger.h"
+// Utilities
+#include "fscore/utils/types.h"
+#include "fscore/utils/string.h"
+#include "fscore/utils/globals.h"
+#include "fscore/utils/platforms.h"
+#include "fscore/utils/utils.h"
+#include "fscore/utils/clock.h"
+#include "fscore/utils/random.h"
+#include "fscore/utils/math.h"
+
+// Debugging
+#include "fscore/debugging/assert.h"
+#include "fscore/debugging/logger.h"
 
 // Memory
 #include "fscore/dlmalloc/malloc.h"
-#include "fscore/memory.h"
+#include "fscore/memory/new.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/double_buffered_allocator.h"
 #include "fscore/allocators/double_stack_allocator.h"

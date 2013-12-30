@@ -1,11 +1,10 @@
 #include "fscore/dlmalloc/malloc.h"
 #include "fscore/allocators/heap_allocator.h"
 #include "fscore/allocators/page_allocator.h"
-#include "fscore/util.h"
-#include "fscore/globals.h"
-#include "fscore/assert.h"
-#include "fscore/trace.h"
-#include "fscore/memory.h"
+#include "fscore/utils/utils.h"
+#include "fscore/utils/globals.h"
+#include "fscore/debugging/assert.h"
+#include "fscore/memory/new.h"
 
 using namespace fs;
 

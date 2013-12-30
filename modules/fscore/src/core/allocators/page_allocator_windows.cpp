@@ -3,10 +3,10 @@
 #include <Windows.h>
 
 #include "fscore/allocators/page_allocator_windows.h"
-#include "fscore/platforms.h"
-#include "fscore/globals.h"
-#include "fscore/assert.h"
-#include "fscore/trace.h"
+#include "fscore/utils/platforms.h"
+#include "fscore/utils/globals.h"
+#include "fscore/debugging/assert.h"
+#include "fscore/debugging/trace.h"
 
 using namespace fs;
 

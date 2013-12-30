@@ -1,7 +1,7 @@
 #ifndef FS_CLOCK_H
 #define FS_CLOCK_H
 
-#include "fscore/types.h"
+#include "fscore/utils/types.h"
 
 namespace fs
 {

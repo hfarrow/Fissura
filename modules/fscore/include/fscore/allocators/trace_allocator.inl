@@ -1,8 +1,8 @@
 #ifndef FS_TRACE_ALLOCATOR_INL
 #define FS_TRACE_ALLOCATOR_INL
 
-#include "core/types.h"
-#include "core/allocators/trace_allocator.h"
+#include "fscore/utils/types.h"
+#include "fscore/allocators/trace_allocator.h"
 
 namespace fs
 {

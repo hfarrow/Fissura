@@ -3,11 +3,10 @@
 #include <errno.h>
 
 #include "fscore/allocators/page_allocator_linux.h"
-#include "fscore/platforms.h"
+#include "fscore/utils/platforms.h"
 #include "fscore/allocators/heap_allocator.h"
-#include "fscore/globals.h"
-#include "fscore/assert.h"
-#include "fscore/trace.h"
+#include "fscore/utils/globals.h"
+#include "fscore/debugging/assert.h"
 
 using namespace fs;
 

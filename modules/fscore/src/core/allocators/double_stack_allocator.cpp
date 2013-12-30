@@ -1,5 +1,5 @@
 #include "fscore/allocators/double_stack_allocator.h"
-#include "fscore/assert.h"
+#include "fscore/debugging/assert.h"
 
 using namespace fs;
 

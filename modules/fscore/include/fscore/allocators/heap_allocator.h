@@ -1,12 +1,13 @@
 #ifndef FS_HEAP_ALLOCATOR_H
 #define FS_HEAP_ALLOCATOR_H
 
-#include "fscore/types.h"
+#include <vector>
+
+#include "fscore/utils/types.h"
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/page_allocator.h"
 #include "fscore/allocators/stl_allocator.h"
 #include "fscore/dlmalloc/malloc.h"
-#include <vector>
 
 namespace fs
 {

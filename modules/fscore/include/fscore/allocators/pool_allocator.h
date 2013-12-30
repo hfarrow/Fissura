@@ -1,7 +1,7 @@
 #ifndef FS_POOL_ALLOCATOR_H
 #define FS_POOL_ALLOCATOR_H
 
-#include "fscore/types.h"
+#include "fscore/utils/types.h"
 #include "fscore/allocators/allocator.h"
 
 namespace fs

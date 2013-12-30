@@ -1,18 +1,23 @@
-#include "fscore/logger.h"
+#include "fscore/debugging/logger.h"
 
 #include <stdlib.h>
-#include <cstdio>
+#include <iostream>
+#include <fstream>
 
 #include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <tinyxml.h>
 #include <SDL.h>
 
-#include "fscore/types.h"
-#include "fscore/memory.h"
-#include "fscore/util.h"
-#include "fscore/globals.h"
+#include "fscore/utils/types.h"
+#include "fscore/memory/new.h"
+#include "fscore/utils/utils.h"
+#include "fscore/utils/globals.h"
 
 using namespace fs;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
 
 // Constants
 static const char* LOG_FILENAME = "fissura.log";
@@ -152,17 +157,11 @@ void LogManager::outputFinalBufferToLogs(const std::string& finalBuffer, u32 fla
 
 void LogManager::writeToLogFile(const std::string& data)
 {
-    // TODO:: store log in buffer and flush occasionaly.
-    // We don't want to block the thread everytime we write
-    // the log.
-
-    FILE* pLogFile = nullptr;
-    pLogFile = fopen(LOG_FILENAME, "a+");
-    if(!pLogFile)
-        return; // can't write to the log file for some reason
-
-    fprintf(pLogFile, "%s", data.c_str());
-    fclose(pLogFile);
+    std::ofstream output(LOG_FILENAME, std::ios::out | std::ios::app);
+    if(output.good())
+    {
+        output << data;
+    }
 }
 
 void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string& tag, const std::string& message,
@@ -190,9 +189,15 @@ void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string
         outOutputBuffer += sourceFile;
     }
     
-    outOutputBuffer += " t=";
-    outOutputBuffer += std::to_string((f64)SDL_GetPerformanceCounter() / (f64)SDL_GetPerformanceFrequency());
-    outOutputBuffer += "\n";
+    outOutputBuffer += " (";
+    ptime pt = microsec_clock::local_time();
+    time_duration td = pt.time_of_day();
+    auto hours = td.hours();
+    auto minutes = td.minutes();
+    auto seconds = td.seconds();
+    auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
+    outOutputBuffer += (boost::format("%1%:%2%:%3%:%4%") % hours % minutes % seconds % milliseconds).str();
+    outOutputBuffer += ")\n";
 }
 
 namespace fs

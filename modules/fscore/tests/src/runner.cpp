@@ -17,10 +17,14 @@ public:
     {
         u8* pNext = pMemory;
         gpPageAllocator = new(pNext) PageAllocator(L"(gpPageAllocator");
+
         pNext += sizeof(PageAllocator);
-        gpFsMainHeap = new(pNext) HeapAllocator(L"gpMainHeap", *gpPageAllocator);
-        pNext += sizeof(HeapAllocator);
         gpFsDebugHeap = new(pNext) HeapAllocator(L"gpDebugHeap", *gpPageAllocator);
+        Memory::setDefaultDebugAllocator(gpFsDebugHeap);
+
+        pNext += sizeof(HeapAllocator);
+        gpFsMainHeap = new(pNext) HeapAllocator(L"gpMainHeap", *gpPageAllocator);
+        Memory::setDefaultAllocator(gpFsMainHeap);
 
         fs::setIgnoreAsserts(true);
     }

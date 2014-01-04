@@ -21,7 +21,9 @@ int main( int, char **)
 
     HeapAllocator* pHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
     gpFsDebugHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
+    Memory::setDefaultDebugAllocator(gpFsDebugHeap);
     gpFsMainHeap = new TraceAllocator(L"gpFsMainHeapTrace", *pHeap);
+    Memory::setDefaultAllocator(gpFsMainHeap);
 
     Logger::init("fscore-logger-content/logger.xml");
     FS_DEBUG("TESTING FS_DEBUG");
@@ -34,6 +36,7 @@ int main( int, char **)
     FS_WARNF(boost::format("TESTING FS_WARNF %d %s") % 0 % "testArgInt");
     FS_ERRORF(boost::format("TESTING FS_ERRORF %2% %1%") % "testArg1" % "testArg2");
     FS_FATALF(boost::format("TESTING FS_FATALF"));
+    
     Logger::destroy();
     
     gpFsMainHeap->clear();

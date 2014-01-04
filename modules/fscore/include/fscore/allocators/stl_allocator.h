@@ -5,6 +5,7 @@
 
 #include "fscore/debugging/assert.h"
 #include "fscore/utils/globals.h"
+#include "fscore/memory/memory.h"
 #include "fscore/utils/types.h"
 #include "fscore/utils/utils.h"
 #include "fscore/allocators/allocator.h"
@@ -28,8 +29,7 @@ namespace fs
 
         StlAllocator()
         {
-            FS_ASSERT(gpFsMainHeap != nullptr);
-            _pAllocator = gpFsMainHeap;
+            _pAllocator = Memory::getDefaultAllocator();
         }
 
 		StlAllocator(Allocator& allocator) :

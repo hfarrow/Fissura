@@ -9,6 +9,9 @@
 
 using namespace fs;
 
+extern fs::Allocator* gpFsDebugHeap;
+extern fs::Allocator* gpFsMainHeap;
+
 BOOST_AUTO_TEST_SUITE(core)
 
 struct string_fixture
@@ -26,8 +29,8 @@ struct string_fixture
 	void resizeMemory(u32 size)
 	{
 		currentMemorySize = size;
-        gpFsDebugHeap->clear();
-        gpFsMainHeap->clear();
+        Memory::getDefaultDebugAllocator()->clear();
+        Memory::getDefaultAllocator()->clear();
 		if(size > 0)
 		{
 		}

@@ -31,8 +31,8 @@ struct pageallocator_fixture
 		delete pAllocator;
 
 		currentMemorySize = size;
-        gpFsDebugHeap->clear();
-        gpFsMainHeap->clear();
+        Memory::getDefaultDebugAllocator()->clear();
+        Memory::getDefaultAllocator()->clear();
 		if(size > 0)
 		{
 			pAllocator = new PageAllocator(nullptr);

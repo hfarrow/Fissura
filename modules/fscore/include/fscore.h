@@ -8,7 +8,6 @@
 #include "fscore/utils/platforms.h"
 #include "fscore/utils/utils.h"
 #include "fscore/utils/clock.h"
-#include "fscore/utils/random.h"
 #include "fscore/utils/math.h"
 
 // Debugging
@@ -18,7 +17,9 @@
 // Memory
 #include "fscore/dlmalloc/malloc.h"
 #include "fscore/memory/new.h"
+#include "fscore/memory/memory.h"
 #include "fscore/allocators/allocator.h"
+#include "fscore/allocators/malloc_allocator.h"
 #include "fscore/allocators/double_buffered_allocator.h"
 #include "fscore/allocators/double_stack_allocator.h"
 #include "fscore/allocators/heap_allocator.h"

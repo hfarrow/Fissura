@@ -11,6 +11,9 @@
 
 using namespace fs;
 
+extern fs::Allocator* gpFsDebugHeap;
+extern fs::Allocator* gpFsMainHeap;
+
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(allocators)
 
@@ -120,8 +123,8 @@ struct pageheapallocator_fixture
 		//delete pPageAllocator;
 
 		currentMemorySize = size;
-        gpFsDebugHeap->clear();
-        gpFsMainHeap->clear();
+        Memory::getDefaultDebugAllocator()->clear();
+        Memory::getDefaultAllocator()->clear();
 		if(size > 0)
 		{
 			//pPageAllocator = new PageAllocator(L"PageAllocator");

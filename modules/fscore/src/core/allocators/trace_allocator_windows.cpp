@@ -6,6 +6,7 @@
 #include "windows/allocators/trace_allocator.h"
 #include "fscore/allocators/heap_allocator.h"
 #include "fscore/utils/globals.h"
+#include "fscore/memory/memory.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/debugging/trace.h"
 #include "fscore/utils/utils.h"
@@ -19,10 +20,7 @@ using namespace fs;
 TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator)
 {
-	// gpFsDebugHeap must have been provided by application.
-	FS_ASSERT(gpFsDebugHeap != nullptr);
-
-	_pAllocationMap = AllocationMapPointer(FS_NEW_DEBUG(AllocationMap)(*gpFsDebugHeap),
+	_pAllocationMap = AllocationMapPointer(FS_NEW_DEBUG(AllocationMap)(*Memory::getDefaultDebugAllocator()),
 		[](AllocationMap* p){FS_DELETE(p);});
 
 	SymInitialize(GetCurrentProcess(), NULL, TRUE);

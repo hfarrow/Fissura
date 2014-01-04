@@ -49,16 +49,18 @@ int main( int, char **)
     const u32 mainHeapSize = 1048576;
     u8 mainHeapMemory[mainHeapSize];
     u8 debugHeapMemory[mainHeapSize];
-    gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
     gpFsDebugHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
+    Memory::setDefaultDebugAllocator(gpFsDebugHeap);
+    gpFsMainHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
+    Memory::setDefaultAllocator(gpFsMainHeap);
 
     dummy_function();
     
     gpFsDebugHeap->clear();
     gpFsMainHeap->clear();
 
-    delete gpFsDebugHeap;
     delete gpFsMainHeap;
+    delete gpFsDebugHeap;
 
     return 0;
 }

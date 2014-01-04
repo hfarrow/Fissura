@@ -56,9 +56,11 @@ int GameAppRunner::runGameApp()
 #ifdef _DEBUG
     pNextAllocation += u8(sizeof(HeapAllocator));
 	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
+    Memory::setDefaultDebugAllocator(gpFsDebugHeap);
 #endif
     pNextAllocation += u8(sizeof(PageAllocator));
 	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
+    Memory::setDefaultAllocator(gpFsMainHeap);
 
     Clock::init();
     Logger::init("logger.xml");

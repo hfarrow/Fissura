@@ -35,8 +35,8 @@ struct traceallocator_fixture
 		delete[] (u8*)pMemory;
 
 		currentMemorySize = size;
-        gpFsDebugHeap->clear();
-        gpFsMainHeap->clear();
+        Memory::getDefaultDebugAllocator()->clear();
+        Memory::getDefaultAllocator()->clear();
 		if(size > 0)
 		{
 			pMemory = new u8[size];

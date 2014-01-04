@@ -11,9 +11,6 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
     "${PROJECT_SOURCE_DIR}/*.c")
 
-add_custom_command(TARGET fscore-logger POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_ROOT_DIR}/content ${EXECUTABLE_OUTPUT_PATH})
-
 message(${PROJECT_ROOT_DIR})
 message(${EXECUTABLE_OUTPUT_PATH})
 

@@ -6,6 +6,7 @@
 #include "fscore/allocators/heap_allocator.h"
 #include "fscore/allocators/stl_allocator.h"
 #include "fscore/utils/globals.h"
+#include "fscore/memory/memory.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/utils/utils.h"
 #include "fscore/memory/new.h"
@@ -15,12 +16,10 @@ using namespace fs;
 
 TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator),
-    _allocationMapAllocator(*gpFsDebugHeap)
+    _allocationMapAllocator(*Memory::getDefaultDebugAllocator())
 {
-	// gpFsDebugHeap must have been provided by application.
-	FS_ASSERT(gpFsDebugHeap != nullptr);
-    
-    FS_ALLOCATE_UNIQUE(AllocationMap, _pAllocationMap, gpFsDebugHeap, std::less<uptr>(), _allocationMapAllocator);
+    FS_ALLOCATE_UNIQUE(AllocationMap, _pAllocationMap, 
+            Memory::getDefaultDebugAllocator(), std::less<uptr>(), _allocationMapAllocator);
 }
 
 TraceAllocator::~TraceAllocator()

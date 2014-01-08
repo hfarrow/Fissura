@@ -15,10 +15,12 @@
 #include "fscore/debugging/logger.h"
 
 // Memory
-#include "fscore/dlmalloc/malloc.h"
+#include "fscore/memory/malloc.h"
 #include "fscore/memory/new.h"
 #include "fscore/memory/memory.h"
+#include "fscore/memory/memory_tracker.h"
 #include "fscore/allocators/allocator.h"
+#include "fscore/allocators/stl_allocator.h"
 #include "fscore/allocators/malloc_allocator.h"
 #include "fscore/allocators/double_buffered_allocator.h"
 #include "fscore/allocators/double_stack_allocator.h"
@@ -27,7 +29,6 @@
 #include "fscore/allocators/pool_allocator.h"
 #include "fscore/allocators/proxy_allocator.h"
 #include "fscore/allocators/stack_allocator.h"
-#include "fscore/allocators/stl_allocator.h"
 #include "fscore/allocators/trace_allocator.h"
 
 #endif

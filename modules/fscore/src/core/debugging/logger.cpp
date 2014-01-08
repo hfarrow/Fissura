@@ -204,6 +204,8 @@ namespace fs
 {
 namespace Logger
 {
+    static bool surpressStdOutput = false;
+
     void init(const char* configFilename)
     {
         if(!s_pLogManager)
@@ -245,6 +247,15 @@ namespace Logger
             std::cout << format;
         }
     }
-    bool surpressStdOutput = false;
+
+    bool getSurpressStdOutput()
+    {
+        return surpressStdOutput;
+    }
+
+    void setSurpressStdOutput(bool surpress)
+    {
+        surpressStdOutput = surpress;
+    }
 }
 }

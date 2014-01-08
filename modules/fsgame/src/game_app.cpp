@@ -5,7 +5,7 @@
 
 using namespace fs;
 
-GameApp* g_pApp;
+GameApp* gpApp = nullptr;
 PageAllocator* gpGeneralPage = nullptr;
 Allocator* gpFsMainHeap = nullptr;
 #ifdef _DEBUG
@@ -54,24 +54,37 @@ int GameAppRunner::runGameApp()
     u8* pNextAllocation = pAllocatorMemory;
 	gpGeneralPage = new(pNextAllocation) PageAllocator(L"gpGeneralPage");
 #ifdef _DEBUG
-    pNextAllocation += u8(sizeof(HeapAllocator));
+    pNextAllocation += u8(sizeof(PageAllocator));
 	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
     Memory::setDefaultDebugAllocator(gpFsDebugHeap);
 #endif
-    pNextAllocation += u8(sizeof(PageAllocator));
+    pNextAllocation += u8(sizeof(HeapAllocator));
 	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
     Memory::setDefaultAllocator(gpFsMainHeap);
+    
+#ifdef _DEBUG
+    Memory::initTracker();
+    MemoryTracker* pTracker = Memory::getTracker();
+    FS_ASSERT(pTracker);
+    // Normally allocators automatically register themselves but these
+    // allocators must be created before the tracker is initialized
+    // because the tracker init needs to allocate memory from debug heap.
+    pTracker->registerAllocator(gpGeneralPage);
+    pTracker->registerAllocator(gpFsDebugHeap);
+    pTracker->registerAllocator(gpFsMainHeap);
+#endif
+
 
     Clock::init();
     Logger::init("logger.xml");
 
-	// TODO: g_pApp->initOption("PlayerOptions.xml", lpCmdLine);
+	// TODO: gpApp->initOption("PlayerOptions.xml", lpCmdLine);
 
 	int retCode = 0;
-	if(g_pApp->init())
+	if(gpApp->init())
 	{
-		g_pApp->run();
-		g_pApp->shutdown();
+		gpApp->run();
+		gpApp->shutdown();
 	}
 	else
 	{
@@ -80,6 +93,10 @@ int GameAppRunner::runGameApp()
 	}
 
     Logger::destroy();
+    
+#ifdef _DEBUG
+    Memory::destroyTracker();
+#endif
 
 	static_cast<HeapAllocator*>(gpFsMainHeap)->~HeapAllocator();
 #ifdef _DEBUG
@@ -93,7 +110,7 @@ int GameAppRunner::runGameApp()
 GameApp::GameApp() :
     _clock(0)
 {
-	g_pApp = this;
+	gpApp = this;
 	_isRunning = false;
 	pWindow = nullptr;
 }
@@ -177,6 +194,10 @@ void GameApp::run()
 
         //f32 percentage = accumulator / dt;
         // render(percentage);
+        
+#ifdef _DEBUG
+        Memory::getTracker()->update();
+#endif
 	}
 }
 

@@ -11,9 +11,6 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
     "${PROJECT_SOURCE_DIR}/*.c")
 
-message(${PROJECT_ROOT_DIR})
-message(${EXECUTABLE_OUTPUT_PATH})
-
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
 add_custom_target(${PROJECT_NAME}-content

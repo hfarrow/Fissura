@@ -8,12 +8,13 @@
 
 namespace fs
 {
+    class MemoryTracker;
+        
     class Memory : Uncopyable
     {
     public:
         static inline void setDefaultAllocator(Allocator* pAllocator)
         {
-            FS_ASSERT(pAllocator);
             _pDefaultAllocator = pAllocator;
         }
 
@@ -24,7 +25,6 @@ namespace fs
 
         static inline void setDefaultDebugAllocator(Allocator* pAllocator)
         {
-            FS_ASSERT(pAllocator);
             _pDefaultDebugAllocator = pAllocator;
         }
 
@@ -33,12 +33,28 @@ namespace fs
             return _pDefaultDebugAllocator ? _pDefaultDebugAllocator : &_mallocAllocator;
         }
 
+        static inline Allocator* getDefaultSystemAllocator()
+        {
+            return &_mallocAllocator;
+        }
+
+        // Should be called after defualt allocators are set.
+        static void initTracker();
+        static void destroyTracker();
+        static inline MemoryTracker* getTracker()
+        {
+            return _pTracker;
+        }
+
     private:
         Memory(){}
+
         static Allocator* _pDefaultAllocator;
         static Allocator* _pDefaultDebugAllocator;
         static MallocAllocator _mallocAllocator;
+        static MemoryTracker* _pTracker;
     };
+
 }
 
 #endif

@@ -217,7 +217,7 @@
         endfor
 
         call add(g:unite_source_menu_menus.build.command_candidates,
-                    \ ['Setup Build Directory ',
+                    \ ['Setup/Clean Build Directory ',
                     \ 'exe "!' . g:fs_scripts_path . 'setup_build.sh" | exe GenerateMenus()'])
 
         call add(g:unite_source_menu_menus.build.command_candidates,

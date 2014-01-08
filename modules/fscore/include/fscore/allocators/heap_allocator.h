@@ -7,7 +7,7 @@
 #include "fscore/allocators/allocator.h"
 #include "fscore/allocators/page_allocator.h"
 #include "fscore/allocators/stl_allocator.h"
-#include "fscore/dlmalloc/malloc.h"
+#include "fscore/memory/malloc.h"
 
 namespace fs
 {

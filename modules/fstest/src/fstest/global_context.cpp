@@ -5,6 +5,18 @@
 
 using namespace fs::test;
 
+namespace fs
+{
+    namespace Logger
+    {
+        extern bool getSurpressStdOutput();
+        extern void setSurpressStdOutput(bool surpress);
+    }
+
+    extern bool getAssertTriggered();
+    extern void setAssertTriggered(bool assertTriggered);
+}
+
 GlobalContext* GlobalContext::_pInstance = nullptr;
 
 GlobalContext::GlobalContext()
@@ -22,24 +34,16 @@ GlobalContext* GlobalContext::instance()
     return _pInstance;
 }
 
-namespace fs
-{
-    extern bool assertTriggered;
-    namespace Logger
-    {
-        extern bool surpressStdOutput;
-    }
-}
 bool GlobalContext::requireAssert(std::function<void()> func)
 {
-    bool surpressStdOutputOld = fs::Logger::surpressStdOutput;
-    fs::Logger::surpressStdOutput = true;
-    fs::assertTriggered = false;
+    bool surpressStdOutputOld = fs::Logger::getSurpressStdOutput();
+    fs::Logger::setSurpressStdOutput(true);
+    fs::setAssertTriggered(false);
 
     func();
 
-    fs::Logger::surpressStdOutput = surpressStdOutputOld;
-    return fs::assertTriggered;
+    fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
+    return fs::getAssertTriggered();
     
     // If the assert results in an abort(), the below code would work.
     // SDL_assert, however can not easily be made to abort with out corrupting its state so

@@ -22,6 +22,9 @@ namespace fs
 
     template<typename K, typename V>
     using Map = std::map<K, V, std::less<K>, MapAllocator<K, V>>;
+
+    template<typename T>
+    using Vector = std::vector<T, StlAllocator<T>>;
     
     // Pre C++11... Use above template alaises if possible.
 	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>

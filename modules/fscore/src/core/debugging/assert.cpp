@@ -47,8 +47,8 @@ using namespace fs;
 
 namespace fs
 {
-    bool ignoreAsserts = false;
-    bool assertTriggered = false;
+    static bool ignoreAsserts = false;
+    static bool assertTriggered = false;
 }
 
 SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* /*userdata*/)
@@ -72,5 +72,15 @@ void fs::setIgnoreAsserts(bool ignore)
 bool fs::getIgnoreAsserts()
 {
     return fs::ignoreAsserts;
+}
+
+void fs::setAssertTriggered(bool assertTriggered)
+{
+    fs::assertTriggered = assertTriggered;
+}
+
+bool fs::getAssertTriggered()
+{
+    return fs::assertTriggered;
 }
 

@@ -1,4 +1,4 @@
-#include "fscore/dlmalloc/malloc.h"
+#include "fscore/memory/malloc.h"
 #include "fscore/allocators/page_allocator.h"
 
 /*------------------------------ internal #includes ---------------------- */

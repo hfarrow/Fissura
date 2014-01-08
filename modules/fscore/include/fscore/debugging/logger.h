@@ -23,7 +23,8 @@ namespace fs
                  const char* funcName, const char* sourceFile, u32 lineNum);
         void setDisplayFlags(const std::string& tag, u32 flags);
         void printStringFormatted(boost::format);
-        extern bool surpressStdOutput;
+        bool getSurpressStdOutput();
+        void setSurpressStdOutput(bool surpress);
     }
 }
 

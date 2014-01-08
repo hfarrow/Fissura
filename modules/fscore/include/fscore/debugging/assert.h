@@ -15,7 +15,8 @@ namespace fs
 	// 						 const char* format, ...);
     void setIgnoreAsserts(bool ignore);
     bool getIgnoreAsserts();
-    extern bool assertTriggered;
+    void setAssertTriggered(bool assertTriggered);
+    bool getAssertTriggered();
 }
 
 // The below is commented out because it is the custom assert functionality

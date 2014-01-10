@@ -17,7 +17,7 @@ namespace internal
 	class TraceAllocator<PLATFORM_WINDOWS> : public ProxyAllocator
 	{
 	public:
-		TraceAllocator(const fswchar* const  pName, Allocator& allocator);
+		TraceAllocator(const fschar* const  pName, Allocator& allocator);
 		~TraceAllocator();
 
         virtual void reportMemoryLeaks();

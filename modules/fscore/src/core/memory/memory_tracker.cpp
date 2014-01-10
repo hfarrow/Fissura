@@ -27,8 +27,8 @@ void MemoryTracker::registerAllocator(Allocator* pAllocator)
     {
         AllocatorInfo info;
         info.pAllocator = pAllocator;
-        info.peakUsedMemory = pAllocator->getTotalUsedMemory();
-        info.peakNumAllocations = pAllocator->getTotalNumAllocations();
+        info.peakUsedMemory = info.usedMemory = pAllocator->getTotalUsedMemory();
+        info.peakNumAllocations = info.numAllocations = pAllocator->getTotalNumAllocations();
         _pAllocatorMap->insert(std::make_pair(pAllocator, info));
     }
 }
@@ -60,6 +60,9 @@ void MemoryTracker::update()
             {
                 pInfo->peakNumAllocations = currentTotalNumAllocations;
             }
+
+            pInfo->usedMemory = currentTotalUsedMemory;
+            pInfo->numAllocations = currentTotalNumAllocations;
         }
     }
 }
@@ -70,6 +73,7 @@ const MemoryTracker::Report MemoryTracker::generateReport()
     MemoryTracker::Report report;
     report.allocators = std::allocate_shared<Vector<AllocatorInfo>>(
                         _allocatorVectorAllocator, _allocatorVectorAllocator);
+    update();
 
     if(_pAllocatorMap->size() > 0)
     {

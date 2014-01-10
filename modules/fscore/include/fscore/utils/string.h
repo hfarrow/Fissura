@@ -12,9 +12,6 @@ namespace fs
 	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> fsstring;
     typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocator<wchar_t>> fswstring;
 
-    std::string ws2s(const std::wstring& s);
-    std::wstring s2ws(const std::string& s);
-
     class HashedString
     {
     public:

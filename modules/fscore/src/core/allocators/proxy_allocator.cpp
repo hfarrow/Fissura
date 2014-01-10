@@ -3,7 +3,7 @@
 
 using namespace fs;
 
-ProxyAllocator::ProxyAllocator(const fswchar* const  pName, Allocator& allocator, size_t budget)
+ProxyAllocator::ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget)
 	:
 	Allocator(pName),
 	_allocator(allocator),

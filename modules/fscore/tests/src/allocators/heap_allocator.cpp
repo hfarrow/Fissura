@@ -127,8 +127,8 @@ struct pageheapallocator_fixture
         Memory::getDefaultAllocator()->clear();
 		if(size > 0)
 		{
-			//pPageAllocator = new PageAllocator(L"PageAllocator");
-			//pAllocator = new HeapAllocator(L"TestHeap", *pPageAllocator);
+			//pPageAllocator = new PageAllocator("PageAllocator");
+			//pAllocator = new HeapAllocator("TestHeap", *pPageAllocator);
 		}
 	}
 

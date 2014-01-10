@@ -16,6 +16,8 @@ namespace fs
         struct AllocatorInfo
         {
             Allocator* pAllocator;
+            size_t usedMemory;
+            size_t numAllocations;
             size_t peakUsedMemory;
             size_t peakNumAllocations;
         };

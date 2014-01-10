@@ -10,7 +10,7 @@
 
 using namespace fs;
 
-PageAllocator::PageAllocator(const fswchar* const pName)
+PageAllocator::PageAllocator(const fschar* const pName)
 	:
 	Allocator(pName),
 	_totalNumAllocations(0),

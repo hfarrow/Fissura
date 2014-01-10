@@ -9,7 +9,7 @@ namespace fs
     class MallocAllocator : public Allocator
     {
     public:
-        MallocAllocator(const fswchar* const pName);
+        MallocAllocator(const fschar* const pName);
         ~MallocAllocator();
 
         virtual void* allocate(size_t, u8 alignment) override;

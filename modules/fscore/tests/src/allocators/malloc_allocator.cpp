@@ -15,7 +15,7 @@ struct mallocallocator_fixture
 {
 	mallocallocator_fixture()
 	{
-        pAllocator = new MallocAllocator(L"MallocAllocator");
+        pAllocator = new MallocAllocator("MallocAllocator");
 	}
 
 	~mallocallocator_fixture()

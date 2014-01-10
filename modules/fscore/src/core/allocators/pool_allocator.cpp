@@ -5,7 +5,7 @@
 
 using namespace fs;
 
-PoolAllocator::PoolAllocator(const fswchar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
+PoolAllocator::PoolAllocator(const fschar* const  pName, size_t objectSize, u32 objectAlignment, size_t memorySize, void* pMemory)
 	:
 	Allocator(pName),
 	_objectSize(objectSize),

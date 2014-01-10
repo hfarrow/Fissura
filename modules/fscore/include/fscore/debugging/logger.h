@@ -13,8 +13,9 @@ namespace fs
     {
         enum DisplayFlags
         {
-            DisplayFlagWriteToFile = 1 << 0,
-            DisplayFlagWriteToStdOut = 1 << 1
+            DisplayFlagWriteToFile =    1 << 0,
+            DisplayFlagWriteToStdOut =  1 << 1,
+            DisplayFlagDetailed =       1 << 2
         };
 
         void init(const char* configFilename);

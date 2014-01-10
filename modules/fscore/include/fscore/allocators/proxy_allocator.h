@@ -9,7 +9,7 @@ namespace fs
 	class ProxyAllocator : public Allocator
 	{
 	public:
-		ProxyAllocator(const fswchar* const  pName, Allocator& allocator, size_t budget = 0);
+		ProxyAllocator(const fschar* const  pName, Allocator& allocator, size_t budget = 0);
 		~ProxyAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

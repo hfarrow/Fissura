@@ -7,7 +7,7 @@
 
 using namespace fs;
 
-MallocAllocator::MallocAllocator(const fswchar* pName) :
+MallocAllocator::MallocAllocator(const fschar* pName) :
     Allocator(pName),
     _totalUsedMemory(0),
     _totalNumAllocations(0)

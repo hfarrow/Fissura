@@ -1,6 +1,7 @@
 #include "fscore/utils/string.h"
 
 #include <stdlib.h>
+#include <locale>
 #include <string>
 
 using namespace fs;

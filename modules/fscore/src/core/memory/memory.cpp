@@ -6,7 +6,7 @@ using namespace fs;
 
 Allocator* Memory::_pDefaultAllocator = nullptr;
 Allocator* Memory::_pDefaultDebugAllocator = nullptr;
-MallocAllocator Memory::_mallocAllocator(L"SystemMallocAllocator");
+MallocAllocator Memory::_mallocAllocator("SystemMallocAllocator");
 MemoryTracker* Memory::_pTracker = nullptr;
 
 void Memory::initTracker()

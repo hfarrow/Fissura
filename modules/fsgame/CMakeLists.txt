@@ -5,6 +5,7 @@ set(PROJECT_TEST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/tests/src)
 set(PROJECT_TEST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests/include)
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+set(PROJECT_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME})
 
 include_directories(${PROJECT_INCLUDE_DIR})
 
@@ -42,8 +43,11 @@ target_link_libraries(${PROJECT_NAME}-test
                       fscore
                       fstest
                       )
+
 set_target_properties(${PROJECT_NAME}-test 
-                      PROPERTIES COMPILE_FLAGS "-fexceptions -DFS_CUSTOM_GLOBAL_NEW_DELETE")
+                      PROPERTIES 
+                      COMPILE_FLAGS "-fexceptions -DFS_CUSTOM_GLOBAL_NEW_DELETE"
+                      RUNTIME_OUTPUT_DIRECTORY "${PROJECT_OUTPUT_DIR}-test")
 
 # Spikes
 add_subdirectory(spikes)

@@ -17,7 +17,7 @@
 
 using namespace fs;
 
-TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
+TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator)
 {
 	_pAllocationMap = AllocationMapPointer(FS_NEW_DEBUG(AllocationMap)(*Memory::getDefaultDebugAllocator()),

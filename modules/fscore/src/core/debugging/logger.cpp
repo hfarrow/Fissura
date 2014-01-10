@@ -21,9 +21,9 @@ using namespace boost::gregorian;
 
 // Constants
 static const char* LOG_FILENAME = "fissura.log";
-const u8 DEFAULT_FLAG_FATAL = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut;
-const u8 DEFAULT_FLAG_ERROR = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut;
-const u8 DEFAULT_FLAG_WARNING = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut;
+const u8 DEFAULT_FLAG_FATAL = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut | Logger::DisplayFlagDetailed;
+const u8 DEFAULT_FLAG_ERROR = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut | Logger::DisplayFlagDetailed;
+const u8 DEFAULT_FLAG_WARNING = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut | Logger::DisplayFlagDetailed;
 const u8 DEFAULT_FLAG_LOG = Logger::DisplayFlagWriteToFile | Logger::DisplayFlagWriteToStdOut;
 const u8 DEFAULT_FLAG_DEBUG = 0;
 
@@ -50,7 +50,7 @@ private:
 
     void outputFinalBufferToLogs(const std::string& finalBuffer, u32 flags);
     void writeToLogFile(const std::string& data);
-    void getOutputBuffer(std::string& outOutputBuffer, const std::string& tag, const std::string& message,
+    void getOutputBuffer(std::string& outOutputBuffer, const std::string& tag, u32 flags, const std::string& message,
                          const char* funcName, const char* sourceFile, u32 lineNum);
 };
 
@@ -97,6 +97,13 @@ void LogManager::init(const char* configFilename)
                 if(logfile)
                     flags |= Logger::DisplayFlagWriteToFile;
 
+                i32 detailed = 0;
+                pNode->Attribute("detailed", &detailed);
+                if(detailed)
+                {
+                    flags |= Logger::DisplayFlagDetailed;
+                }
+
                 setDisplayFlags(tag, flags);
             }
         }
@@ -117,7 +124,7 @@ void LogManager::log(const std::string& tag, const std::string& message, const c
         _tagMutex.unlock();
         
         std::string buffer;
-        getOutputBuffer(buffer, tag, message, funcName, sourceFile, lineNum);
+        getOutputBuffer(buffer, tag, findIt->second, message, funcName, sourceFile, lineNum);
         outputFinalBufferToLogs(buffer, findIt->second);
     }
     else
@@ -164,7 +171,7 @@ void LogManager::writeToLogFile(const std::string& data)
     }
 }
 
-void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string& tag, const std::string& message,
+void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string& tag, u32 flags, const std::string& message,
                             const char* funcName, const char* sourceFile, u32 lineNum)
 {
     if(!tag.empty())
@@ -172,32 +179,37 @@ void LogManager::getOutputBuffer(std::string& outOutputBuffer, const std::string
     else
         outOutputBuffer = "[NO-TAG] " + message;
 
-    outOutputBuffer += "\n\t at ";
+    if((flags & Logger::DisplayFlagDetailed) > 0)
+    {
+        outOutputBuffer += "\n\t at ";
 
-    if(funcName != nullptr)
-    {
-        outOutputBuffer += funcName;
+        if(funcName != nullptr)
+        {
+            outOutputBuffer += funcName;
+        }
+        if(lineNum != 0)
+        {
+            outOutputBuffer += ":";
+            outOutputBuffer += std::to_string(lineNum);
+        }
+        if(sourceFile != nullptr)
+        {
+            outOutputBuffer += " in ";
+            outOutputBuffer += sourceFile;
+        }
+        
+        outOutputBuffer += " (";
+        ptime pt = microsec_clock::local_time();
+        time_duration td = pt.time_of_day();
+        auto hours = td.hours();
+        auto minutes = td.minutes();
+        auto seconds = td.seconds();
+        auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
+        outOutputBuffer += (boost::format("%1%:%2%:%3%:%4%") % hours % minutes % seconds % milliseconds).str();
+        outOutputBuffer += ")";
     }
-    if(lineNum != 0)
-    {
-        outOutputBuffer += ":";
-        outOutputBuffer += std::to_string(lineNum);
-    }
-    if(sourceFile != nullptr)
-    {
-        outOutputBuffer += " in ";
-        outOutputBuffer += sourceFile;
-    }
-    
-    outOutputBuffer += " (";
-    ptime pt = microsec_clock::local_time();
-    time_duration td = pt.time_of_day();
-    auto hours = td.hours();
-    auto minutes = td.minutes();
-    auto seconds = td.seconds();
-    auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
-    outOutputBuffer += (boost::format("%1%:%2%:%3%:%4%") % hours % minutes % seconds % milliseconds).str();
-    outOutputBuffer += ")\n";
+
+    outOutputBuffer += "\n";
 }
 
 namespace fs

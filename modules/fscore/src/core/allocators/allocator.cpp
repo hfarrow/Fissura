@@ -5,9 +5,10 @@
 
 using namespace fs;
 
-Allocator::Allocator(const fswchar* const  pName)
-	: _pName(pName)
+Allocator::Allocator(const fschar* const  pName)
+	: _pName(pName == nullptr ? "Unkown" : pName)
 {
+
 #ifdef _DEBUG
     MemoryTracker* pTracker = Memory::getTracker();
     if(pTracker)
@@ -31,7 +32,7 @@ Allocator::~Allocator()
 #endif
 }
 
-const fswchar* Allocator::getName() const
+const fschar* Allocator::getName() const
 {
 	return _pName;
 }

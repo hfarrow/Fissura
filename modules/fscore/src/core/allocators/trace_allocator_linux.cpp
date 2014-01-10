@@ -14,7 +14,7 @@
 
 using namespace fs;
 
-TraceAllocator::TraceAllocator(const fswchar* const  pName, Allocator& allocator)
+TraceAllocator::TraceAllocator(const fschar* const  pName, Allocator& allocator)
 	: ProxyAllocator(pName, allocator),
     _allocationMapAllocator(*Memory::getDefaultDebugAllocator())
 {
@@ -37,18 +37,8 @@ void TraceAllocator::reportMemoryLeaks()
             auto pStackTrace = getCaller(&it->second);
             if(pStackTrace)
             {
-                std::string name;
-                const fswchar* wname = getName();
-                if(wname)
-                {
-                    std::wstring ws(wname);
-                    name = std::string(ws.begin(), ws.end());
-                }
-                else
-                {
-                    name = "Unkown";
-                }
-			    FS_ASSERT_MSG_FORMATTED(false, boost::format("TraceAllocator(%s) memory leak:\n%s") % name % pStackTrace);
+			    FS_ASSERT_MSG_FORMATTED(false, boost::format("TraceAllocator(%s) memory leak:\n%s")
+                        % getName() % pStackTrace);
             }
 		}
 	}

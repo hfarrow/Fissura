@@ -3,7 +3,7 @@
 
 using namespace fs;
 
-DoubleStackAllocator::DoubleStackAllocator(const fswchar* const  pName, size_t stackSize, void* pStack)
+DoubleStackAllocator::DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack)
 	:
 	Allocator(pName),
 	_upper(pName, stackSize, pStack, false),

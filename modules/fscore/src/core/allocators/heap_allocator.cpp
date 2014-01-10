@@ -10,7 +10,7 @@ using namespace fs;
 
 extern PageAllocator* gpVirtualAllocator;
 
-HeapAllocator::HeapAllocator(const fswchar* const  pName, size_t memorySize, void* pMemory)
+HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory)
 	:
 	Allocator(pName),
 	_pMemory(pMemory),
@@ -21,7 +21,7 @@ HeapAllocator::HeapAllocator(const fswchar* const  pName, size_t memorySize, voi
 	createHeap();	
 }
 
-HeapAllocator::HeapAllocator(const fswchar* const pName, PageAllocator& backingAllocator)
+HeapAllocator::HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator)
 	:
 	Allocator(pName),
 	_pMemory(nullptr),

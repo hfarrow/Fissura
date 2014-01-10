@@ -19,11 +19,11 @@ namespace fs
 		// will still be served using mmap and the application can continue if needed.
 		// If you want a heap that can grow without asserting use the ctor that requires
 		// a backing PageAllocator.
-		HeapAllocator(const fswchar* const  pName, size_t memorySize, void* pMemory);
+		HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory);
 
 		// Using a backing page allocator will allow the heap to grow and be tracked
 		// through the backing allocator.
-		HeapAllocator(const fswchar* const pName, PageAllocator& backingAllocator);
+		HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator);
 		~HeapAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

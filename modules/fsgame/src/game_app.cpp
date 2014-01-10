@@ -52,16 +52,20 @@ int GameAppRunner::runGameApp()
 
     u8 pAllocatorMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
     u8* pNextAllocation = pAllocatorMemory;
-	gpGeneralPage = new(pNextAllocation) PageAllocator(L"gpGeneralPage");
+	gpGeneralPage = new(pNextAllocation) PageAllocator("gpGeneralPage");
 #ifdef _DEBUG
     pNextAllocation += u8(sizeof(PageAllocator));
-	gpFsDebugHeap = new(pNextAllocation) HeapAllocator(L"gpFsDebugHeap", *gpGeneralPage);
+	gpFsDebugHeap = new(pNextAllocation) HeapAllocator("gpFsDebugHeap", *gpGeneralPage);
     Memory::setDefaultDebugAllocator(gpFsDebugHeap);
 #endif
     pNextAllocation += u8(sizeof(HeapAllocator));
-	gpFsMainHeap = new(pNextAllocation) HeapAllocator(L"gpFsMainHeap", *gpGeneralPage);
+	gpFsMainHeap = new(pNextAllocation) HeapAllocator("gpFsMainHeap", *gpGeneralPage);
     Memory::setDefaultAllocator(gpFsMainHeap);
     
+
+
+    Clock::init();
+
 #ifdef _DEBUG
     Memory::initTracker();
     MemoryTracker* pTracker = Memory::getTracker();
@@ -73,10 +77,6 @@ int GameAppRunner::runGameApp()
     pTracker->registerAllocator(gpFsDebugHeap);
     pTracker->registerAllocator(gpFsMainHeap);
 #endif
-
-
-    Clock::init();
-    Logger::init("logger.xml");
 
 	// TODO: gpApp->initOption("PlayerOptions.xml", lpCmdLine);
 
@@ -92,8 +92,6 @@ int GameAppRunner::runGameApp()
 		retCode = 1;
 	}
 
-    Logger::destroy();
-    
 #ifdef _DEBUG
     Memory::destroyTracker();
 #endif
@@ -108,11 +106,12 @@ int GameAppRunner::runGameApp()
 }
 
 GameApp::GameApp() :
+    _pBasePath(nullptr),
+    _isRunning(false),
+    _pWindow(nullptr),
     _clock(0)
 {
 	gpApp = this;
-	_isRunning = false;
-	pWindow = nullptr;
 }
 
 GameApp::~GameApp()
@@ -123,34 +122,62 @@ GameApp::~GameApp()
 bool GameApp::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE);
-    
-    if(!initConfig())
-        return false;
 
-    if(!initWindow())
+    if(!initPaths() ||
+       !initLogger() ||
+       !initConfig() ||
+       !initWindow())
+    {
         return false;
-    
+    }
+
 	return onInit();
+}
+
+bool GameApp::initPaths()
+{
+    char* pBasePath = SDL_GetBasePath();
+    if(!pBasePath)
+    {
+        FS_FATALF(boost::format("Failed to get base path. Error: %1%") % SDL_GetError());
+        return false;
+    }
+    
+    FS_INFOF(boost::format("Base path is %1%") % pBasePath);
+    _pBasePath = pBasePath;
+    return true;
+}
+
+bool GameApp::initLogger()
+{
+    FS_ASSERT(_pBasePath);
+
+    std::string configPath(_pBasePath);
+    configPath += "content/logger.xml";
+    Logger::init(configPath.c_str());
+
+    return true;
 }
 
 bool GameApp::initConfig()
 {
+    FS_ASSERT(_pBasePath);
 
     return true;
 }
 
 bool GameApp::initWindow()
 {
-	pWindow = SDL_CreateWindow(getGameTitle(),
+	_pWindow = SDL_CreateWindow(getGameTitle(),
 							   SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED,
 							   800,
 							   600,
 							   SDL_WINDOW_OPENGL);
 
-    if(!pWindow)
+    if(!_pWindow)
     {
-        FS_ASSERT_MSG_FORMATTED(false, boost::format("Failed to create window. Error: %s") % SDL_GetError());
+        FS_FATALF(boost::format("Failed to create window. Error: %1%") % SDL_GetError());
         return false;
     }
 
@@ -223,6 +250,8 @@ void GameApp::shutdown()
 {
 	onShutdown();
 
-	SDL_DestroyWindow(pWindow);
+	SDL_DestroyWindow(_pWindow);
+    Logger::destroy();
+    SDL_free(_pBasePath);
 	SDL_Quit();
 }

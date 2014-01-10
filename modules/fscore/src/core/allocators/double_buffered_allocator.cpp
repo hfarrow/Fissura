@@ -4,7 +4,7 @@
 
 using namespace fs;
 
-DoubleBufferedAllocator::DoubleBufferedAllocator(const fswchar* const  pName, StackAllocator& stackA, StackAllocator& stackB)
+DoubleBufferedAllocator::DoubleBufferedAllocator(const fschar* const  pName, StackAllocator& stackA, StackAllocator& stackB)
 	:
 	Allocator(pName),
 	_currentStack(0)

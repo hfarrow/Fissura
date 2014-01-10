@@ -34,8 +34,8 @@ namespace fs
                 : position(0), allocationIndex(0){}
 		};
 
-		StackAllocator(const fswchar* const  pName, size_t stackSize, void* pStack);
-		StackAllocator(const fswchar* const  pName, size_t stackSize, void* pStack, bool growUpwards);
+		StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack);
+		StackAllocator(const fschar* const  pName, size_t stackSize, void* pStack, bool growUpwards);
 		~StackAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

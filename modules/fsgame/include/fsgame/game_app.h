@@ -30,6 +30,7 @@ namespace fs
         const Clock& getClock() const;
 
 		virtual const char* getGameTitle() const = 0;
+        const char* getBasePath() const;
 
 	protected:
 		virtual bool onInit() = 0;
@@ -40,13 +41,16 @@ namespace fs
 
 	private:
 		bool init();
+        bool initPaths();
+        bool initLogger();
         bool initConfig();
         bool initWindow();
 		void run();
 		void shutdown();
 
+        char* _pBasePath;
 		bool _isRunning;
-		SDL_Window* pWindow;
+		SDL_Window* _pWindow;
         Clock _clock;
 	};
 }

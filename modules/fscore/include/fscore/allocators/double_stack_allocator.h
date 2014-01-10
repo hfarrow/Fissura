@@ -10,7 +10,7 @@ namespace fs
 	class DoubleStackAllocator : public Allocator
 	{
 	public:
-		DoubleStackAllocator(const fswchar* const  pName, size_t stackSize, void* pStack);
+		DoubleStackAllocator(const fschar* const  pName, size_t stackSize, void* pStack);
 		~DoubleStackAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;

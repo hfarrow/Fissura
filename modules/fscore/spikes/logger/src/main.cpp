@@ -19,13 +19,13 @@ int main( int, char **)
     u8 mainHeapMemory[mainHeapSize];
     u8 debugHeapMemory[mainHeapSize];
 
-    HeapAllocator* pHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
-    gpFsDebugHeap = new HeapAllocator(L"gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
+    HeapAllocator* pHeap = new HeapAllocator("gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
+    gpFsDebugHeap = new HeapAllocator("gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
     Memory::setDefaultDebugAllocator(gpFsDebugHeap);
-    gpFsMainHeap = new TraceAllocator(L"gpFsMainHeapTrace", *pHeap);
+    gpFsMainHeap = new TraceAllocator("gpFsMainHeapTrace", *pHeap);
     Memory::setDefaultAllocator(gpFsMainHeap);
 
-    Logger::init("fscore-logger-content/logger.xml");
+    Logger::init("content/logger.xml");
     FS_DEBUG("TESTING FS_DEBUG");
     FS_INFO("TESTING FS_INFO");
     FS_WARN("TESTING FS_WARN");

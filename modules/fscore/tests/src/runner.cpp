@@ -16,14 +16,14 @@ public:
     GlobalFixture()
     {
         u8* pNext = pMemory;
-        gpPageAllocator = new(pNext) PageAllocator(L"(gpPageAllocator");
+        gpPageAllocator = new(pNext) PageAllocator("(gpPageAllocator");
 
         pNext += sizeof(PageAllocator);
-        gpFsDebugHeap = new(pNext) HeapAllocator(L"gpDebugHeap", *gpPageAllocator);
+        gpFsDebugHeap = new(pNext) HeapAllocator("gpDebugHeap", *gpPageAllocator);
         Memory::setDefaultDebugAllocator(gpFsDebugHeap);
 
         pNext += sizeof(HeapAllocator);
-        gpFsMainHeap = new(pNext) HeapAllocator(L"gpMainHeap", *gpPageAllocator);
+        gpFsMainHeap = new(pNext) HeapAllocator("gpMainHeap", *gpPageAllocator);
         Memory::setDefaultAllocator(gpFsMainHeap);
 
         fs::setIgnoreAsserts(true);

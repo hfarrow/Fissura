@@ -48,8 +48,8 @@ BOOST_FIXTURE_TEST_SUITE(proxy_allocator, proxyallocator_fixture)
 
 BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 {
-	ProxyAllocator proxyA(L"ProxyA", *pAllocator);
-	ProxyAllocator proxyB(L"ProxyB", *pAllocator);
+	ProxyAllocator proxyA("ProxyA", *pAllocator);
+	ProxyAllocator proxyB("ProxyB", *pAllocator);
 
 	u64* pA1 = proxyA.allocateConstruct<u64>();
 	BOOST_CHECK(pA1 != nullptr);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_deallocate)
 
 BOOST_AUTO_TEST_CASE(excede_memory_budget)
 {
-	ProxyAllocator proxy(L"Proxy", *pAllocator, 8);
+	ProxyAllocator proxy("Proxy", *pAllocator, 8);
 	proxy.allocate(8, 8);
 
 	FS_REQUIRE_ASSERT([&](){proxy.allocate(8, 8);});

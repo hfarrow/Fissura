@@ -17,7 +17,7 @@ RandomGenerator::RandomGenerator(void)
 }	
 	
 // Returns a number from 0 to n (excluding n)
-u32 RandomGenerator::random( u32 n )
+u32 RandomGenerator::random(u32 n)
 {
     u64 y;
     static u64 mag01[2]={0x0, CMATH_MATRIX_A};
@@ -61,7 +61,7 @@ u32 RandomGenerator::random( u32 n )
 }
 
 
-float RandomGenerator::random( )
+float RandomGenerator::random()
 {
 	f32 r = (f32)random(std::numeric_limits<u32>::max());
 	f32 divisor = (f32)std::numeric_limits<u32>::max();
@@ -83,12 +83,12 @@ void RandomGenerator::setRandomSeed(u32 n)
 	rseed = n;
 }
 
-u32 RandomGenerator::getRandomSeed(void)
+u32 RandomGenerator::getRandomSeed()
 {
 	return(rseed);
 }
 
-void RandomGenerator::randomize(void)
+void RandomGenerator::randomize()
 {
 	setRandomSeed((u32)time(NULL));
 }

@@ -33,14 +33,14 @@ namespace fs
         RandomGenerator();	
 
         // Random u32 from 0 to n (not including n).
-        unsigned int	random( unsigned int n );
+        unsigned int	random(u32 n);
 
         // Random float from 0 to 1 (float)
-        float			random( );
+        float			random();
 
-        void			setRandomSeed(unsigned int n);
-        unsigned int	getRandomSeed(void);
-        void			randomize(void);
+        void			setRandomSeed(u32 n);
+        unsigned int	getRandomSeed();
+        void			randomize();
     };
 }
 #endif

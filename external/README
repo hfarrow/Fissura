@@ -1,0 +1,3 @@
+The following system libs must be installed on the system:
+    boost (v1.54)
+    tinyxml (v1)

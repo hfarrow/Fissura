@@ -23,7 +23,7 @@ namespace fs
 
 		// Using a backing page allocator will allow the heap to grow and be tracked
 		// through the backing allocator.
-		HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator);
+		HeapAllocator(const fschar* const pName, Allocator& backingAllocator);
 		~HeapAllocator();
 
 		virtual void* allocate(size_t size, u8 alignment) override;
@@ -40,7 +40,7 @@ namespace fs
 		size_t _memorySize;
 		mspace _mspace;
 		u32 _totalNumAllocations;
-		PageAllocator* _pBackingAllocator;
+		Allocator* _pBackingAllocator;
 	};
 }
 

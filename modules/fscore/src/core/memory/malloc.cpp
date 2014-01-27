@@ -222,7 +222,7 @@ unsigned char _BitScanReverse(unsigned long *index, unsigned long mask);
 #define MMAP_FLAGS           (MAP_PRIVATE|MAP_ANONYMOUS)
 #define MMAP_DEFAULT(s)       fsmmap((s))
 //#define MMAP_DEFAULT(s)       mmap(0, (s), MMAP_PROT, MMAP_FLAGS, -1, 0)
-fs::PageAllocator* gpVirtualAllocator = nullptr;
+fs::Allocator* gpVirtualAllocator = nullptr;
 
 static FORCEINLINE void* fsmmap(size_t size)
 {

@@ -30,5 +30,6 @@
 #include "fscore/allocators/proxy_allocator.h"
 #include "fscore/allocators/stack_allocator.h"
 #include "fscore/allocators/trace_allocator.h"
+#include "fscore/allocators/thread_safe_allocator.h"
 
 #endif

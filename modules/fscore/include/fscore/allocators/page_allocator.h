@@ -25,7 +25,7 @@ namespace internal
 		virtual size_t getTotalUsedMemory() const override;
 		virtual u32 getTotalNumAllocations() const override;
 
-        virtual bool deallocate(void* p, size_t size);
+        virtual bool deallocate(void* p, size_t size) override;
 
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;

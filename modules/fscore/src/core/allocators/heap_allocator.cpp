@@ -8,7 +8,7 @@
 
 using namespace fs;
 
-extern PageAllocator* gpVirtualAllocator;
+extern Allocator* gpVirtualAllocator;
 
 HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void* pMemory)
 	:
@@ -21,7 +21,7 @@ HeapAllocator::HeapAllocator(const fschar* const  pName, size_t memorySize, void
 	createHeap();	
 }
 
-HeapAllocator::HeapAllocator(const fschar* const pName, PageAllocator& backingAllocator)
+HeapAllocator::HeapAllocator(const fschar* const pName, Allocator& backingAllocator)
 	:
 	Allocator(pName),
 	_pMemory(nullptr),

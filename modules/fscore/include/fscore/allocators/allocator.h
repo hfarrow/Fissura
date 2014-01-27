@@ -30,6 +30,7 @@ namespace fs
 
 		virtual void* allocate(size_t size, u8 alignment) = 0;
 		virtual bool deallocate(void* p) = 0;
+		virtual bool deallocate(void* p, size_t size){(void)size; return deallocate(p);}
 		virtual void clear() = 0;
 		virtual bool canDeallocate() const = 0;
 		virtual size_t getTotalUsedMemory() const = 0;

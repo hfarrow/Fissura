@@ -30,7 +30,7 @@ namespace internal
 		u32 calcRequiredPages(size_t size) const;
 		size_t getPageSize() const;
 
-        virtual bool deallocate(void* p, size_t size);
+        virtual bool deallocate(void* p, size_t size) override;
 
 	private:
 		u32 _totalNumAllocations;

@@ -7,9 +7,12 @@ using namespace fs;
 
 GameApp* gpApp = nullptr;
 PageAllocator* gpGeneralPage = nullptr;
+ThreadSafeAllocator* gpGeneralPageTS = nullptr;
 Allocator* gpFsMainHeap = nullptr;
+Allocator* gpFsMainHeapTS = nullptr;
 #ifdef _DEBUG
 Allocator* gpFsDebugHeap = nullptr;
+Allocator* gpFsDebugHeapTS = nullptr;
 #endif
 
 GameAppRunner::GameAppRunner()
@@ -50,19 +53,23 @@ int GameAppRunner::runGameApp()
 #endif
 
 
-    u8 pAllocatorMemory[sizeof(PageAllocator) + (2 * sizeof(HeapAllocator))];
+    u8 pAllocatorMemory[sizeof(PageAllocator) + sizeof(ThreadSafeAllocator) + (2 * sizeof(HeapAllocator))];
     u8* pNextAllocation = pAllocatorMemory;
 	gpGeneralPage = new(pNextAllocation) PageAllocator("gpGeneralPage");
-#ifdef _DEBUG
     pNextAllocation += u8(sizeof(PageAllocator));
-	gpFsDebugHeap = new(pNextAllocation) HeapAllocator("gpFsDebugHeap", *gpGeneralPage);
-    Memory::setDefaultDebugAllocator(gpFsDebugHeap);
+    gpGeneralPageTS = new(pNextAllocation) ThreadSafeAllocator("gpGeneralPageTS", *gpGeneralPage);
+#ifdef _DEBUG
+    pNextAllocation += u8(sizeof(ThreadSafeAllocator));
+	gpFsDebugHeap = new(pNextAllocation) HeapAllocator("gpFsDebugHeap", *gpGeneralPageTS);
+    gpFsDebugHeapTS = FS_NEW_WITH(ThreadSafeAllocator, gpFsDebugHeap)
+        ("gpFsDebugHeapTS", *gpFsDebugHeap);
+    Memory::setDefaultDebugAllocator(gpFsDebugHeapTS);
 #endif
     pNextAllocation += u8(sizeof(HeapAllocator));
-	gpFsMainHeap = new(pNextAllocation) HeapAllocator("gpFsMainHeap", *gpGeneralPage);
-    Memory::setDefaultAllocator(gpFsMainHeap);
-    
-
+	gpFsMainHeap = new(pNextAllocation) HeapAllocator("gpFsMainHeap", *gpGeneralPageTS);
+    gpFsMainHeapTS = FS_NEW_WITH(ThreadSafeAllocator, gpFsMainHeap)
+        ("gpFsMainHeapTS", *gpFsMainHeap);
+    Memory::setDefaultAllocator(gpFsMainHeapTS);
 
     Clock::init();
 
@@ -74,8 +81,11 @@ int GameAppRunner::runGameApp()
     // allocators must be created before the tracker is initialized
     // because the tracker init needs to allocate memory from debug heap.
     pTracker->registerAllocator(gpGeneralPage);
+    pTracker->registerAllocator(gpGeneralPageTS);
     pTracker->registerAllocator(gpFsDebugHeap);
+    pTracker->registerAllocator(gpFsDebugHeapTS);
     pTracker->registerAllocator(gpFsMainHeap);
+    pTracker->registerAllocator(gpFsMainHeapTS);
 #endif
 
 	// TODO: gpApp->initOption("PlayerOptions.xml", lpCmdLine);
@@ -96,10 +106,13 @@ int GameAppRunner::runGameApp()
     Memory::destroyTracker();
 #endif
 
+    FS_DELETE_WITH(gpFsMainHeapTS, gpFsMainHeap);
 	static_cast<HeapAllocator*>(gpFsMainHeap)->~HeapAllocator();
 #ifdef _DEBUG
+    FS_DELETE_WITH(gpFsDebugHeapTS, gpFsDebugHeap);
 	static_cast<HeapAllocator*>(gpFsDebugHeap)->~HeapAllocator();
 #endif
+    gpGeneralPageTS->~ThreadSafeAllocator();
 	gpGeneralPage->~PageAllocator();
 
 	return retCode;
@@ -161,6 +174,7 @@ bool GameApp::initLogger()
 
 bool GameApp::initConfig()
 {
+    FS_INFO("GameApp::initConfig");
     FS_ASSERT(_pBasePath);
 
     return true;
@@ -168,6 +182,7 @@ bool GameApp::initConfig()
 
 bool GameApp::initWindow()
 {
+    FS_INFO("GameApp::initWindow");
 	_pWindow = SDL_CreateWindow(getGameTitle(),
 							   SDL_WINDOWPOS_UNDEFINED,
 							   SDL_WINDOWPOS_UNDEFINED,
@@ -186,6 +201,7 @@ bool GameApp::initWindow()
 
 void GameApp::run()
 {
+    FS_INFO("GameApp::run");
 	_isRunning = true;
 
 	SDL_Event event;
@@ -238,6 +254,7 @@ void GameApp::onEvent(SDL_Event* pEvent)
 
 void GameApp::exit()
 {
+    FS_INFO("GameApp::exit");
 	_isRunning = false;
 }
 
@@ -248,7 +265,18 @@ const Clock& GameApp::getClock() const
 
 void GameApp::shutdown()
 {
+    FS_INFO("GameApp::shutdown");
 	onShutdown();
+
+    FS_INFO("Memory Report after onShutDown():");
+    MemoryTracker::Report report = Memory::getTracker()->generateReport();
+    for(auto it = report.allocators->begin(); it != report.allocators->end(); ++it)
+    {
+        FS_INFO(boost::format("Allocator[%1%] total=%2% peak=%3%")
+                % it->pAllocator->getName() 
+                % it->usedMemory
+                % it->peakUsedMemory);
+    }
 
 	SDL_DestroyWindow(_pWindow);
     Logger::destroy();

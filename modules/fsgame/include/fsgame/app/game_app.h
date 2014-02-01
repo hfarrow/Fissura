@@ -7,6 +7,8 @@
 
 namespace fs
 {
+    class IMemoryPolicy;
+
 	class GameAppRunner : Uncopyable
 	{
 	public:
@@ -38,9 +40,12 @@ namespace fs
 
 		virtual void onEvent(SDL_Event* pEvent);
 		virtual void onUpdate(f32 elapsedTime) = 0;
+        
+        virtual IMemoryPolicy* createMemoryPolicy(); 
 
 	private:
 		bool init();
+        bool initMemory();
         bool initPaths();
         bool initLogger();
         bool initConfig();
@@ -48,6 +53,7 @@ namespace fs
 		void run();
 		void shutdown();
 
+        IMemoryPolicy* _pMemoryPolicy;
         char* _pBasePath;
 		bool _isRunning;
 		SDL_Window* _pWindow;

@@ -12,13 +12,13 @@ include_directories(${PROJECT_INCLUDE_DIR})
 file(GLOB_RECURSE PROJECT_SOURCE_FILES 
     "${PROJECT_SOURCE_DIR}/*.cpp"
     "${PROJECT_SOURCE_DIR}/*.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS 
-    "${PROJECT_SOURCE_DIR}/*_windows.cpp"
-    "${PROJECT_SOURCE_DIR}/*_windows.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_LINUX 
-    "${PROJECT_SOURCE_DIR}/*_linux.cpp"
-    "${PROJECT_SOURCE_DIR}/*_linux.c")
-list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
+#file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS 
+    #    "${PROJECT_SOURCE_DIR}/*_windows.cpp"
+    #    "${PROJECT_SOURCE_DIR}/*_windows.c")
+#file(GLOB_RECURSE PROJECT_SOURCE_FILES_LINUX 
+    #    "${PROJECT_SOURCE_DIR}/*_linux.cpp"
+    #    "${PROJECT_SOURCE_DIR}/*_linux.c")
+#list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
 
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 
@@ -43,7 +43,6 @@ target_link_libraries(${PROJECT_NAME}-test
                       ${Boost_DATE_TIME_LIBRARY}
                       ${SDL2_LIBRARIES}
                       ${TINYXML_LIBRARIES}
-                      fstest
                       )
 
 set_target_properties(${PROJECT_NAME}-test 

@@ -20,10 +20,10 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
-add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                      )
+#add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
+#target_link_libraries(${PROJECT_NAME}
+#                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+#                      )
 
 # Spikes
 add_subdirectory(spikes)

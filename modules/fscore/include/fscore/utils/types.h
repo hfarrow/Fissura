@@ -9,10 +9,11 @@
 #include <vector>
 #include <list>
 #include <functional>
-#include <exception>
+//#include <exception>
 
 namespace fs
 {
+    /*
 	template<typename T> class StlAllocator;
 
     template<typename T>
@@ -35,6 +36,7 @@ namespace fs
 	#define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>>>
 	#define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
 	#define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
+    */
 
 	typedef wchar_t fswchar;
 	typedef char fschar;
@@ -54,7 +56,7 @@ namespace fs
 	typedef std::uint_fast32_t u32f;
 	typedef __m128 vf32;
 
-	typedef std::exception exception;
+	//typedef std::exception exception;
 
 	class Uncopyable
 	{

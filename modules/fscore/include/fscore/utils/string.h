@@ -9,8 +9,8 @@
 
 namespace fs
 {
-	typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> fsstring;
-    typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocator<wchar_t>> fswstring;
+	//typedef std::basic_string<char, std::char_traits<char>, StlAllocator<char>> fsstring;
+    //typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocator<wchar_t>> fswstring;
 
     class HashedString
     {

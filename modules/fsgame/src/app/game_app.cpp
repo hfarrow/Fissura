@@ -3,6 +3,8 @@
 #include "fscore.h"
 #include "fsgame/app/game_app.h"
 #include "fsgame/app/memory_policy.h"
+#include "fsgame/app/system_interfaces.h"
+#include "fsgame/app/game_context.h"
 
 using namespace fs;
 
@@ -49,15 +51,18 @@ GameApp::GameApp() :
     _pBasePath(nullptr),
     _isRunning(false),
     _pWindow(nullptr),
+    _processManager(ProcessManager()),
     _clock(0)
 {
 	gpApp = this;
+    GameContext::GameApp = this;
 }
 
 GameApp::~GameApp()
 {
 
 }
+
 
 IMemoryPolicy* GameApp::createMemoryPolicy()
 {
@@ -184,6 +189,7 @@ void GameApp::run()
         while(accumulator >= dt)
         {
             f32 dtScaled = _clock.update(dt);
+            _processManager.updateProcesses(dtScaled);
             onUpdate(dtScaled);
             accumulator -= dt;
         }
@@ -214,9 +220,19 @@ void GameApp::exit()
 	_isRunning = false;
 }
 
-const Clock& GameApp::getClock() const
+const char* GameApp::getBasePath() const
 {
-    return _clock;
+    return _pBasePath;
+}
+
+const Clock* GameApp::getClock() const
+{
+    return &_clock;
+}
+
+ProcessManager* GameApp::getProcessManager()
+{
+    return &_processManager;
 }
 
 void GameApp::shutdown()
@@ -224,13 +240,15 @@ void GameApp::shutdown()
     FS_INFO("GameApp::shutdown");
 	onShutdown();
 
+    _processManager.abortAllProcesses(true);
+
     if(Memory::getTracker())
     {
         FS_INFO("Memory Report after onShutDown():");
         MemoryTracker::Report report = Memory::getTracker()->generateReport();
         for(auto it = report.allocators->begin(); it != report.allocators->end(); ++it)
         {
-            FS_INFO(boost::format("Allocator[%1%] total=%2% peak=%3%")
+            FS_INFO(boost::format("    Allocator[%1%] total=%2% peak=%3%")
                     % it->pAllocator->getName() 
                     % it->usedMemory
                     % it->peakUsedMemory);

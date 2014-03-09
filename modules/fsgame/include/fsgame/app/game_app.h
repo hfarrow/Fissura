@@ -4,6 +4,8 @@
 #include <SDL.h>
 
 #include "fscore.h"
+#include "fsgame/app/system_interfaces.h"
+#include "fsgame/process/process_manager.h"
 
 namespace fs
 {
@@ -20,7 +22,7 @@ namespace fs
 		bool _isRunning;
 	};
 
-	class GameApp : Uncopyable
+	class GameApp : public IGameApp, Uncopyable
 	{
 	public:
 		friend class GameAppRunner;
@@ -28,11 +30,11 @@ namespace fs
 		GameApp();
 		virtual ~GameApp();
 
-		void exit();
-        const Clock& getClock() const;
+        virtual const char* getBasePath() const override;
+        virtual ProcessManager* getProcessManager() override;
+        virtual const Clock* getClock() const override;
+		virtual void exit() override;
 
-		virtual const char* getGameTitle() const = 0;
-        const char* getBasePath() const;
 
 	protected:
 		virtual bool onInit() = 0;
@@ -57,6 +59,7 @@ namespace fs
         char* _pBasePath;
 		bool _isRunning;
 		SDL_Window* _pWindow;
+        ProcessManager _processManager;
         Clock _clock;
 	};
 }

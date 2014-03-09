@@ -27,6 +27,10 @@ namespace fs
     protected:
         virtual bool onInit() override
         {
+            StlAllocator<DelayProcess> allocator(*Memory::getDefaultSystemAllocator());
+            StrongProcessPtr pDelay = std::allocate_shared<DelayProcess>(allocator, 3);
+            getProcessManager()->attachProcess(pDelay);
+
             return true;
         }
 

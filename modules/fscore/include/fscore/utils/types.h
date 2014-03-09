@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 #include <functional>
 #include <exception>
 
@@ -25,6 +26,9 @@ namespace fs
 
     template<typename T>
     using Vector = std::vector<T, StlAllocator<T>>;
+
+    template<typename T>
+    using List = std::list<T, StlAllocator<T>>;
     
     // Pre C++11... Use above template alaises if possible.
 	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>

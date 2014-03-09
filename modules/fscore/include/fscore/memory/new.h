@@ -67,7 +67,7 @@ inline void operator delete[](void* ptr, const std::nothrow_t&) noexcept
         return;
 
     fs::Memory::getDefaultAllocator()->deallocate(ptr);
-}
+};
 
 inline void* operator new (size_t size)
 {
@@ -97,6 +97,9 @@ namespace fs
 
     //template<typename T, typename Alloc, typename... Args>
     //UniquePtr<T> allocate_unique(Alloc* allocator, Args&&... args);
+    
+    //template<class T, class... Args>
+    //std::shared_ptr<T> allocate_shared(Args&&... args);
     
 }
 

@@ -11,7 +11,11 @@ namespace fs
         virtual void init() = 0;
         virtual void destroy() = 0;
     };
-
+    
+    /*
+     * This policy provides a main HeapAllocator and a debug HeapAllocator that are thread 
+     * safe and backed by a single PageAllocator
+     */
     class StandardMemoryPolicy : public IMemoryPolicy, Uncopyable
     {
     public:

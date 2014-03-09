@@ -18,3 +18,10 @@ std::unique_ptr<T> fs::make_unique(Args&&... args)
 //    return UniquePtr<T>(FS_NEW_WITH(T, allocator)(std::forward<Args>(args)...), 
 //                              [allocator](T* p){FS_DELETE_WITH(p, allocator);});
 //}
+
+//template<class T, class... Args>
+//std::shared_ptr<T> fs::allocate_shared(Args&&... args)
+//{
+    //StlAllocator<T> allocator = StlAllocator<T>(Memory::getDefaultAllocator());
+    //return std::allocate_shared<T>(allocator, std::forward<Args>(args)...);
+//}

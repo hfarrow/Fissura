@@ -9,9 +9,12 @@
 #include "fscore/utils/math.h"
 
 // Debugging
-//#include "fscore/debugging/assert.h"
+#include "fscore/debugging/assert.h"
 //#include "fscore/debugging/logger.h"
 
 // Memory
+#include "fscore/memory/utils.h"
+#include "fscore/memory/linear_allocator.h"
+#include "fscore/memory/page_allocator.h"
 
 #endif

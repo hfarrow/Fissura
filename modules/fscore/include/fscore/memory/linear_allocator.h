@@ -28,6 +28,11 @@ namespace fs
             _current = _start;
         }
 
+        inline size_t getAllocatedSpace()
+        {
+            return _current - _start;
+        }
+
     private:
         uptr _start;
         uptr _end;

@@ -41,9 +41,13 @@ LinearAllocator::~LinearAllocator()
 
 void* LinearAllocator::allocate(size_t size, size_t alignment, size_t offset)
 {
+    FS_ASSERT(alignment != 0);
+
     _current = pointerUtil::alignTop(_current + offset, alignment) - offset;
     void* userPtr = (void*) _current;
     _current += size;
+
+    FS_ASSERT(userPtr);
 
     if(_current >= _end)
     {

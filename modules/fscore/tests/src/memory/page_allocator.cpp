@@ -27,17 +27,17 @@ BOOST_AUTO_TEST_CASE(allocate_and_free)
 {
     PageAllocator allocator;
 
-    void* ptr = allocator.allocate(pointerUtil::getPageSize(), 0, 0);
+    void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), 0, 0);
     BOOST_REQUIRE(ptr);
-    allocator.free(ptr, pointerUtil::getPageSize());
+    allocator.free(ptr, PagedMemoryUtil::getPageSize());
     
     // By default will allocate up to page size.
     ptr = allocator.allocate(32, 0, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr, 32);
 
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(pointerUtil::getPageSize(), 1, 0);});
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(pointerUtil::getPageSize(), 0, 1);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(PagedMemoryUtil::getPageSize(), 1, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(PagedMemoryUtil::getPageSize(), 0, 1);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(-1, 0, 0);});
 }
 

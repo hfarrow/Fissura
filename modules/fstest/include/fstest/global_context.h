@@ -21,15 +21,17 @@ namespace test
     public:
         GlobalContext()
         {
-            _pInstance = this;
         }
 
         ~GlobalContext()
         {
-        
         }
 
-        static GlobalContext* instance();
+        static GlobalContext* instance()
+        {
+            static GlobalContext context;
+            return &context;
+        }
 
         bool requireAssert(std::function<void()> func)
         {
@@ -51,13 +53,7 @@ namespace test
             // BOOST_REQUIRE_THROW(monitor.execute([&func](){func(); return 0;}), boost::execution_exception);
             // BOOST_TEST_MESSAGE("GlobalContext requireAssert - End of expected assert above this point.");
         }
-
-    private:
-        static GlobalContext* _pInstance;
     };
-
-
-    GlobalContext* GlobalContext::_pInstance = nullptr;
 }
 }
 

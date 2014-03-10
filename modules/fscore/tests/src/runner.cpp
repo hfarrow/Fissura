@@ -10,6 +10,7 @@ class GlobalFixture
 public:
     GlobalFixture()
     {
+        fs::setIgnoreAsserts(true);
     }
 
     ~GlobalFixture()

@@ -1,11 +1,20 @@
 #ifndef FS_MEMORY_UTILS_H
 #define FS_MEMORY_UTILS_H
 
-#if PLATFORM_ID == PLATFORM_LINUX
+#ifndef WINDOWS
     #include <unistd.h>
 #endif
 
+#include <sys/mman.h>
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
+#include <boost/format.hpp>
+
 #include "fscore/utils/types.h"
+#include "fscore/utils/platforms.h"
 
 namespace fs
 {
@@ -15,36 +24,36 @@ namespace fs
 
         // Calculate by what amount in bytes the pAddress must be moved
         // forward to be aligned by the specified amount.
-        inline uptr alignTop(uptr ptr, size_t alignment)
-        {
-            return ((ptr + alignment-1) & ~(alignment-1));
-        }
+        inline uptr alignTop(uptr ptr, size_t alignment);
 
         // Calculate by what amount in bytes the pAddress must be moved
         // forward to be aligned by the specified amount.
-        inline size_t alignTopAmount(uptr pAddress, size_t alignment)
-        {
-            u8 adjustment = alignment - (pAddress & (alignment-1));
+        inline size_t alignTopAmount(uptr pAddress, size_t alignment);
 
-            if(adjustment == alignment)
-            {
-                return 0;
-            }
-
-            return adjustment;
-        }
-
-        inline size_t getPageSize()
-        {
-#if PLATFORM_ID == PLATFORM_LINUX
-            return sysconf(_SC_PAGE_SIZE);
-#else
-            return 4096;
-#endif
-
-        }
     }
 
+    namespace internal
+    {   
+
+        // Platform specific utils for reserving and committing virtual address space.
+        // The default implementation in utils.inl should work for all unix platforms
+        // based on mmap and munmap.
+        template<u32 PlatformID>
+        class PagedMemoryUtil
+        {
+        public:
+            static inline size_t getPageSize();
+            static inline void* reserveMemory(size_t size);
+            static inline void* commitMemory(void* ptr, size_t);
+            static inline void* commitMemory(size_t);
+            static inline void decommitMemory(void* ptr, size_t size);
+            static inline void freeMemory(void* ptr, size_t size);
+        };
+    }
+
+    using PagedMemoryUtil = internal::PagedMemoryUtil<PLATFORM_ID>;
 }
+
+#include "fscore/memory/utils.inl"
 
 #endif

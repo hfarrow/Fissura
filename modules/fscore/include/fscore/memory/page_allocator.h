@@ -2,6 +2,7 @@
 #define FS_PAGE_ALLOCATOR_H
 
 #include "fscore/utils/types.h"
+#include "fscore/utils/platforms.h"
 #include "fscore/debugging/assert.h"
 
 namespace fs
@@ -9,8 +10,8 @@ namespace fs
     class PageAllocator
     {
     public:
-        PageAllocator();
-        ~PageAllocator();
+        PageAllocator(){}
+        ~PageAllocator(){}
 
         void* allocate(size_t size, size_t alignment = 0, size_t offset = 0);
         void free(void* ptr, size_t size);
@@ -27,5 +28,7 @@ namespace fs
         }
     };
 }
+
+
 
 #endif

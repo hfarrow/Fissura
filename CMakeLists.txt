@@ -11,7 +11,7 @@ set(CMAKE_C_FLAGS_MINSIZEREL      "-Os -DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE         "-O3 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO  "-O2 -g")
 
-set(CMAKE_CXX_FLAGS                 "-Wall -std=c++11")
+set(CMAKE_CXX_FLAGS                 "-Wall -std=c++11 -stdlib=libc++ -m64")
 set(CMAKE_CXX_FLAGS_DEBUG           "-g -D_DEBUG -DSDL_ASSERT_LEVEL=2")
 set(CMAKE_CXX_FLAGS_MINSIZEREL      "-Os -DNDEBUG -DSDL_ASSERT_LEVEL=1")
 set(CMAKE_CXX_FLAGS_RELEASE         "-O3 -DNDEBUG -DSDL_ASSERT_LEVEL=1")
@@ -23,7 +23,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXTERNAL_LIBRARY_INSTALL_PATH ${CMAKE_SOURCE_DIR}/external/build)
 
 find_package(SDL2 REQUIRED)
-find_package(Boost 1.54.0 COMPONENTS unit_test_framework thread date_time chrono system REQUIRED)
+find_package(Boost 1.55.0 COMPONENTS unit_test_framework thread date_time chrono system REQUIRED)
 find_package(TinyXML REQUIRED)
 
 add_subdirectory(modules/fstest)

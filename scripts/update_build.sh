@@ -11,15 +11,15 @@ mkdir build/RelWithDebInfo
 mkdir build/MinSizeRel
 
 cd build/Debug
-cmake -DCMAKE_USER_MAKE_RULES_OVERRIDE=~/dev/ClangOverrides.txt -DCMAKE_BUILD_TYPE:STRING=Debug ../..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE:STRING=Debug ../..
 
 cd ../Release
-cmake -DCMAKE_USER_MAKE_RULES_OVERRIDE=~/dev/ClangOverrides.txt -DCMAKE_BUILD_TYPE:STRING=Release ../..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE:STRING=Release ../..
 
 cd ../RelWithDebInfo
-cmake -DCMAKE_USER_MAKE_RULES_OVERRIDE=~/dev/ClangOverrides.txt -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo ../..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo ../..
 
 cd ../MinSizeRel
-cmake -DCMAKE_USER_MAKE_RULES_OVERRIDE=~/dev/ClangOverrides.txt -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ../..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ../..
 
 popd

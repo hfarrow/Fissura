@@ -5,23 +5,10 @@
 
 using namespace fs;
 
-LinearAllocator::LinearAllocator(size_t size)
-{
-    FS_ASSERT(size > 0);
 
-    static PageAllocator allocator;
-    _pBackingAllocator = &allocator;
-
-    void* ptr = allocator.allocate(size);
-    FS_ASSERT_MSG(ptr, "Failed to allocate pages for LinearAllocator");
-
-    _start = (uptr)ptr;
-    _end = _start + size;
-    _current = _start;
-}
 
 LinearAllocator::LinearAllocator(void* start, void* end) :
-    _pBackingAllocator(nullptr)
+    _deleter(nullptr)
 {
     FS_ASSERT(start);
     FS_ASSERT(end);
@@ -33,9 +20,9 @@ LinearAllocator::LinearAllocator(void* start, void* end) :
 
 LinearAllocator::~LinearAllocator()
 {
-    if(_pBackingAllocator)
+    if(_deleter)
     {
-        _pBackingAllocator->free((void*)_start, (size_t)(_end - _start));
+        _deleter();
     }
 }
 

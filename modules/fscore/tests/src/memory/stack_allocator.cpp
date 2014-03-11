@@ -8,9 +8,9 @@ using namespace fs;
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(memory)
 
-struct LinearAllocatorFixture
+struct StackAllocatorFixture
 {
-    LinearAllocatorFixture() :
+    StackAllocatorFixture() :
         allocatorSize(PagedMemoryUtil::getPageSize() * 8),
         largeAllocationSize(PagedMemoryUtil::getPageSize()),
         smallAllocationSize(32),
@@ -19,7 +19,7 @@ struct LinearAllocatorFixture
     {
     }
 
-    ~LinearAllocatorFixture()
+    ~StackAllocatorFixture()
     {
     
     }
@@ -31,41 +31,46 @@ struct LinearAllocatorFixture
     const size_t defaultAlignment;
 };
 
-BOOST_FIXTURE_TEST_SUITE(linear_allocator, LinearAllocatorFixture)
+BOOST_FIXTURE_TEST_SUITE(stack_allocator, StackAllocatorFixture)
 
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 {
-    LinearAllocator allocator(allocatorSize);
+    StackAllocator allocator(allocatorSize);
     BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
-    // Alignment can cause getAllocatedSpace to be greater than the request size.
+    // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
     BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
 
-    FS_REQUIRE_ASSERT([&](){allocator.free(ptr);});
+    size_t oldSize = allocator.getAllocatedSpace();
+    allocator.free(ptr);
+    BOOST_CHECK(oldSize > allocator.getAllocatedSpace());
 }
 
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
 {
     u8 pMemory[allocatorSize];
 
-    LinearAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
+    StackAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
     BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
     void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
-    // Alignment can cause getAllocatedSpace to be greater than the request size.
+    // Stack allocator has memory overhead so getAllocatedSpace will be greater than what
+    // we requested. Alignment also accounts for overhead.
     BOOST_CHECK(allocator.getAllocatedSpace() >= PagedMemoryUtil::getPageSize());
 
-    FS_REQUIRE_ASSERT([&](){allocator.free(ptr);});
+    size_t oldSize = allocator.getAllocatedSpace();
+    allocator.free(ptr);
+    BOOST_CHECK(oldSize > allocator.getAllocatedSpace());
 }
 
 BOOST_AUTO_TEST_CASE(allocate_aligned)
 {
-    LinearAllocator allocator(allocatorSize);
+    StackAllocator allocator(allocatorSize);
 
     void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
     BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 8) == 0);
@@ -81,16 +86,17 @@ BOOST_AUTO_TEST_CASE(allocate_aligned)
 
 BOOST_AUTO_TEST_CASE(allocate_offset)
 {
-    LinearAllocator allocator(allocatorSize);
+    StackAllocator allocator(allocatorSize);
 
 }
 
 BOOST_AUTO_TEST_CASE(allocate_aligned_offset)
 {
-    LinearAllocator allocator(allocatorSize);
+    StackAllocator allocator(allocatorSize);
 
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
+

@@ -51,6 +51,8 @@ flags = [
 # For a C project, you would set this to something like 'c99' instead of
 # 'c++11'.
 '-std=c++11',
+#'-stdlib=libc++',
+#'-m64',
 # ...and the same thing goes for the magic -x option which specifies the
 # language that the files to be compiled are written in. This is mostly
 # relevant for c++ headers.
@@ -68,21 +70,25 @@ flags = [
 #'-isystem',
 #'../llvm/tools/clang/include',
 '-I',
-'./modules/fscore/include',
+'modules/fscore/include',
 '-I',
-'./modules/fscore/tests/include',
+'modules/fscore/tests/include',
 '-I',
-'./modules/fsgame/include',
+'modules/fsgame/include',
 '-I',
-'./modules/fsgame/tests/include',
+'modules/fsgame/tests/include',
 '-I',
-'./modules/fstest/include',
+'modules/fstest/include',
 '-I',
-'./external/SDL2/include',
+'external/SDL2/include',
+'-isystem',
+'/usr/local/include/boost',
 '-isystem',
 '/usr/local/boost_1_54_0',
 '-isystem',
-'/usr/include/'
+'/usr/include/',
+'-isystem',
+'/usr/lib/c++/v1'
 #'-I',
 #'-isystem',
 #'./tests/gmock/gtest',

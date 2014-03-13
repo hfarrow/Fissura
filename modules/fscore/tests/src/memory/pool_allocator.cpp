@@ -171,6 +171,37 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
     }
 }
 
+BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
+{
+    const size_t elementSize = 8;
+    const size_t alignment = 8;
+    const size_t offset = 0;
+    const size_t totalMemory = 256;
+    const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
+    BOOST_REQUIRE(slotSize == elementSize);
+
+    u8 pMemory[totalMemory];
+
+    const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
+    const size_t availableMemory = totalMemory - (start - (uptr)pMemory);
+    const uptr end = start + availableMemory;
+    BOOST_REQUIRE(start == (uptr)pMemory);
+    BOOST_REQUIRE(availableMemory == totalMemory);
+
+    Freelist freelist((void*)start, (void*)end, elementSize, alignment, offset);
+    verifyEmptyFreelistStructure(freelist, end, slotSize, elementSize, alignment, offset);
+    
+    const u32 numElements = availableMemory / slotSize;
+    BOOST_REQUIRE(numElements > 0);
+    for(u32 i = 0; i < numElements; ++i)
+    {
+       BOOST_CHECK(freelist.obtain());
+    }
+
+    void* ptr = freelist.obtain();
+    BOOST_REQUIRE(ptr == nullptr);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

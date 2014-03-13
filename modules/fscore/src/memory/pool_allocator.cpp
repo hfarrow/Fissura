@@ -3,8 +3,6 @@
 #include "fscore/memory/utils.h"
 #include "fscore/debugging/assert.h"
 
-#include <iostream>
-
 using namespace fs;
 
 Freelist::Freelist(void* start, void* end, size_t elementSize, size_t alignment, size_t offset)

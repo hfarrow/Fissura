@@ -24,7 +24,7 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
     //PRINT("freelist start = " << freelist.getStart());
     FS_ASSERT(freelist.getStart());
     
-    as_freelist = freelist.getNext();
+    as_uptr = freelist.peekNext();
     uptr start = as_uptr;
     //PRINT("start = " << start);
 
@@ -36,16 +36,18 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
     const FreelistNode<IndexSize>* runner = as_freelist;
     //PRINT("runner  = " << as_uptr);
 
-    FS_ASSERT(runner->next);
-    while(runner->next)
+    FS_ASSERT(runner->offset);
+    size_t counter = 1;
+    while(runner->offset)
     {
-        //PRINT("runner->next = " << runner->next);
+        counter++;
+        //PRINT("runner->offset = " << runner->offset);
 
         uptr ptrPrev = as_uptr;
         //PRINT("ptrPrev = " << ptrPrev);
-        runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->next);
+        //PRINT("next offset = " << runner->offset);
+        runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->offset);
         as_freelist = runner;
-        //PRINT("runner  = " << as_uptr);
         uptr ptrNext = as_uptr;
         //PRINT("ptrNext = " << ptrNext);
 
@@ -59,35 +61,60 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
 
         //PRINT("");
     }
+    
+    size_t numElements = (end - start) / slotSize;
+    FS_ASSERT(numElements == freelist.getNumElements());
+    FS_ASSERT(runner->offset == 0);
+    FS_ASSERT(counter == numElements);
 }
 
 template<u8 IndexSize>
-Freelist<IndexSize> createAndVerifyFreelist(size_t elementSize, size_t alignment, size_t offset)
+Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
 {
     PRINT("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
-    const size_t allocatorSize = PagedMemoryUtil::getPageSize() * 2;
-    u8 pMemory[allocatorSize];
-
     if(elementSize < IndexSize)
     {
         elementSize = IndexSize;
-        PRINT("adjusted element size to " << elementSize);
+        //PRINT("adjusted element size to " << elementSize);
     }
 
     const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
     const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
-    const size_t availableMemory = allocatorSize - (start - (uptr)pMemory);
+    const size_t availableMemory = memorySize - (start - (uptr)pMemory);
     const uptr end = start + availableMemory;
-
-    PRINT("slotSize = " << slotSize);
-    PRINT("start    = " << start);
-    PRINT("end      = " << end);
-    PRINT("memory   = " << availableMemory);
 
     Freelist<IndexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
     verifyEmptyFreelistStructure(freelist, end, slotSize, elementSize, alignment, offset);
 
     return freelist;
+}
+
+void allocateOutOfMemory()
+{
+    u8 pMemory[256];
+    Freelist<8> freelist = createAndVerifyFreelist<8>(pMemory, 256, 8, 8, 0);
+    //PRINT("first = " << freelist.getStart());
+    //PRINT("first = " << freelist.peekNext());
+    //PRINT("offset = " << *(u64*)freelist.getStart());
+
+    uptr last = freelist.getStart();
+    uptr current = 0;
+
+    //PRINT("numElements = " << freelist.getNumElements());
+    for(u32 i = 0; i < freelist.getNumElements(); ++i)
+    {
+        //PRINT("i = " << i );
+        current = (uptr)freelist.obtain();
+        FS_ASSERT(current);
+        //PRINT("current = " << current);
+        //PRINT("last    = " << last);
+        //PRINT("diff    = " << current - last);
+        last = current;
+    }
+
+    void* ptr = freelist.obtain();
+    FS_ASSERT(ptr == nullptr);
+
 }
 
 int main( int, char **)
@@ -97,9 +124,12 @@ int main( int, char **)
     const size_t alignmentSizeMax = 32;
     const size_t offsetSizeIncrement = 2;
 
-    size_t elementSize = 2;
+    size_t elementSize = 4;
     size_t alignment = 2;
     size_t offset = 0;
+    
+    const size_t memorySize = PagedMemoryUtil::getPageSize() * 2;
+    u8 pMemory[memorySize];
     
     // Test many different combinations of elementSize, alignment, and offset.
     while(elementSize <= elementSizeMax)
@@ -108,9 +138,9 @@ int main( int, char **)
         {
             while(offset < elementSize)
             {
-                createAndVerifyFreelist<2>(elementSize, alignment, offset);
-                createAndVerifyFreelist<4>(elementSize, alignment, offset);
-                createAndVerifyFreelist<8>(elementSize, alignment, offset);
+                createAndVerifyFreelist<2>(pMemory, memorySize, elementSize, alignment, offset);
+                createAndVerifyFreelist<4>(pMemory, memorySize, elementSize, alignment, offset);
+                createAndVerifyFreelist<8>(pMemory, memorySize, elementSize, alignment, offset);
                 
                 offset += offsetSizeIncrement;
             }
@@ -122,6 +152,8 @@ int main( int, char **)
         elementSize += elementSizeIncrement;
         alignment = 8;
     }
+    
+    allocateOutOfMemory();
 
     return 0;
 }

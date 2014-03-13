@@ -10,12 +10,12 @@ namespace fs
     template<u8 IndexSize = 0>
     struct FreelistNode {};
 
-    template<> struct FreelistNode<2> {u16 next;};
-    template<> struct FreelistNode<4> {u32 next;};
-    template<> struct FreelistNode<8> {u64 next;};
+    template<> struct FreelistNode<2> {u16 offset;};
+    template<> struct FreelistNode<4> {u32 offset;};
+    template<> struct FreelistNode<8> {u64 offset;};
 
     // Default 0 for sizeof(void*)
-    template<> struct FreelistNode<0> {uptr next;};
+    template<> struct FreelistNode<0> {uptr offset;};
 
     template<u8 IndexSize = 0>
     class Freelist
@@ -48,6 +48,7 @@ namespace fs
             // Calculate total available memory after alignment is factored in.
             const size_t size = (uptr)end - alignedStart;
             const u32 numElements = size / slotSize;
+            _numElements = numElements;
 
             union
             {
@@ -64,24 +65,32 @@ namespace fs
             FreelistNode<IndexSize>* runner = _next;
             for(size_t i = 1; i < numElements; ++i)
             {
-                runner->next = as_uptr - (uptr)start;
+                runner->offset = as_uptr - (uptr)start;
                 runner = as_self;
                 as_uptr += slotSize;
             }
-
-            runner->next = 0;
+            
+            runner->offset = 0;
         }
         
         inline void* obtain()
         {
             if(_next == nullptr)
             {
-                // out of available memory
                 return nullptr;
             }
 
             FreelistNode<IndexSize>* head = _next;
-            _next = (FreelistNode<IndexSize>*)(_start + head->next);
+
+            if(head->offset == 0)
+            {
+                _next = nullptr;
+            }
+            else
+            {
+                _next = (FreelistNode<IndexSize>*)(_start + head->offset);
+            }
+
             return head;
         }
 
@@ -89,7 +98,14 @@ namespace fs
         {
             FS_ASSERT(ptr);
             FreelistNode<IndexSize>* head = static_cast<FreelistNode<IndexSize>*>(ptr);
-            head->next = (uptr)_next - _start;
+            if(_next)
+            {
+                head->offset = (uptr)_next - _start;
+            }
+            else
+            {
+                head->offset = 0;
+            }
             _next = head;
         }
         
@@ -105,8 +121,14 @@ namespace fs
             return _start;
         }
 
+        inline size_t getNumElements() const
+        {
+            return _numElements;
+        }
+
     private:
         uptr _start;
+        size_t _numElements;
         FreelistNode<IndexSize>* _next;
     };
 }

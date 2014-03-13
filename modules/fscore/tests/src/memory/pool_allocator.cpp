@@ -25,10 +25,8 @@ struct PoolAllocatorFixture
     }
 
     template<u8 IndexSize>
-    Freelist<IndexSize> createAndVerifyFreelist(size_t elementSize, size_t alignment, size_t offset)
+    Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
     {
-        u8 pMemory[allocatorSize];
-
         if(elementSize < IndexSize)
         {
             elementSize = IndexSize;
@@ -36,7 +34,7 @@ struct PoolAllocatorFixture
 
         const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
         const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
-        const size_t availableMemory = allocatorSize - (start - (uptr)pMemory);
+        const size_t availableMemory = memorySize - (start - (uptr)pMemory);
         const uptr end = start + availableMemory;
 
         Freelist<IndexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
@@ -67,11 +65,14 @@ struct PoolAllocatorFixture
 
         const FreelistNode<IndexSize>* runner = as_freelist;
 
-        BOOST_REQUIRE(runner->next);
-        while(runner->next)
+        BOOST_REQUIRE(runner->offset);
+        size_t counter = 1;
+        while(runner->offset)
         {
+            counter++;
+
             uptr ptrPrev = as_uptr;
-            runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->next);
+            runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->offset);
             as_freelist = runner;
             uptr ptrNext = as_uptr;
 
@@ -83,6 +84,11 @@ struct PoolAllocatorFixture
             // Verify each free list pointer is slotSize apart.
             BOOST_REQUIRE(ptrNext - ptrPrev == slotSize);
         }
+        
+        size_t numElements = (end - start) / slotSize;
+        BOOST_REQUIRE(numElements == freelist.getNumElements());
+        BOOST_REQUIRE(runner->offset == 0);
+        BOOST_REQUIRE(counter == numElements);
     }
 
     template<u8 IndexSize>
@@ -132,6 +138,8 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
     size_t elementSize = 0;
     size_t alignment = 2;
     size_t offset = 0;
+
+    u8 pMemory[allocatorSize];
     
     // Test many different combinations of elementSize, alignment, and offset.
     while(elementSize <= elementSizeMax)
@@ -140,7 +148,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
         {
             while(offset < elementSize)
             {
-                Freelist<2> freelist2 = createAndVerifyFreelist<2>(elementSize, alignment, offset);
+                Freelist<2> freelist2 = createAndVerifyFreelist<2>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist2, elementSize, alignment, offset);
     
                 // Reduce run time by skipping this. If Freelist<2> works, it is likely larger IndexSizes
@@ -148,7 +156,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
                 //Freelist<4> freelist4 = createAndVerifyFreelist<4>(elementSize, alignment, offset);
                 //allocateAndFreeFromFreelist(freelist4, elementSize, alignment, offset);
                 
-                Freelist<8> freelist8 = createAndVerifyFreelist<8>(elementSize, alignment, offset);
+                Freelist<8> freelist8 = createAndVerifyFreelist<8>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist8, elementSize, alignment, offset);
                 
                 offset += offsetSizeIncrement;
@@ -162,7 +170,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
         alignment = 8;
     }
 }
-/*
+
 BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 {
     const size_t elementSize = 8;
@@ -174,16 +182,9 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 
     u8 pMemory[totalMemory];
 
-    const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
-    const size_t availableMemory = totalMemory - (start - (uptr)pMemory);
-    const uptr end = start + availableMemory;
-    BOOST_REQUIRE(start == (uptr)pMemory);
-    BOOST_REQUIRE(availableMemory == totalMemory);
-
-    Freelist freelist((void*)start, (void*)end, elementSize, alignment, offset);
-    verifyEmptyFreelistStructure(freelist, end, slotSize, elementSize, alignment, offset);
+    Freelist<8> freelist = createAndVerifyFreelist<8>(pMemory, totalMemory, elementSize, alignment, offset);
     
-    const u32 numElements = availableMemory / slotSize;
+    const u32 numElements = totalMemory / slotSize;
     BOOST_REQUIRE(numElements > 0);
     for(u32 i = 0; i < numElements; ++i)
     {
@@ -193,7 +194,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
     void* ptr = freelist.obtain();
     BOOST_REQUIRE(ptr == nullptr);
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

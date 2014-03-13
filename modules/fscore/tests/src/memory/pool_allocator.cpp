@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_SUITE(memory)
 struct PoolAllocatorFixture
 {
     PoolAllocatorFixture() :
-        allocatorSize(PagedMemoryUtil::getPageSize() * 8),
+        allocatorSize(PagedMemoryUtil::getPageSize() * 2),
         largeAllocationSize(PagedMemoryUtil::getPageSize()),
         smallAllocationSize(32),
         tinyAllocationSize(4),
@@ -23,6 +23,7 @@ struct PoolAllocatorFixture
     {
     
     }
+
 
     Freelist createAndVerifyFreelist(size_t elementSize, size_t alignment, size_t offset)
     {
@@ -75,6 +76,59 @@ struct PoolAllocatorFixture
         }
     }
 
+    void allocateAndFreeFromFreelist(Freelist& freelist, size_t elementSize, size_t alignment, size_t offset)
+    {
+        const uptr start = (uptr)freelist.getNext();
+        const uptr slotSize = pointerUtil::roundUp(elementSize, alignment);
+
+        uptr ptr = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptr);
+        BOOST_CHECK(ptr == start);
+        BOOST_CHECK(pointerUtil::alignTopAmount(ptr + offset, alignment) == 0);
+
+        // Obtain second slot. For current size and alignment the next slot should be exactly slotSize bytes forward.
+        uptr ptrNext = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptrNext);
+        BOOST_CHECK(ptr + slotSize == ptrNext);
+        BOOST_CHECK(slotSize >= elementSize);
+        BOOST_CHECK(pointerUtil::alignTopAmount(ptrNext + offset, alignment) == 0);
+        uptr originalPtr = ptrNext;
+        
+        // Releasing and obtaining should return the same slot.
+        freelist.release((void*)ptrNext);
+        ptrNext = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptrNext);
+        BOOST_CHECK(ptrNext == originalPtr);
+
+        freelist.release((void*)ptr);
+    }
+
+    void allocateAndFree(Freelist& freelist, size_t elementSize, size_t alignment, size_t offset)
+    {
+        const uptr start = (uptr)freelist.getNext();
+        const uptr slotSize = pointerUtil::roundUp(elementSize, alignment);
+
+        uptr ptr = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptr);
+        BOOST_CHECK(ptr == start);
+        BOOST_CHECK(pointerUtil::alignTopAmount(ptr + offset, alignment) == 0);
+
+        // Obtain second slot. For current size and alignment the next slot should be exactly slotSize bytes forward.
+        uptr ptrNext = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptrNext);
+        BOOST_CHECK(ptr + slotSize == ptrNext);
+        BOOST_CHECK(pointerUtil::alignTopAmount(ptrNext + offset, alignment) == 0);
+        uptr originalPtr = ptrNext;
+        
+        // Releasing and obtaining should return the same slot.
+        freelist.release((void*)ptrNext);
+        ptrNext = (uptr)freelist.obtain();
+        BOOST_REQUIRE(ptrNext);
+        BOOST_CHECK(ptrNext == originalPtr);
+
+        freelist.release((void*)ptr);
+    }
+
     const size_t allocatorSize;
     const size_t largeAllocationSize;
     const size_t smallAllocationSize;
@@ -84,128 +138,39 @@ struct PoolAllocatorFixture
 
 BOOST_FIXTURE_TEST_SUITE(pool_allocator, PoolAllocatorFixture)
 
-// BOOST_AUTO_TEST_CASE(freelist_verify_structure_32_8_0)
-// {
-//     const size_t elementSize = 32;
-//     const size_t alignment = 8;
-//     const size_t offset = 0;
-//     Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-//     (void)freelist;
-// }
-// 
-// BOOST_AUTO_TEST_CASE(freelist_verify_structure_32_8_4)
-// {
-//     const size_t elementSize = 32;
-//     const size_t alignment = 8;
-//     const size_t offset = 4;
-//     Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-//     (void)freelist;
-// }
-// 
-BOOST_AUTO_TEST_CASE(freelist_verify_structure_36_8_4)
+BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
 {
-    const size_t elementSize = 36;
-    const size_t alignment = 8;
-    const size_t offset = 4;
-    Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-    (void)freelist;
-}
-// 
-// BOOST_AUTO_TEST_CASE(freelist_verify_structure_32_16_0)
-// {
-//     const size_t elementSize = 32;
-//     const size_t alignment = 16;
-//     const size_t offset = 0;
-//     Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-//     (void)freelist;
-// }
-// 
-// BOOST_AUTO_TEST_CASE(freelist_verify_structure_32_16_4)
-// {
-//     const size_t elementSize = 32;
-//     const size_t alignment = 16;
-//     const size_t offset = 4;
-//     Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-//     (void)freelist;
-// }
-// 
-// BOOST_AUTO_TEST_CASE(freelist_verify_structure_36_16_4)
-// {
-//     const size_t elementSize = 36;
-//     const size_t alignment = 16;
-//     const size_t offset = 4;
-//     Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
-//     (void)freelist;
-// }
+    const size_t elementSizeIncrement = 4;
+    const size_t elementSizeMax = 128;
+    const size_t alignmentSizeMax = 32;
+    const size_t offsetSizeIncrement = 2;
 
-/*
-BOOST_AUTO_TEST_CASE(freelist_obtain_and_release_32_8_0)
-{
-    u8 pMemory[allocatorSize];
-
-    // Ensure we start off at desired alignment.
-    uptr start = pointerUtil::alignTop((uptr)pMemory, 8);
-    size_t listSize = allocatorSize - (start - (uptr)pMemory);
-    const size_t slotSize = 32;
-
-    Freelist freelist((void*)start, (void*)(start + listSize), 32, 8, 0);
-
-    uptr ptr = (uptr)freelist.obtain();
-    BOOST_REQUIRE(ptr);
-    BOOST_CHECK(ptr == start);
-    BOOST_CHECK(pointerUtil::alignTopAmount(ptr, 32) == 0);
-
-    // Obtain second slot. For current size and alignment the next slot should be exactly slotSize bytes forward.
-    uptr ptrNext = (uptr)freelist.obtain();
-    BOOST_REQUIRE(ptrNext);
-    BOOST_CHECK(ptr + slotSize == ptrNext);
-    BOOST_CHECK(pointerUtil::alignTopAmount(ptrNext, 32) == 0);
+    size_t elementSize = 0;
+    size_t alignment = 4;
+    size_t offset = 0;
     
-    // Releasing and obtaining should return the same slot.
-    freelist.release((void*)ptrNext);
-    uptr ptrNext2 = (uptr)freelist.obtain();
-    BOOST_REQUIRE(ptrNext2);
-    BOOST_CHECK(ptrNext2 == ptrNext);
-
-    freelist.release((void*)ptr);
-
-    // Walk the list manually and verify it's structure
-    union
+    // Test many different combinations of elementSize, alignment, and offset.
+    while(elementSize <= elementSizeMax)
     {
-        void* as_void;
-        uptr* as_uptr;
-    };
+        while(alignment <= alignmentSizeMax)
+        {
+            while(offset < elementSize)
+            {
+                Freelist freelist = createAndVerifyFreelist(elementSize, alignment, offset);
+                allocateAndFreeFromFreelist(freelist, elementSize, alignment, offset);
+                
+                offset += offsetSizeIncrement;
+            }
+
+            alignment *= 2;
+            offset = 0;
+        }
+
+        elementSize += elementSizeIncrement;
+        alignment = 8;
+    }
 }
 
-BOOST_AUTO_TEST_CASE(freelist_obtain_and_release_32_8_4)
-{
-}
-
-BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
-{
-
-}
-
-BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
-{
-
-}
-
-BOOST_AUTO_TEST_CASE(allocate_aligned)
-{
-
-}
-
-BOOST_AUTO_TEST_CASE(allocate_offset)
-{
-
-}
-
-BOOST_AUTO_TEST_CASE(allocate_aligned_offset)
-{
-
-}
-*/
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

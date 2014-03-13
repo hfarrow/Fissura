@@ -32,6 +32,11 @@ namespace fs
             _next = head;
         }
 
+        inline const Freelist* getNext() const
+        {
+            return _next;
+        }
+
     private:
         Freelist* _next;
     };

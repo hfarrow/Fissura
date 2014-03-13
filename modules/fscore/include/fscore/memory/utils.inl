@@ -2,6 +2,7 @@
 #define FS_MEMORY_UTILS_INL
 
 #include "fscore/memory/utils.h"
+#include "fscore/debugging/assert.h"
 
 #ifndef MAP_ANONYMOUS
 #  define MAP_ANONYMOUS MAP_ANON
@@ -16,16 +17,14 @@ namespace fs
             return ((ptr + alignment-1) & ~(alignment-1));
         }
 
-        size_t alignTopAmount(uptr pAddress, size_t alignment)
+        size_t alignTopAmount(uptr ptr, size_t alignment)
         {
-            u8 adjustment = alignment - (pAddress & (alignment-1));
+            return alignTop(ptr, alignment) - ptr;
+        }
 
-            if(adjustment == alignment)
-            {
-                return 0;
-            }
-
-            return adjustment;
+        size_t roundUp(size_t value, size_t multiple)
+        {
+            return (value + multiple - 1) & ~(multiple - 1);
         }
     }
 

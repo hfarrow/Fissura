@@ -11,8 +11,8 @@ BOOST_AUTO_TEST_SUITE(memory)
 struct PoolAllocatorFixture
 {
     PoolAllocatorFixture() :
-        allocatorSize(PagedMemoryUtil::getPageSize() * 2),
-        largeAllocationSize(PagedMemoryUtil::getPageSize()),
+        allocatorSize(1024),
+        largeAllocationSize(128),
         smallAllocationSize(32),
         tinyAllocationSize(4),
         defaultAlignment(8)
@@ -27,6 +27,7 @@ struct PoolAllocatorFixture
     template<u8 IndexSize>
     Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
     {
+        BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
         if(elementSize < IndexSize)
         {
             elementSize = IndexSize;
@@ -131,7 +132,7 @@ BOOST_FIXTURE_TEST_SUITE(pool_allocator, PoolAllocatorFixture)
 BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
 {
     const size_t elementSizeIncrement = 4;
-    const size_t elementSizeMax = 128;
+    const size_t elementSizeMax = 92;
     const size_t alignmentSizeMax = 32;
     const size_t offsetSizeIncrement = 2;
 
@@ -153,7 +154,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
     
                 // Reduce run time by skipping this. If Freelist<2> works, it is likely larger IndexSizes
                 // will work as well.
-                //Freelist<4> freelist4 = createAndVerifyFreelist<4>(elementSize, alignment, offset);
+                //Freelist<4> freelist4 = createAndVerifyFreelist<4>(pMemory, allocatorSize, elementSize, alignment, offset);
                 //allocateAndFreeFromFreelist(freelist4, elementSize, alignment, offset);
                 
                 Freelist<8> freelist8 = createAndVerifyFreelist<8>(pMemory, allocatorSize, elementSize, alignment, offset);
@@ -193,6 +194,75 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 
     void* ptr = freelist.obtain();
     BOOST_REQUIRE(ptr == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
+{
+    PoolAllocator allocator(allocatorSize, largeAllocationSize, defaultAlignment, 0);
+    //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+
+    void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+
+    // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
+    //BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
+
+    //size_t oldSize = allocator.getAllocatedSpace();
+    allocator.free(ptr);
+    //BOOST_CHECK(oldSize > allocator.getAllocatedSpace());
+    
+    ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+    allocator.free(ptr);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
+{
+    u8 pMemory[allocatorSize];
+
+    PoolAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize), largeAllocationSize, defaultAlignment, 0);
+    //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+
+    void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+
+    // Stack allocator has memory overhead so getAllocatedSpace will be greater than what
+    // we requested. Alignment also accounts for overhead.
+    //BOOST_CHECK(allocator.getAllocatedSpace() >= PagedMemoryUtil::getPageSize());
+
+    //size_t oldSize = allocator.getAllocatedSpace();
+    allocator.free(ptr);
+    //BOOST_CHECK(oldSize > allocator.getAllocatedSpace());
+    
+    ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+    allocator.free(ptr);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_aligned)
+{
+    PoolAllocator allocator(allocatorSize, smallAllocationSize, 32, 0);
+
+    void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 0);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 16, 0);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 16) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 32, 0);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 32) == 0);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_offset)
+{
+    PoolAllocator allocator(allocatorSize, smallAllocationSize, 8, 4);
+
+    void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
+    FS_ASSERT(ptr);
+    FS_ASSERT(pointerUtil::alignTopAmount((uptr)ptr + 4, 8) == 0);
+ 
+    ptr = allocator.allocate(smallAllocationSize, 4, 0);
+    FS_ASSERT(pointerUtil::alignTopAmount((uptr)ptr + 4, 4) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -83,12 +83,36 @@ BOOST_AUTO_TEST_CASE(allocate_offset)
 {
     LinearAllocator allocator(allocatorSize);
 
+    void* ptr = allocator.allocate(smallAllocationSize, 8, 4);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 6);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 6, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 8);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 8, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 12);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 12, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 16);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 16, 8) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 8, 32);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 32, 8) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(allocate_aligned_offset)
 {
     LinearAllocator allocator(allocatorSize);
 
+    void* ptr = allocator.allocate(smallAllocationSize, 16, 4);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 16) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 32, 6);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 6, 32) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 64, 8);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 8, 64) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 16, 12);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 12, 16) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 32, 16);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 16, 32) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 64, 32);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 32, 64) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

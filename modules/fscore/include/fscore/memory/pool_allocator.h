@@ -4,133 +4,64 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/utils.h"
+#include "fscore/memory/freelist.h"
 
 namespace fs
 {
-    template<u8 IndexSize = 0>
-    struct FreelistNode {};
+    class PageAllocator;
 
-    template<> struct FreelistNode<2> {u16 offset;};
-    template<> struct FreelistNode<4> {u32 offset;};
-    template<> struct FreelistNode<8> {u64 offset;};
-
-    // Default 0 for sizeof(void*)
-    template<> struct FreelistNode<0> {uptr offset;};
-
-    template<u8 IndexSize = 0>
-    class Freelist
+    class PoolAllocator
     {
+        using FreelistDefault = Freelist<0>;
+
     public:
+        template<typename BackingAllocator = PageAllocator>
+        explicit PoolAllocator(size_t size, size_t maxElementSize, size_t maxAlignment, size_t offset);
+        PoolAllocator(void* start, void* end, size_t maxElementSize, size_t maxAlignment, size_t offset);
+        ~PoolAllocator();
 
-        static_assert(IndexSize == 0 || IndexSize == 2 || IndexSize == 4 || IndexSize == 8, "Invalid IndexSize");
-
-        Freelist(void* start, void* end, size_t elementSize, size_t alignment, size_t offset)
-        {
-            FS_ASSERT(alignment > 0);
-
-            // Freelist is stored as pointers which require the element size to
-            // be at least the size of a pointer.
-            size_t indexSize = IndexSize;
-            if(elementSize < indexSize)
-            {
-                elementSize = indexSize;
-            }
-
-            _start = (uptr)start;
-            
-            // Ensure that the first free slot is starting off aligned.
-            const uptr alignedStart = pointerUtil::alignTop((uptr)start + offset, alignment) - offset;
-
-            // Add padding to elementSize to ensure all following slots are also aligned.
-            const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
-            FS_ASSERT(slotSize >= elementSize);
-            
-            // Calculate total available memory after alignment is factored in.
-            const size_t size = (uptr)end - alignedStart;
-            const u32 numElements = size / slotSize;
-            _numElements = numElements;
-
-            union
-            {
-                void* as_void;
-                FreelistNode<IndexSize>* as_self;
-                uptr as_uptr;
-            };
-
-            as_uptr = alignedStart;
-            _next = as_self;
-            as_uptr += slotSize;
-
-            // initialize the free list. Each element points to the next free element.
-            FreelistNode<IndexSize>* runner = _next;
-            for(size_t i = 1; i < numElements; ++i)
-            {
-                runner->offset = as_uptr - (uptr)start;
-                runner = as_self;
-                as_uptr += slotSize;
-            }
-            
-            runner->offset = 0;
-        }
+        void* allocate(size_t size, size_t alignment, size_t offset);
         
-        inline void* obtain()
+        inline void free(void* ptr)
         {
-            if(_next == nullptr)
-            {
-                return nullptr;
-            }
-
-            FreelistNode<IndexSize>* head = _next;
-
-            if(head->offset == 0)
-            {
-                _next = nullptr;
-            }
-            else
-            {
-                _next = (FreelistNode<IndexSize>*)(_start + head->offset);
-            }
-
-            return head;
+            _freelist.release(ptr);
         }
 
-        inline void release(void* ptr)
+        inline void reset()
         {
-            FS_ASSERT(ptr);
-            FreelistNode<IndexSize>* head = static_cast<FreelistNode<IndexSize>*>(ptr);
-            if(_next)
-            {
-                head->offset = (uptr)_next - _start;
-            }
-            else
-            {
-                head->offset = 0;
-            }
-            _next = head;
-        }
-        
-        // peekNext and getStart were added to assist with verifing Freelist in unit tests
-        // The unit tests need to verify the internal state of this class.
-        inline uptr peekNext() const
-        {
-            return (uptr)_next;
-        }
-
-        inline  uptr getStart() const
-        {
-            return _start;
-        }
-
-        inline size_t getNumElements() const
-        {
-            return _numElements;
+            _freelist = FreelistDefault(_start, _end, _maxElementSize, _maxAlignment, _offset);
         }
 
     private:
-        uptr _start;
-        size_t _numElements;
-        FreelistNode<IndexSize>* _next;
+        const size_t _maxElementSize;
+        const size_t _maxAlignment;
+        const size_t _offset;
+        void* _start;
+        void* _end;
+        FreelistDefault _freelist;
+        std::function<void()> _deleter;
     };
+
+    // Templated constructor implementation
+    template<typename BackingAllocator>
+    PoolAllocator::PoolAllocator(size_t size, size_t maxElementSize, size_t maxAlignment, size_t offset) :
+        _maxElementSize(maxElementSize),
+        _maxAlignment(maxAlignment),
+        _offset(offset),
+        _freelist()
+    {
+        FS_ASSERT(size > 0);
+
+        static BackingAllocator allocator;
+        void* ptr = allocator.allocate(size);
+        FS_ASSERT_MSG(ptr, "Failed to allocate pages for PoolAllocator");
+
+        _start = ptr;
+        _end = (void*)((uptr)_start + size);
+        _freelist = FreelistDefault(_start, _end, _maxElementSize, _maxAlignment, _offset);
+
+        _deleter = std::function<void()>([this](){allocator.free(_start, (uptr)_end - (uptr)_start);});
+    }
 }
 
 #endif

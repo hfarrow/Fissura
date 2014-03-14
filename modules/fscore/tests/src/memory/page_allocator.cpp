@@ -27,17 +27,17 @@ BOOST_AUTO_TEST_CASE(allocate_and_free)
 {
     PageAllocator allocator;
 
-    void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), 0, 0);
+    void* ptr = allocator.allocate(VirtualMemory::getPageSize(), 0, 0);
     BOOST_REQUIRE(ptr);
-    allocator.free(ptr, PagedMemoryUtil::getPageSize());
+    allocator.free(ptr, VirtualMemory::getPageSize());
     
     // By default will allocate up to page size.
     ptr = allocator.allocate(32, 0, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr, 32);
 
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(PagedMemoryUtil::getPageSize(), 1, 0);});
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(PagedMemoryUtil::getPageSize(), 0, 1);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(VirtualMemory::getPageSize(), 1, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(VirtualMemory::getPageSize(), 0, 1);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(-1, 0, 0);});
 }
 

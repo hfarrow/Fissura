@@ -33,7 +33,7 @@ struct PoolAllocatorFixture
             elementSize = IndexSize;
         }
 
-        const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
+        const size_t slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
         const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
         const size_t availableMemory = memorySize - (start - (uptr)pMemory);
         const uptr end = start + availableMemory;
@@ -96,7 +96,7 @@ struct PoolAllocatorFixture
     void allocateAndFreeFromFreelist(Freelist<IndexSize>& freelist, size_t elementSize, size_t alignment, size_t offset)
     {
         const uptr start = freelist.peekNext();
-        const uptr slotSize = pointerUtil::roundUp(elementSize, alignment);
+        const uptr slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
 
         uptr ptr = (uptr)freelist.obtain();
         BOOST_REQUIRE(ptr);
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
     const size_t alignment = 8;
     const size_t offset = 0;
     const size_t totalMemory = 256;
-    const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
+    const size_t slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
     BOOST_REQUIRE(slotSize == elementSize);
 
     u8 pMemory[totalMemory];
@@ -223,12 +223,12 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
     PoolAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize), largeAllocationSize, defaultAlignment, 0);
     //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
-    void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), defaultAlignment, 0);
+    void* ptr = allocator.allocate(VirtualMemory::getPageSize(), defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
     // Stack allocator has memory overhead so getAllocatedSpace will be greater than what
     // we requested. Alignment also accounts for overhead.
-    //BOOST_CHECK(allocator.getAllocatedSpace() >= PagedMemoryUtil::getPageSize());
+    //BOOST_CHECK(allocator.getAllocatedSpace() >= VirtualMemory::getPageSize());
 
     //size_t oldSize = allocator.getAllocatedSpace();
     allocator.free(ptr);

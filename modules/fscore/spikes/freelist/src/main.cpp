@@ -78,7 +78,7 @@ Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size
         //PRINT("adjusted element size to " << elementSize);
     }
 
-    const size_t slotSize = pointerUtil::roundUp(elementSize, alignment);
+    const size_t slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
     const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
     const size_t availableMemory = memorySize - (start - (uptr)pMemory);
     const uptr end = start + availableMemory;
@@ -128,7 +128,7 @@ int main( int, char **)
     size_t alignment = 2;
     size_t offset = 0;
     
-    const size_t memorySize = PagedMemoryUtil::getPageSize() * 2;
+    const size_t memorySize = VirtualMemory::getPageSize() * 2;
     u8 pMemory[memorySize];
     
     // Test many different combinations of elementSize, alignment, and offset.

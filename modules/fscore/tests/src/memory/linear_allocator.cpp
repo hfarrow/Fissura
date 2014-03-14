@@ -11,8 +11,8 @@ BOOST_AUTO_TEST_SUITE(memory)
 struct LinearAllocatorFixture
 {
     LinearAllocatorFixture() :
-        allocatorSize(PagedMemoryUtil::getPageSize() * 8),
-        largeAllocationSize(PagedMemoryUtil::getPageSize()),
+        allocatorSize(VirtualMemory::getPageSize() * 8),
+        largeAllocationSize(VirtualMemory::getPageSize()),
         smallAllocationSize(32),
         tinyAllocationSize(4),
         defaultAlignment(8)
@@ -54,11 +54,11 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
     LinearAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
     BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
-    void* ptr = allocator.allocate(PagedMemoryUtil::getPageSize(), defaultAlignment, 0);
+    void* ptr = allocator.allocate(VirtualMemory::getPageSize(), defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
     // Alignment can cause getAllocatedSpace to be greater than the request size.
-    BOOST_CHECK(allocator.getAllocatedSpace() >= PagedMemoryUtil::getPageSize());
+    BOOST_CHECK(allocator.getAllocatedSpace() >= VirtualMemory::getPageSize());
 
     FS_REQUIRE_ASSERT([&](){allocator.free(ptr);});
 }

@@ -12,7 +12,7 @@ namespace fs
 
     class PoolAllocator
     {
-        using FreelistDefault = Freelist<0>;
+        using PoolFreelist = Freelist<0>;
 
     public:
         template<typename BackingAllocator = PageAllocator>
@@ -29,7 +29,7 @@ namespace fs
 
         inline void reset()
         {
-            _freelist = FreelistDefault(_start, _end, _maxElementSize, _maxAlignment, _offset);
+            _freelist = PoolFreelist(_start, _end, _maxElementSize, _maxAlignment, _offset);
         }
 
     private:
@@ -38,7 +38,7 @@ namespace fs
         const size_t _offset;
         void* _start;
         void* _end;
-        FreelistDefault _freelist;
+        PoolFreelist _freelist;
         std::function<void()> _deleter;
     };
 
@@ -58,7 +58,7 @@ namespace fs
 
         _start = ptr;
         _end = (void*)((uptr)_start + size);
-        _freelist = FreelistDefault(_start, _end, _maxElementSize, _maxAlignment, _offset);
+        _freelist = PoolFreelist(_start, _end, _maxElementSize, _maxAlignment, _offset);
 
         _deleter = std::function<void()>([this](){allocator.free(_start, (uptr)_end - (uptr)_start);});
     }

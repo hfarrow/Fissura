@@ -22,7 +22,7 @@ namespace fs
             return alignTop(ptr, alignment) - ptr;
         }
 
-        size_t roundUp(size_t value, size_t multiple)
+        size_t roundUpToMultiple(size_t value, size_t multiple)
         {
             return (value + multiple - 1) & ~(multiple - 1);
         }
@@ -31,13 +31,13 @@ namespace fs
     namespace internal
     {
         template<u32 PlatformID>
-        size_t PagedMemoryUtil<PlatformID>::getPageSize()
+        size_t VirtualMemory<PlatformID>::getPageSize()
         {
              return sysconf(_SC_PAGE_SIZE);
         }
 
         template<u32 PlatformID>
-        void* PagedMemoryUtil<PlatformID>::reserveMemory(size_t size)
+        void* VirtualMemory<PlatformID>::reserveAddressSpace(size_t size)
         {
             void* userPtr = mmap(nullptr, size, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 
@@ -54,14 +54,14 @@ namespace fs
         }
 
         template<u32 PlatformID>
-        void* PagedMemoryUtil<PlatformID>::commitMemory(void* ptr, size_t size)
+        void* VirtualMemory<PlatformID>::allocatePhysicalMemory(void* ptr, size_t size)
         {
             void* userPtr = mmap(ptr, size, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_SHARED|MAP_ANONYMOUS, -1, 0);
             
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to commit requested ptr of size %u. errno: %i")
+                                        boost::format("Failed to allocate requested ptr of size %u. errno: %i")
                                         % size % errno);
                 return nullptr;
             }
@@ -71,14 +71,14 @@ namespace fs
         }
 
         template<u32 PlatformID>
-        void* PagedMemoryUtil<PlatformID>::commitMemory(size_t size)
+        void* VirtualMemory<PlatformID>::allocatePhysicalMemory(size_t size)
         {
             void* userPtr = mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
 
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to commit requested size %u. errno: %i")
+                                        boost::format("Failed to allocate requested size %u. errno: %i")
                                         % size % errno);
                 return nullptr;
             }
@@ -88,14 +88,14 @@ namespace fs
         }
 
         template<u32 PlatformID>
-        void PagedMemoryUtil<PlatformID>::decommitMemory(void* ptr, size_t size)
+        void VirtualMemory<PlatformID>::freePhysicalMemory(void* ptr, size_t size)
         {
             void* userPtr = mmap(ptr, size, PROT_NONE, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);
 
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to decommit requested ptr of size %u. errno: %i")
+                                        boost::format("Failed to free requested ptr of size %u. errno: %i")
                                         % size % errno);
 
                 return;
@@ -105,13 +105,13 @@ namespace fs
         }
 
         template<u32 PlatformID>
-        void PagedMemoryUtil<PlatformID>::freeMemory(void* ptr, size_t size)
+        void VirtualMemory<PlatformID>::releaseAddressSpace(void* ptr, size_t size)
         {
             msync(ptr, size, MS_SYNC);
             if(munmap(ptr, size))
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to free ptr %p of size %u. errno: %i")
+                                        boost::format("Failed to release ptr %p of size %u. errno: %i")
                                         % ptr % size % errno);
             }
         }

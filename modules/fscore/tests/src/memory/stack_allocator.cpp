@@ -11,8 +11,8 @@ BOOST_AUTO_TEST_SUITE(memory)
 struct StackAllocatorFixture
 {
     StackAllocatorFixture() :
-        allocatorSize(PagedMemoryUtil::getPageSize() * 8),
-        largeAllocationSize(PagedMemoryUtil::getPageSize()),
+        allocatorSize(VirtualMemory::getPageSize() * 8),
+        largeAllocationSize(VirtualMemory::getPageSize()),
         smallAllocationSize(32),
         tinyAllocationSize(4),
         defaultAlignment(8)

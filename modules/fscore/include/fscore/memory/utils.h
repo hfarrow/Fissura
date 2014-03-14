@@ -32,7 +32,7 @@ namespace fs
 
         // Round value up to the neares multiple.
         // multiple must be a non zero power of 2.
-        inline size_t roundUp(size_t value, size_t multiple);
+        inline size_t roundUpToMultiple(size_t value, size_t multiple);
 
     }
 
@@ -43,19 +43,19 @@ namespace fs
         // The default implementation in utils.inl should work for all unix platforms
         // based on mmap and munmap.
         template<u32 PlatformID>
-        class PagedMemoryUtil
+        class VirtualMemory
         {
         public:
             static inline size_t getPageSize();
-            static inline void* reserveMemory(size_t size);
-            static inline void* commitMemory(void* ptr, size_t);
-            static inline void* commitMemory(size_t);
-            static inline void decommitMemory(void* ptr, size_t size);
-            static inline void freeMemory(void* ptr, size_t size);
+            static inline void* reserveAddressSpace(size_t size);
+            static inline void* allocatePhysicalMemory(void* ptr, size_t);
+            static inline void* allocatePhysicalMemory(size_t);
+            static inline void freePhysicalMemory(void* ptr, size_t size);
+            static inline void releaseAddressSpace(void* ptr, size_t size);
         };
     }
 
-    using PagedMemoryUtil = internal::PagedMemoryUtil<PLATFORM_ID>;
+    using VirtualMemory = internal::VirtualMemory<PLATFORM_ID>;
 }
 
 #include "fscore/memory/utils.inl"

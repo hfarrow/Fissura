@@ -14,7 +14,7 @@ void* PageAllocator::allocate(size_t size, size_t alignment, size_t offset)
     FS_ASSERT(alignment == 0);
     FS_ASSERT(offset == 0);
 
-    return PagedMemoryUtil::commitMemory(size);
+    return VirtualMemory::allocatePhysicalMemory(size);
 }
 
 void PageAllocator::free(void* ptr, size_t size)
@@ -22,5 +22,5 @@ void PageAllocator::free(void* ptr, size_t size)
     FS_ASSERT(ptr);
     FS_ASSERT(size > 0);
     
-    PagedMemoryUtil::freeMemory(ptr, size);
+    VirtualMemory::releaseAddressSpace(ptr, size);
 }

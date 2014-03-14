@@ -3,6 +3,14 @@ project(Fissura)
 
 include(CMakeFindBinUtils)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Mac OS X specific code
+    set(IS_MAC "1")
+ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # Linux specific code
+    set(IS_LINUX "1")
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/modules/")
 
 set(CMAKE_C_FLAGS                 "-Wall -std=c99")
@@ -11,7 +19,11 @@ set(CMAKE_C_FLAGS_MINSIZEREL      "-Os -DNDEBUG")
 set(CMAKE_C_FLAGS_RELEASE         "-O3 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO  "-O2 -g")
 
-set(CMAKE_CXX_FLAGS                 "-Wall -std=c++11")
+IF(DEFINED IS_LINUX)
+    set(CMAKE_CXX_FLAGS                 "-Wall -std=c++11")
+ELSEIF(DEFINED IS_MAC)
+    set(CMAKE_CXX_FLAGS                 "-Wall -std=c++11 -stdlib=libc++")
+ENDIF(DEFINED IS_LINUX)
 set(CMAKE_CXX_FLAGS_DEBUG           "-g -D_DEBUG -DSDL_ASSERT_LEVEL=2")
 set(CMAKE_CXX_FLAGS_MINSIZEREL      "-Os -DNDEBUG -DSDL_ASSERT_LEVEL=1")
 set(CMAKE_CXX_FLAGS_RELEASE         "-O3 -DNDEBUG -DSDL_ASSERT_LEVEL=1")

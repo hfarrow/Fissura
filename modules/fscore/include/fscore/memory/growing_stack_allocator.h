@@ -22,6 +22,10 @@ namespace fs
             _lastUserPtr = 0;
         }
 
+        // Free physical memory that is no longer in use.
+        // The address space will still be reserved.
+        void purge();
+
     private: 
         uptr _virtualStart;
         uptr _virtualEnd;
@@ -29,7 +33,6 @@ namespace fs
         uptr _physicalEnd;
         size_t _growSize;
         uptr _lastUserPtr;
-
     };
 }
 

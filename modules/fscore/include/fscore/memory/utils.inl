@@ -21,7 +21,10 @@ namespace fs
         {
             return alignTop(ptr, alignment) - ptr;
         }
+    }
 
+    namespace bitUtil
+    {
         size_t roundUpToMultiple(size_t value, size_t multiple)
         {
             return (value + multiple - 1) & ~(multiple - 1);

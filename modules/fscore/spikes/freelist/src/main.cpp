@@ -78,7 +78,7 @@ Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size
         //PRINT("adjusted element size to " << elementSize);
     }
 
-    const size_t slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
+    const size_t slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
     const uptr start = pointerUtil::alignTop((uptr)pMemory, alignment);
     const size_t availableMemory = memorySize - (start - (uptr)pMemory);
     const uptr end = start + availableMemory;

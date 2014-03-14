@@ -29,11 +29,13 @@ namespace fs
         // Calculate by what amount in bytes the pAddress must be moved
         // forward to be aligned by the specified amount.
         inline size_t alignTopAmount(uptr pAddress, size_t alignment);
+    }
 
+    namespace bitUtil
+    {
         // Round value up to the neares multiple.
         // multiple must be a non zero power of 2.
         inline size_t roundUpToMultiple(size_t value, size_t multiple);
-
     }
 
     namespace internal

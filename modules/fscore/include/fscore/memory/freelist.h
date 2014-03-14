@@ -51,7 +51,7 @@ namespace fs
             _alignedStart = alignedStart;
 
             // Add padding to elementSize to ensure all following slots are also aligned.
-            const size_t slotSize = pointerUtil::roundUpToMultiple(elementSize, alignment);
+            const size_t slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
             FS_ASSERT(slotSize >= elementSize);
             
             // Calculate total available memory after alignment is factored in.

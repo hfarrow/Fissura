@@ -17,6 +17,7 @@
 #include "fscore/memory/page_allocator.h"
 #include "fscore/memory/linear_allocator.h"
 #include "fscore/memory/stack_allocator.h"
+#include "fscore/memory/growing_stack_allocator.h"
 #include "fscore/memory/pool_allocator.h"
 
 #endif

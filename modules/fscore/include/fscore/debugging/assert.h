@@ -1,6 +1,10 @@
 #ifndef FS_ASSERT_H
 #define FS_ASSERT_H
 
+// Remove this later once logger is completed
+#include <iostream>
+#define FS_PRINT(x) std::cout << x << std::endl
+
 #include <SDL.h>
 
 //#include "fscore/debugging/logger.h"

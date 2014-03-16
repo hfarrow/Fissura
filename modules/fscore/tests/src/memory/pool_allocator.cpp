@@ -27,7 +27,7 @@ struct PoolAllocatorFixture
     template<u8 IndexSize>
     Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
     {
-        BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
+        //BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
         if(elementSize < IndexSize)
         {
             elementSize = IndexSize;

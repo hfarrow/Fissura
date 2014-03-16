@@ -21,6 +21,17 @@ namespace fs
         {
             return alignTop(ptr, alignment) - ptr;
         }
+
+        uptr alignBottom(uptr ptr, size_t alignment)
+        {
+            FS_ASSERT(ptr > alignment);
+            return ((ptr) & ~(alignment-1));
+        }
+
+        size_t alignBottomAmount(uptr ptr, size_t alignment)
+        {
+            return ptr - alignBottom(ptr, alignment);
+        }
     }
 
     namespace bitUtil

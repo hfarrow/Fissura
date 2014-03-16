@@ -26,6 +26,24 @@ namespace fs
         // The address space will still be reserved.
         void purge();
 
+        inline size_t getAllocatedSpace() const
+        {
+            return _physicalCurrent - _virtualStart;
+        }
+
+        // Temp... delete me later
+        // void PRINT_STATE()
+        // {
+        //     FS_PRINT("Current State:");
+        //     FS_PRINT("\t_virtualStart    = " << (void*)_virtualStart);
+        //     FS_PRINT("\t_virtualEnd      = " << (void*)_virtualEnd);
+        //     FS_PRINT("\t_physicalCurrent = " << (void*)_physicalCurrent);
+        //     FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
+        //     FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
+        //     FS_PRINT("\t_growSize        = " << (void*)_growSize);
+        //     FS_PRINT("\tallocatedSpace   = " << getAllocatedSpace());
+        // }
+
     private: 
         uptr _virtualStart;
         uptr _virtualEnd;

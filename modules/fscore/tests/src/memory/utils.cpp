@@ -35,6 +35,37 @@ BOOST_AUTO_TEST_CASE(align_top_amount)
 
 }
 
+BOOST_AUTO_TEST_CASE(align_bottom)
+{
+    const uptr base = 512;
+    BOOST_CHECK(base == pointerUtil::alignBottom(base + 0, 2));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 1, 2));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 0, 4));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 2, 4));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 0, 16));	
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 2, 16));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 4, 16));
+	BOOST_CHECK(base == pointerUtil::alignBottom(base + 13, 16));
+	BOOST_CHECK(base + 16 == pointerUtil::alignBottom(base + 16, 16)); 
+	BOOST_CHECK(base + 16 == pointerUtil::alignBottom(base + 17, 16)); 
+	BOOST_CHECK(base + 16 == pointerUtil::alignBottom(base + 31, 16)); 
+	BOOST_CHECK(base + 32 == pointerUtil::alignBottom(base + 32, 16)); 
+}
+
+BOOST_AUTO_TEST_CASE(align_bottom_amount)
+{
+    const uptr base = 512;
+	BOOST_CHECK( 0 == pointerUtil::alignBottomAmount(base + 0, 2));
+	BOOST_CHECK( 1 == pointerUtil::alignBottomAmount(base + 1, 2));
+	BOOST_CHECK( 0 == pointerUtil::alignBottomAmount(base + 0, 4));
+	BOOST_CHECK( 1 == pointerUtil::alignBottomAmount(base + 1, 4));
+	BOOST_CHECK( 2 == pointerUtil::alignBottomAmount(base + 2, 4));
+	BOOST_CHECK( 3 == pointerUtil::alignBottomAmount(base + 3, 4));
+	BOOST_CHECK( 1 == pointerUtil::alignBottomAmount(base + 1, 16));
+	BOOST_CHECK( 13 == pointerUtil::alignBottomAmount(base + 13, 16));
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

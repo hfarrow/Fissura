@@ -29,6 +29,9 @@ namespace fs
         // Calculate by what amount in bytes the pAddress must be moved
         // forward to be aligned by the specified amount.
         inline size_t alignTopAmount(uptr pAddress, size_t alignment);
+
+        inline uptr alignBottom(uptr ptr, size_t alignment);
+        inline uptr alignBottomAmount(uptr pAddress, size_t alignment);
     }
 
     namespace bitUtil

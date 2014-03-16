@@ -9,10 +9,16 @@
 namespace fs
 {
     class PageAllocator;
+    class AllocateFromBottom;
+    class AllocateFromTop;
 
+    template<typename MemoryPolicy>
     class StackAllocator
     {
     public:
+        friend AllocateFromBottom;
+        friend AllocateFromTop;
+
         template<typename BackingAllocator = PageAllocator>
         explicit StackAllocator(size_t size);
         StackAllocator(void* start, void* end);
@@ -20,19 +26,22 @@ namespace fs
 
         void* allocate(size_t size, size_t alignment, size_t offset);
         void free(void* ptr);
-        
-        inline void reset()
-        {
-            _current = _start;
-            _lastUserPtr = _current;
-        }
+        inline void reset();
+        inline size_t getAllocatedSpace();
 
-        inline size_t getAllocatedSpace()
+        // Temp... delete me later
+        void PRINT_STATE()
         {
-            return _current - _start;
+            FS_PRINT("Current State:");
+            FS_PRINT("\t_start       = " << (void*)_start);
+            FS_PRINT("\t_end         = " << (void*)_end);
+            FS_PRINT("\t_current     = " << (void*)_current);
+            FS_PRINT("\t_lastUserPtr = " << (void*)_lastUserPtr);
+            FS_PRINT("\tallocatedSpace = " << getAllocatedSpace());
         }
     
     private:
+        MemoryPolicy _memoryPolicy;
         uptr _start;
         uptr _end;
         uptr _current;
@@ -40,24 +49,38 @@ namespace fs
         std::function<void()> _deleter;
     };
 
-    // Templated constructor implementation
-    template<typename BackingAllocator>
-    StackAllocator::StackAllocator(size_t size)
+    class AllocateFromTop
     {
-        FS_ASSERT(size > 0);
+    public:
+        using StackAllocator = StackAllocator<AllocateFromTop>;
+        inline void initCurrentAndLast(StackAllocator* pThis);
+        inline uptr alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset);
+        inline u32 calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size);
+        inline bool checkOutOfMemory(StackAllocator* pThis, size_t size);
+        inline void* allocate(StackAllocator* pThis, u32 headerSize, size_t size);
+        inline void free(StackAllocator* pThis, void* ptr);
+        inline size_t getAllocatedSpace(StackAllocator* pThis);
+    };
 
-        static BackingAllocator allocator;
-        void* ptr = allocator.allocate(size);
-        FS_ASSERT_MSG(ptr, "Failed to allocate pages for LinearAllocator");
+    class AllocateFromBottom
+    {
+    public:
+        using StackAllocator = StackAllocator<AllocateFromBottom>;
+        inline void initCurrentAndLast(StackAllocator* pThis);
+        inline uptr alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset);
+        inline u32 calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size);
+        inline bool checkOutOfMemory(StackAllocator* pThis, size_t size);
+        inline void* allocate(StackAllocator* pThis, u32 headerSize, size_t size);
+        inline void free(StackAllocator* pThis, void* ptr);
+        inline size_t getAllocatedSpace(StackAllocator* pThis);
+    };
 
-        _start = (uptr)ptr;
-        _end = _start + size;
-        _current = _start;
-        _lastUserPtr = _start;
-
-        _deleter = std::function<void()>([this](){allocator.free((void*)_start, _end - _start);});
-    }
+    using StackAllocatorBottom = StackAllocator<AllocateFromBottom>;
+    using StackAllocatorTop = StackAllocator<AllocateFromTop>;
+    using StandardStackAllocator = StackAllocatorBottom;
 }
+
+#include "fscore/memory/stack_allocator.inl"
 
 #endif
 

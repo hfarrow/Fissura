@@ -12,7 +12,7 @@ namespace fs
 
     class PoolAllocator
     {
-        using PoolFreelist = Freelist<0>;
+        using PoolFreelist = Freelist<IndexSize::systemDefault>;
 
     public:
         template<typename BackingAllocator = PageAllocator>

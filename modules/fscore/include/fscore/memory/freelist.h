@@ -7,22 +7,28 @@
 
 namespace fs
 {
-    template<u8 IndexSize = 0>
+    enum class IndexSize
+    {
+        // Default 0 for sizeof(void*)
+        systemDefault = 0,
+        twoBytes = 2,
+        fourBytes = 4,
+        eightBytes = 8
+    };
+
+    template<IndexSize indexSize = IndexSize::systemDefault>
     struct FreelistNode {};
 
-    template<> struct FreelistNode<2> {u16 offset;};
-    template<> struct FreelistNode<4> {u32 offset;};
-    template<> struct FreelistNode<8> {u64 offset;};
+    template<> struct FreelistNode<IndexSize::twoBytes> {u16 offset;};
+    template<> struct FreelistNode<IndexSize::fourBytes> {u32 offset;};
+    template<> struct FreelistNode<IndexSize::eightBytes> {u64 offset;};
 
-    // Default 0 for sizeof(void*)
-    template<> struct FreelistNode<0> {uptr offset;};
+    template<> struct FreelistNode<IndexSize::systemDefault> {uptr offset;};
 
-    template<u8 IndexSize = 0>
+    template<IndexSize indexSize = IndexSize::systemDefault>
     class Freelist
     {
     public:
-
-        static_assert(IndexSize == 0 || IndexSize == 2 || IndexSize == 4 || IndexSize == 8, "Invalid IndexSize");
 
         Freelist() :
             _start(0),
@@ -38,10 +44,10 @@ namespace fs
 
             // Freelist is stored as pointers which require the element size to
             // be at least the size of a pointer.
-            size_t indexSize = IndexSize;
-            if(elementSize < indexSize)
+            size_t indexTypeSize = sizeof(FreelistNode<indexSize>);
+            if(elementSize < indexTypeSize)
             {
-                elementSize = indexSize;
+                elementSize = indexTypeSize;
             }
 
             
@@ -63,7 +69,7 @@ namespace fs
             union
             {
                 void* as_void;
-                FreelistNode<IndexSize>* as_self;
+                FreelistNode<indexSize>* as_self;
                 uptr as_uptr;
             };
 
@@ -72,7 +78,7 @@ namespace fs
             as_uptr += slotSize;
 
             // initialize the free list. Each element points to the next free element.
-            FreelistNode<IndexSize>* runner = _next;
+            FreelistNode<indexSize>* runner = _next;
             for(size_t i = 1; i < numElements; ++i)
             {
                 runner->offset = as_uptr - (uptr)start;
@@ -90,7 +96,7 @@ namespace fs
                 return nullptr;
             }
 
-            FreelistNode<IndexSize>* head = _next;
+            FreelistNode<indexSize>* head = _next;
 
             if(head->offset == 0)
             {
@@ -98,7 +104,7 @@ namespace fs
             }
             else
             {
-                _next = reinterpret_cast<FreelistNode<IndexSize>*>(_start + head->offset);
+                _next = reinterpret_cast<FreelistNode<indexSize>*>(_start + head->offset);
             }
 
             return head;
@@ -112,7 +118,7 @@ namespace fs
             FS_ASSERT_MSG(((uptr)ptr - _alignedStart) % ((_end - _alignedStart) / _numElements) == 0, 
                           "ptr was not the beginning of a slot");
 
-            FreelistNode<IndexSize>* head = static_cast<FreelistNode<IndexSize>*>(ptr);
+            FreelistNode<indexSize>* head = static_cast<FreelistNode<indexSize>*>(ptr);
             if(_next)
             {
                 head->offset = (uptr)_next - _start;
@@ -146,7 +152,7 @@ namespace fs
         uptr _alignedStart;
         uptr _end;
         size_t _numElements;
-        FreelistNode<IndexSize>* _next;
+        FreelistNode<indexSize>* _next;
     };
 }
 

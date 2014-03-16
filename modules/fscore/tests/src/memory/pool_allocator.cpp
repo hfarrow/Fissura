@@ -24,13 +24,13 @@ struct PoolAllocatorFixture
     
     }
 
-    template<u8 IndexSize>
-    Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
+    template<IndexSize indexSize>
+    Freelist<indexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
     {
         //BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
-        if(elementSize < IndexSize)
+        if(elementSize < sizeof(FreelistNode<indexSize>))
         {
-            elementSize = IndexSize;
+            elementSize = sizeof(FreelistNode<indexSize>);
         }
 
         const size_t slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
@@ -38,20 +38,20 @@ struct PoolAllocatorFixture
         const size_t availableMemory = memorySize - (start - (uptr)pMemory);
         const uptr end = start + availableMemory;
 
-        Freelist<IndexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
-        verifyEmptyFreelistStructure<IndexSize>(freelist, end, slotSize, elementSize, alignment, offset);
+        Freelist<indexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
+        verifyEmptyFreelistStructure<indexSize>(freelist, end, slotSize, elementSize, alignment, offset);
 
         return freelist;
     }
 
-    template<u8 IndexSize>
-    void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_t slotSize, size_t elementSize, size_t alignment, size_t offset)
+    template<IndexSize indexSize>
+    void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_t slotSize, size_t elementSize, size_t alignment, size_t offset)
     {
         union
         {
             void* as_void;
             uptr as_uptr;
-            const FreelistNode<IndexSize>* as_freelist;
+            const FreelistNode<indexSize>* as_freelist;
         };
 
         BOOST_REQUIRE(freelist.getStart());
@@ -64,7 +64,7 @@ struct PoolAllocatorFixture
         BOOST_REQUIRE(alignment > 0);
         BOOST_REQUIRE(offset < elementSize);
 
-        const FreelistNode<IndexSize>* runner = as_freelist;
+        const FreelistNode<indexSize>* runner = as_freelist;
 
         BOOST_REQUIRE(runner->offset);
         size_t counter = 1;
@@ -73,7 +73,7 @@ struct PoolAllocatorFixture
             counter++;
 
             uptr ptrPrev = as_uptr;
-            runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->offset);
+            runner = (FreelistNode<indexSize>*)(freelist.getStart() + runner->offset);
             as_freelist = runner;
             uptr ptrNext = as_uptr;
 
@@ -92,8 +92,8 @@ struct PoolAllocatorFixture
         BOOST_REQUIRE(counter == numElements);
     }
 
-    template<u8 IndexSize>
-    void allocateAndFreeFromFreelist(Freelist<IndexSize>& freelist, size_t elementSize, size_t alignment, size_t offset)
+    template<IndexSize indexSize>
+    void allocateAndFreeFromFreelist(Freelist<indexSize>& freelist, size_t elementSize, size_t alignment, size_t offset)
     {
         const uptr start = freelist.peekNext();
         const uptr slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
         {
             while(offset < elementSize)
             {
-                Freelist<2> freelist2 = createAndVerifyFreelist<2>(pMemory, allocatorSize, elementSize, alignment, offset);
+                Freelist<IndexSize::twoBytes> freelist2 = createAndVerifyFreelist<IndexSize::twoBytes>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist2, elementSize, alignment, offset);
     
                 // Reduce run time by skipping this. If Freelist<2> works, it is likely larger IndexSizes
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
                 //Freelist<4> freelist4 = createAndVerifyFreelist<4>(pMemory, allocatorSize, elementSize, alignment, offset);
                 //allocateAndFreeFromFreelist(freelist4, elementSize, alignment, offset);
                 
-                Freelist<8> freelist8 = createAndVerifyFreelist<8>(pMemory, allocatorSize, elementSize, alignment, offset);
+                Freelist<IndexSize::eightBytes> freelist8 = createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist8, elementSize, alignment, offset);
                 
                 offset += offsetSizeIncrement;
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 
     u8 pMemory[totalMemory];
 
-    Freelist<8> freelist = createAndVerifyFreelist<8>(pMemory, totalMemory, elementSize, alignment, offset);
+    Freelist<IndexSize::eightBytes> freelist = createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, totalMemory, elementSize, alignment, offset);
     
     const u32 numElements = totalMemory / slotSize;
     BOOST_REQUIRE(numElements > 0);

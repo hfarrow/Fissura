@@ -21,7 +21,7 @@ namespace fs
         friend AllocateFromBottom;
         friend AllocateFromTop;
 
-        StackAllocator(size_t maxSize, size_t growSize = 0);
+        // StackAllocator(size_t maxSize, size_t growSize = 0);
         template<typename BackingAllocator = PageAllocator>
         explicit StackAllocator(size_t size);
         StackAllocator(void* start, void* end);
@@ -59,22 +59,22 @@ namespace fs
     class Growable
     {
     public:
-        template<typename StackAllocator>
-        inline bool canGrow() { return true; }
+        static const bool canGrow = true;
     };
 
     class NonGrowable
     {
     public:
-        template<typename StackAllocator>
-        inline bool canGrow() { return false; }
+        static const bool canGrow = false;
     };
 
     class AllocateFromTop
     {
     public:
-        template<typename StackAllocator> 
-        inline void initCurrentAndLast(StackAllocator* pStack);
+        template<typename StackAllocator>
+        inline void init(StackAllocator* pStack, uptr memory, size_t size);
+        template<typename StackAllocator>
+        inline void reset(StackAllocator* pStack);
         template<typename StackAllocator> 
         inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
         template<typename StackAllocator> 
@@ -92,8 +92,10 @@ namespace fs
     class AllocateFromBottom
     {
     public:
+        template<typename StackAllocator>
+        inline void init(StackAllocator* pStack, uptr memory, size_t size);
         template<typename StackAllocator> 
-        inline void initCurrentAndLast(StackAllocator* pStack);
+        inline void reset(StackAllocator* pStack);
         template<typename StackAllocator> 
         inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
         template<typename StackAllocator> 

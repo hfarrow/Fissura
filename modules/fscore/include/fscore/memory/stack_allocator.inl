@@ -15,18 +15,26 @@ namespace
 namespace fs
 {
     template<typename LayoutPolicy, typename GrowthPolicy>
-    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t maxSize, size_t growSize) :
-        _virtualStart((uptr)VirtualMemory::reserveAddressSpace(maxSize)),
-        _virtualEnd(_virtualStart + maxSize),
-        _physicalCurrent(_virtualStart),
-        _physicalEnd(_virtualStart),
-        _growSize(growSize),
-        _lastUserPtr(_virtualStart)
+    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t maxSize, size_t growSize)
+    //     _virtualStart((uptr)VirtualMemory::reserveAddressSpace(maxSize)),
+    //     _virtualEnd(_virtualStart + maxSize),
+    //     _physicalEnd(_virtualStart),
+    //     _physicalCurrent(_virtualStart),
+    //     _growSize(growSize),
+    //     _lastUserPtr(_virtualStart)
     {
-        // TODO ASSERT canGrow
-
+        FS_ASSERT_MSG(_growthPolicy.canGrow, "Cannot use a non-growable policy with growable memory.");
         FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
                       "growSize should be a multiple of page size.");
+        
+        void* ptr = VirtualMemory::reserveAddressSpace(maxSize);
+        FS_ASSERT_MSG(ptr, "Failed too allocate pages for StackAllocator");
+    
+        // TODO need physical end to be 0 but virtual end be size
+        _layoutPolicy.init(this, (uptr)ptr, 0);
+        
+
+        _deleter = std::function<void()>([this](){VirtualMemory::releaseAddressSpace(_virtualStart, _virtualEnd);});
         
     }
 
@@ -34,18 +42,16 @@ namespace fs
     template<typename BackingAllocator>
     StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t size)
     {
-        FS_ASSERT_MSG(!_growthPolicy.canGrow(), "Cannot use a growable policy with fixed memory.");
+        FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size memory.");
         FS_ASSERT(size > 0);
 
         static BackingAllocator allocator;
         void* ptr = allocator.allocate(size);
-        FS_ASSERT_MSG(ptr, "Failed to allocate pages for LinearAllocator");
-
-        _virtualStart = (uptr)ptr;
-        _virtualEnd = (uptr)_virtualStart + size;
-        _physicalEnd = _virtualEnd;
-        _layoutPolicy.initCurrentAndLast(this);
-    
+        FS_ASSERT_MSG(ptr, "Failed to allocate pages for StackAllocator");
+        
+        _layoutPolicy.init(this, (uptr)ptr, size);
+        _layoutPolicy.reset(this);
+        
         _deleter = std::function<void()>([this](){allocator.free((void*)_virtualStart, _physicalEnd - _virtualStart);});
 
         PRINT_STATE();
@@ -55,14 +61,13 @@ namespace fs
     StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(void* start, void* end) :
         _deleter(nullptr)
     {
-        FS_ASSERT_MSG(!_growthPolicy.canGrow(), "Cannot use a growable policy with fixed memory.");
+        FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size memory.");
         FS_ASSERT(start);
         FS_ASSERT(end);
         FS_ASSERT(start < end);
-        _virtualStart = (uptr)start;
-        _virtualEnd = (uptr)end;
-        _physicalEnd = _virtualEnd;
-        _layoutPolicy.initCurrentAndLast(this);
+
+        _layoutPolicy.init(this, (uptr)start, (uptr)end - (uptr)start);
+        _layoutPolicy.reset(this);
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -115,7 +120,7 @@ namespace fs
     template<typename LayoutPolicy, typename GrowthPolicy>
     void StackAllocator<LayoutPolicy, GrowthPolicy>::reset()
     {
-        _layoutPolicy.initCurrentAndLast(this);
+        _layoutPolicy.reset(this);
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -125,17 +130,33 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromBottom::initCurrentAndLast(StackAllocator* pStack)
+    void AllocateFromBottom::init(StackAllocator* pStack, uptr memory, size_t size)
+    {
+        pStack->_virtualStart = memory;
+        pStack->_virtualEnd = pStack->_virtualStart + size;
+        pStack->_physicalEnd = pStack->_virtualEnd;
+    }
+
+    template<typename StackAllocator> 
+    void AllocateFromTop::init(StackAllocator* pStack, uptr memory, size_t size)
+    {
+        pStack->_virtualStart = memory + size;
+        pStack->_virtualEnd = memory;
+        pStack->_physicalEnd = pStack->_virtualEnd;
+    }
+
+    template<typename StackAllocator> 
+    void AllocateFromBottom::reset(StackAllocator* pStack)
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart;
     }
 
     template<typename StackAllocator> 
-    void AllocateFromTop::initCurrentAndLast(StackAllocator* pStack)
+    void AllocateFromTop::reset(StackAllocator* pStack)
     {
-        pStack->_physicalCurrent = pStack->_physicalEnd;
-        pStack->_lastUserPtr = pStack->_physicalEnd + SIZE_OF_ALLOCATION_OFFSET;
+        pStack->_physicalCurrent = pStack->_virtualStart;
+        pStack->_lastUserPtr = pStack->_virtualStart + SIZE_OF_ALLOCATION_OFFSET;
     }
 
     template<typename StackAllocator> 
@@ -162,7 +183,6 @@ namespace fs
     template<typename StackAllocator> 
     u32 AllocateFromTop::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
     {
-        //return static_cast<u32>(prevCurrent - current) + SIZE_OF_ALLOCATION_OFFSET;
         (void)prevCurrent;
         return prevCurrent - (pStack->_physicalCurrent + size);
     }
@@ -177,7 +197,7 @@ namespace fs
     bool AllocateFromTop::checkOutOfMemory(StackAllocator* pStack, size_t size)
     {
         (void)size;
-        return pStack->_physicalCurrent < pStack->_virtualStart;
+        return pStack->_physicalCurrent < pStack->_physicalEnd;
     }
 
     template<typename StackAllocator> 
@@ -292,7 +312,7 @@ namespace fs
     template<typename StackAllocator> 
     size_t AllocateFromTop::getAllocatedSpace(StackAllocator* pStack)
     {
-        return pStack->_physicalEnd - pStack->_physicalCurrent;
+        return pStack->_virtualStart - pStack->_physicalCurrent;
     }
 }
 

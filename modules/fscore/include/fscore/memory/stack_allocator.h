@@ -9,16 +9,19 @@
 namespace fs
 {
     class PageAllocator;
+
     class AllocateFromBottom;
+
     class AllocateFromTop;
 
-    template<typename MemoryPolicy>
+    template<typename LayoutPolicy, typename GrowthPolicy>
     class StackAllocator
     {
     public:
         friend AllocateFromBottom;
         friend AllocateFromTop;
 
+        StackAllocator(size_t maxSize, size_t growSize = 0);
         template<typename BackingAllocator = PageAllocator>
         explicit StackAllocator(size_t size);
         StackAllocator(void* start, void* end);
@@ -33,50 +36,81 @@ namespace fs
         void PRINT_STATE()
         {
             FS_PRINT("Current State:");
-            FS_PRINT("\t_start       = " << (void*)_start);
-            FS_PRINT("\t_end         = " << (void*)_end);
-            FS_PRINT("\t_current     = " << (void*)_current);
-            FS_PRINT("\t_lastUserPtr = " << (void*)_lastUserPtr);
-            FS_PRINT("\tallocatedSpace = " << getAllocatedSpace());
+            FS_PRINT("\t_virtualStart    = " << (void*)_virtualStart);
+            FS_PRINT("\t_virtualEnd      = " << (void*)_virtualStart);
+            FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
+            FS_PRINT("\t_phyiscalCurrent = " << (void*)_physicalCurrent);
+            FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
+            FS_PRINT("\tallocatedSpace   = " << getAllocatedSpace());
         }
     
     private:
-        MemoryPolicy _memoryPolicy;
-        uptr _start;
-        uptr _end;
-        uptr _current;
+        LayoutPolicy _layoutPolicy;
+        GrowthPolicy _growthPolicy;
+        uptr _virtualStart;
+        uptr _virtualEnd;
+        uptr _physicalEnd;
+        uptr _physicalCurrent;
+        uptr _growSize;
         uptr _lastUserPtr;
         std::function<void()> _deleter;
+    };
+
+    class Growable
+    {
+    public:
+        template<typename StackAllocator>
+        inline bool canGrow() { return true; }
+    };
+
+    class NonGrowable
+    {
+    public:
+        template<typename StackAllocator>
+        inline bool canGrow() { return false; }
     };
 
     class AllocateFromTop
     {
     public:
-        using StackAllocator = StackAllocator<AllocateFromTop>;
-        inline void initCurrentAndLast(StackAllocator* pThis);
-        inline uptr alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset);
-        inline u32 calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size);
-        inline bool checkOutOfMemory(StackAllocator* pThis, size_t size);
-        inline void* allocate(StackAllocator* pThis, u32 headerSize, size_t size);
-        inline void free(StackAllocator* pThis, void* ptr);
-        inline size_t getAllocatedSpace(StackAllocator* pThis);
+        template<typename StackAllocator> 
+        inline void initCurrentAndLast(StackAllocator* pStack);
+        template<typename StackAllocator> 
+        inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
+        template<typename StackAllocator> 
+        inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
+        template<typename StackAllocator> 
+        inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
+        template<typename StackAllocator> 
+        inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
+        template<typename StackAllocator> 
+        inline void free(StackAllocator* pStack, void* ptr);
+        template<typename StackAllocator> 
+        inline size_t getAllocatedSpace(StackAllocator* pStack);
     };
 
     class AllocateFromBottom
     {
     public:
-        using StackAllocator = StackAllocator<AllocateFromBottom>;
-        inline void initCurrentAndLast(StackAllocator* pThis);
-        inline uptr alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset);
-        inline u32 calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size);
-        inline bool checkOutOfMemory(StackAllocator* pThis, size_t size);
-        inline void* allocate(StackAllocator* pThis, u32 headerSize, size_t size);
-        inline void free(StackAllocator* pThis, void* ptr);
-        inline size_t getAllocatedSpace(StackAllocator* pThis);
+        template<typename StackAllocator> 
+        inline void initCurrentAndLast(StackAllocator* pStack);
+        template<typename StackAllocator> 
+        inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
+        template<typename StackAllocator> 
+        inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
+        template<typename StackAllocator> 
+        inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
+        template<typename StackAllocator> 
+        inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
+        template<typename StackAllocator> 
+        inline void free(StackAllocator* pStack, void* ptr);
+        template<typename StackAllocator> 
+        inline size_t getAllocatedSpace(StackAllocator* pStack);
     };
 
-    using StackAllocatorBottom = StackAllocator<AllocateFromBottom>;
-    using StackAllocatorTop = StackAllocator<AllocateFromTop>;
+    using StackAllocatorBottom = StackAllocator<AllocateFromBottom, NonGrowable>;
+    using StackAllocatorBottomGrowable = StackAllocator<AllocateFromBottom, Growable>;
+    using StackAllocatorTop = StackAllocator<AllocateFromTop, NonGrowable>;
     using StandardStackAllocator = StackAllocatorBottom;
 }
 

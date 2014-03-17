@@ -5,7 +5,7 @@
 
 namespace fs
 {
-    class IMemoryPolicy
+    class ILayoutPolicy
     {
     public:
         virtual void init() = 0;
@@ -16,11 +16,11 @@ namespace fs
      * This policy provides a main HeapAllocator and a debug HeapAllocator that are thread 
      * safe and backed by a single PageAllocator
      */
-    class StandardMemoryPolicy : public IMemoryPolicy, Uncopyable
+    class StandardLayoutPolicy : public ILayoutPolicy, Uncopyable
     {
     public:
         
-        StandardMemoryPolicy() :
+        StandardLayoutPolicy() :
             gpGeneralPage(nullptr),
             gpGeneralPageTS(nullptr),
             gpFsMainHeap(nullptr),

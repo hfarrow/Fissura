@@ -14,39 +14,59 @@ namespace
 
 namespace fs
 {
-    template<typename MemoryPolicy>
-    template<typename BackingAllocator>
-    StackAllocator<MemoryPolicy>::StackAllocator(size_t size)
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t maxSize, size_t growSize) :
+        _virtualStart((uptr)VirtualMemory::reserveAddressSpace(maxSize)),
+        _virtualEnd(_virtualStart + maxSize),
+        _physicalCurrent(_virtualStart),
+        _physicalEnd(_virtualStart),
+        _growSize(growSize),
+        _lastUserPtr(_virtualStart)
     {
+        // TODO ASSERT canGrow
+
+        FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
+                      "growSize should be a multiple of page size.");
+        
+    }
+
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    template<typename BackingAllocator>
+    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t size)
+    {
+        FS_ASSERT_MSG(!_growthPolicy.canGrow(), "Cannot use a growable policy with fixed memory.");
         FS_ASSERT(size > 0);
 
         static BackingAllocator allocator;
         void* ptr = allocator.allocate(size);
         FS_ASSERT_MSG(ptr, "Failed to allocate pages for LinearAllocator");
 
-        _start = (uptr)ptr;
-        _end = _start + size;
-        _memoryPolicy.initCurrentAndLast(this);
+        _virtualStart = (uptr)ptr;
+        _virtualEnd = (uptr)_virtualStart + size;
+        _physicalEnd = _virtualEnd;
+        _layoutPolicy.initCurrentAndLast(this);
     
-        _deleter = std::function<void()>([this](){allocator.free((void*)_start, _end - _start);});
+        _deleter = std::function<void()>([this](){allocator.free((void*)_virtualStart, _physicalEnd - _virtualStart);});
 
         PRINT_STATE();
     }
 
-    template<typename MemoryPolicy>
-    StackAllocator<MemoryPolicy>::StackAllocator(void* start, void* end) :
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(void* start, void* end) :
         _deleter(nullptr)
     {
+        FS_ASSERT_MSG(!_growthPolicy.canGrow(), "Cannot use a growable policy with fixed memory.");
         FS_ASSERT(start);
         FS_ASSERT(end);
         FS_ASSERT(start < end);
-        _start = (uptr)start;
-        _end = (uptr)end;
-        _memoryPolicy.initCurrentAndLast(this);
+        _virtualStart = (uptr)start;
+        _virtualEnd = (uptr)end;
+        _physicalEnd = _virtualEnd;
+        _layoutPolicy.initCurrentAndLast(this);
     }
 
-    template<typename MemoryPolicy>
-    StackAllocator<MemoryPolicy>::~StackAllocator()
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    StackAllocator<LayoutPolicy, GrowthPolicy>::~StackAllocator()
     {
         if(_deleter)
         {
@@ -54,105 +74,114 @@ namespace fs
         }
     }
 
-    template<typename MemoryPolicy>
-    void* StackAllocator<MemoryPolicy>::allocate(size_t size, size_t alignment, size_t offset)
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    void* StackAllocator<LayoutPolicy, GrowthPolicy>::allocate(size_t size, size_t alignment, size_t offset)
     {
         FS_PRINT("StackAllocator::allocate(" << size << ", " << alignment << ", " << offset << ")");
         // store the allocation offset infront of the allocation
         size += SIZE_OF_ALLOCATION_OFFSET;
         offset += SIZE_OF_ALLOCATION_OFFSET;
 
-        const uptr oldCurrent = _current;
+        const uptr oldCurrent = _physicalCurrent;
         
         // offset the pointer first, align it, and then offset it back
-        _current = _memoryPolicy.alignPtr(this, size, alignment, offset);
+        _physicalCurrent = _layoutPolicy.alignPtr(this, size, alignment, offset);
 
-        const u32 headerSize = _memoryPolicy.calcHeaderSize(this, oldCurrent, size);
+        const u32 headerSize = _layoutPolicy.calcHeaderSize(this, oldCurrent, size);
         
-        if(_memoryPolicy.checkOutOfMemory(this, size))
+        if(_layoutPolicy.checkOutOfMemory(this, size))
         {
             FS_ASSERT(!"StackAllocator out of memory");
             return nullptr;
         }
 
-        void* userPtr = _memoryPolicy.allocate(this, headerSize, size);
+        void* userPtr = _layoutPolicy.allocate(this, headerSize, size);
         
         PRINT_STATE();
 
         return userPtr;
     }
 
-    template<typename MemoryPolicy>
-    void StackAllocator<MemoryPolicy>::free(void* ptr)
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    void StackAllocator<LayoutPolicy, GrowthPolicy>::free(void* ptr)
     {
         FS_PRINT("StackAllocator::free(" << ptr << ")");
         FS_ASSERT(ptr);
         FS_ASSERT(ptr == (void*)_lastUserPtr);
-        _memoryPolicy.free(this, ptr);
+        _layoutPolicy.free(this, ptr);
         PRINT_STATE();
     }
 
-    template<typename MemoryPolicy>
-    void StackAllocator<MemoryPolicy>::reset()
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    void StackAllocator<LayoutPolicy, GrowthPolicy>::reset()
     {
-        _memoryPolicy.initCurrentAndLast(this);
+        _layoutPolicy.initCurrentAndLast(this);
     }
 
-    template<typename MemoryPolicy>
-    size_t StackAllocator<MemoryPolicy>::getAllocatedSpace()
+    template<typename LayoutPolicy, typename GrowthPolicy>
+    size_t StackAllocator<LayoutPolicy, GrowthPolicy>::getAllocatedSpace()
     {
-        return _memoryPolicy.getAllocatedSpace(this);
+        return _layoutPolicy.getAllocatedSpace(this);
     }
 
-    void AllocateFromBottom::initCurrentAndLast(StackAllocator* pThis)
+    template<typename StackAllocator> 
+    void AllocateFromBottom::initCurrentAndLast(StackAllocator* pStack)
     {
-        pThis->_current = pThis->_start;
-        pThis->_lastUserPtr = pThis->_start;
+        pStack->_physicalCurrent = pStack->_virtualStart;
+        pStack->_lastUserPtr = pStack->_virtualStart;
     }
 
-    void AllocateFromTop::initCurrentAndLast(StackAllocator* pThis)
+    template<typename StackAllocator> 
+    void AllocateFromTop::initCurrentAndLast(StackAllocator* pStack)
     {
-        pThis->_current = pThis->_end;
-        pThis->_lastUserPtr = pThis->_end + SIZE_OF_ALLOCATION_OFFSET;
+        pStack->_physicalCurrent = pStack->_physicalEnd;
+        pStack->_lastUserPtr = pStack->_physicalEnd + SIZE_OF_ALLOCATION_OFFSET;
     }
 
-    uptr AllocateFromBottom::alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset)
+    template<typename StackAllocator> 
+    uptr AllocateFromBottom::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
     {
         (void)size;
-        return pointerUtil::alignTop(pThis->_current + offset, alignment) - offset;
+        return pointerUtil::alignTop(pStack->_physicalCurrent + offset, alignment) - offset;
     }
 
-    uptr AllocateFromTop::alignPtr(StackAllocator* pThis, size_t size, size_t alignment, size_t offset)
+    template<typename StackAllocator> 
+    uptr AllocateFromTop::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
     {
         offset -= SIZE_OF_ALLOCATION_OFFSET;
-        return pointerUtil::alignBottom(pThis->_current - size + offset, alignment) - offset - SIZE_OF_ALLOCATION_OFFSET;
+        return pointerUtil::alignBottom(pStack->_physicalCurrent - size + offset, alignment) - offset - SIZE_OF_ALLOCATION_OFFSET;
     }
 
-    u32 AllocateFromBottom::calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size)
+    template<typename StackAllocator> 
+    u32 AllocateFromBottom::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
     {
         (void)size;
-        return static_cast<u32>(pThis->_current - prevCurrent) + SIZE_OF_ALLOCATION_OFFSET;
+        return static_cast<u32>(pStack->_physicalCurrent - prevCurrent) + SIZE_OF_ALLOCATION_OFFSET;
     }
 
-    u32 AllocateFromTop::calcHeaderSize(StackAllocator* pThis, uptr prevCurrent, size_t size)
+    template<typename StackAllocator> 
+    u32 AllocateFromTop::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
     {
         //return static_cast<u32>(prevCurrent - current) + SIZE_OF_ALLOCATION_OFFSET;
         (void)prevCurrent;
-        return prevCurrent - (pThis->_current + size);
+        return prevCurrent - (pStack->_physicalCurrent + size);
     }
 
-    bool AllocateFromBottom::checkOutOfMemory(StackAllocator* pThis, size_t size)
+    template<typename StackAllocator> 
+    bool AllocateFromBottom::checkOutOfMemory(StackAllocator* pStack, size_t size)
     {
-        return pThis->_current + size > pThis->_end;
+        return pStack->_physicalCurrent + size > pStack->_physicalEnd;
     }
 
-    bool AllocateFromTop::checkOutOfMemory(StackAllocator* pThis, size_t size)
+    template<typename StackAllocator> 
+    bool AllocateFromTop::checkOutOfMemory(StackAllocator* pStack, size_t size)
     {
         (void)size;
-        return pThis->_current < pThis->_start;
+        return pStack->_physicalCurrent < pStack->_virtualStart;
     }
 
-    void* AllocateFromBottom::allocate(StackAllocator* pThis, u32 headerSize, size_t size)
+    template<typename StackAllocator> 
+    void* AllocateFromBottom::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
     {
         union
         {
@@ -162,23 +191,24 @@ namespace fs
             uptr as_uptr;
         };
 
-        as_char = (char*)pThis->_current;
+        as_char = (char*)pStack->_physicalCurrent;
         
         // store lastUserPtr in the first 4 bytes
         // store allocation offset in the second 4 bytes
-        const uptr lastUserPtrOffset = pThis->_current - pThis->_lastUserPtr;
+        const uptr lastUserPtrOffset = pStack->_physicalCurrent - pStack->_lastUserPtr;
         *as_u32 = lastUserPtrOffset;
         *(as_u32 + 1) = headerSize;
         as_char += SIZE_OF_ALLOCATION_OFFSET;
 
         void* userPtr = as_void;
-        pThis->_lastUserPtr = as_uptr;
-        pThis->_current += size;
+        pStack->_lastUserPtr = as_uptr;
+        pStack->_physicalCurrent += size;
 
         return userPtr;
     }
 
-    void* AllocateFromTop::allocate(StackAllocator* pThis, u32 headerSize, size_t size)
+    template<typename StackAllocator> 
+    void* AllocateFromTop::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
     {
         (void)size;
         union
@@ -189,11 +219,11 @@ namespace fs
             uptr as_uptr;
         };
 
-        as_char = (char*)pThis->_current;
+        as_char = (char*)pStack->_physicalCurrent;
         
         // store lastUserPtr in the first 4 bytes
         // store allocation offset in the second 4 bytes
-        const uptr lastUserPtrOffset = pThis->_lastUserPtr - as_uptr;
+        const uptr lastUserPtrOffset = pStack->_lastUserPtr - as_uptr;
         FS_PRINT("lastUserPtrOffset = " << lastUserPtrOffset);
         FS_PRINT("headerSize = " << headerSize);
         *as_u32 = lastUserPtrOffset;
@@ -201,13 +231,14 @@ namespace fs
         as_char += SIZE_OF_ALLOCATION_OFFSET;
 
         void* userPtr = as_void;
-        pThis->_lastUserPtr = as_uptr;
-        pThis->_current = pThis->_lastUserPtr - SIZE_OF_ALLOCATION_OFFSET;
+        pStack->_lastUserPtr = as_uptr;
+        pStack->_physicalCurrent = pStack->_lastUserPtr - SIZE_OF_ALLOCATION_OFFSET;
 
         return userPtr;
     }
 
-    void AllocateFromBottom::free(StackAllocator* pThis, void* ptr)
+    template<typename StackAllocator> 
+    void AllocateFromBottom::free(StackAllocator* pStack, void* ptr)
     {
         union
         {
@@ -224,11 +255,12 @@ namespace fs
         const u32 headerSize = *(as_u32 + 1);
         FS_ASSERT(headerSize >= SIZE_OF_ALLOCATION_OFFSET);
 
-        pThis->_lastUserPtr = as_uptr - lastUserPtrOffset;    
-        pThis->_current = (uptr)ptr - headerSize;
+        pStack->_lastUserPtr = as_uptr - lastUserPtrOffset;    
+        pStack->_physicalCurrent = (uptr)ptr - headerSize;
     }
 
-    void AllocateFromTop::free(StackAllocator* pThis, void* ptr)
+    template<typename StackAllocator> 
+    void AllocateFromTop::free(StackAllocator* pStack, void* ptr)
     {
         union
         {
@@ -247,18 +279,20 @@ namespace fs
         FS_PRINT("lastUserPtrOffset = " << lastUserPtrOffset);
         FS_PRINT("headerSize = " << headerSize);
 
-        pThis->_lastUserPtr = as_uptr + lastUserPtrOffset;    
-        pThis->_current = pThis->_lastUserPtr - SIZE_OF_ALLOCATION_OFFSET;
+        pStack->_lastUserPtr = as_uptr + lastUserPtrOffset;    
+        pStack->_physicalCurrent = pStack->_lastUserPtr - SIZE_OF_ALLOCATION_OFFSET;
     }
 
-    size_t AllocateFromBottom::getAllocatedSpace(StackAllocator* pThis)
+    template<typename StackAllocator> 
+    size_t AllocateFromBottom::getAllocatedSpace(StackAllocator* pStack)
     {
-        return pThis->_current - pThis->_start;
+        return pStack->_physicalCurrent - pStack->_virtualStart;
     }
 
-    size_t AllocateFromTop::getAllocatedSpace(StackAllocator* pThis)
+    template<typename StackAllocator> 
+    size_t AllocateFromTop::getAllocatedSpace(StackAllocator* pStack)
     {
-        return pThis->_end - pThis->_current;
+        return pStack->_physicalEnd - pStack->_physicalCurrent;
     }
 }
 

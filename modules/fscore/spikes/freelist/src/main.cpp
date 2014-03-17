@@ -11,14 +11,14 @@ using namespace std;
 
 #define PRINT(x) cout << x << endl
 
-template<u8 IndexSize>
-void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_t slotSize, size_t elementSize, size_t alignment, size_t offset)
+template<IndexSize indexSize>
+void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_t slotSize, size_t elementSize, size_t alignment, size_t offset)
 {
     union
     {
         void* as_void;
         uptr as_uptr;
-        const FreelistNode<IndexSize>* as_freelist;
+        const FreelistNode<indexSize>* as_freelist;
     };
 
     //PRINT("freelist start = " << freelist.getStart());
@@ -33,7 +33,7 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
     FS_ASSERT(alignment > 0);
     FS_ASSERT(offset < elementSize);
 
-    const FreelistNode<IndexSize>* runner = as_freelist;
+    const FreelistNode<indexSize>* runner = as_freelist;
     //PRINT("runner  = " << as_uptr);
 
     FS_ASSERT(runner->offset);
@@ -46,7 +46,7 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
         uptr ptrPrev = as_uptr;
         //PRINT("ptrPrev = " << ptrPrev);
         //PRINT("next offset = " << runner->offset);
-        runner = (FreelistNode<IndexSize>*)(freelist.getStart() + runner->offset);
+        runner = (FreelistNode<indexSize>*)(freelist.getStart() + runner->offset);
         as_freelist = runner;
         uptr ptrNext = as_uptr;
         //PRINT("ptrNext = " << ptrNext);
@@ -68,13 +68,13 @@ void verifyEmptyFreelistStructure(Freelist<IndexSize>& freelist, uptr end, size_
     FS_ASSERT(counter == numElements);
 }
 
-template<u8 IndexSize>
-Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
+template<IndexSize indexSize>
+Freelist<indexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
 {
     PRINT("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
-    if(elementSize < IndexSize)
+    if(elementSize < (u8)indexSize)
     {
-        elementSize = IndexSize;
+        elementSize = (u8)indexSize;
         //PRINT("adjusted element size to " << elementSize);
     }
 
@@ -83,7 +83,7 @@ Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size
     const size_t availableMemory = memorySize - (start - (uptr)pMemory);
     const uptr end = start + availableMemory;
 
-    Freelist<IndexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
+    Freelist<indexSize> freelist((void*)start, (void*)end, elementSize, alignment, offset);
     verifyEmptyFreelistStructure(freelist, end, slotSize, elementSize, alignment, offset);
 
     return freelist;
@@ -92,7 +92,7 @@ Freelist<IndexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size
 void allocateOutOfMemory()
 {
     u8 pMemory[256];
-    Freelist<8> freelist = createAndVerifyFreelist<8>(pMemory, 256, 8, 8, 0);
+    Freelist<IndexSize::eightBytes> freelist = createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, 256, 8, 8, 0);
     //PRINT("first = " << freelist.getStart());
     //PRINT("first = " << freelist.peekNext());
     //PRINT("offset = " << *(u64*)freelist.getStart());
@@ -138,9 +138,9 @@ int main( int, char **)
         {
             while(offset < elementSize)
             {
-                createAndVerifyFreelist<2>(pMemory, memorySize, elementSize, alignment, offset);
-                createAndVerifyFreelist<4>(pMemory, memorySize, elementSize, alignment, offset);
-                createAndVerifyFreelist<8>(pMemory, memorySize, elementSize, alignment, offset);
+                createAndVerifyFreelist<IndexSize::twoBytes>(pMemory, memorySize, elementSize, alignment, offset);
+                createAndVerifyFreelist<IndexSize::fourBytes>(pMemory, memorySize, elementSize, alignment, offset);
+                createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, memorySize, elementSize, alignment, offset);
                 
                 offset += offsetSizeIncrement;
             }

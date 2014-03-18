@@ -21,7 +21,7 @@ namespace fs
         friend AllocateFromBottom;
         friend AllocateFromTop;
 
-        StackAllocator(size_t maxSize, size_t growSize = 0);
+        StackAllocator(size_t maxSize, size_t growSize);
         template<typename BackingAllocator = PageAllocator>
         explicit StackAllocator(size_t size);
         StackAllocator(void* start, void* end);
@@ -31,18 +31,23 @@ namespace fs
         void free(void* ptr);
         inline void reset();
         inline size_t getAllocatedSpace();
+        
+        // Free physical memory that is no longer in use.
+        // The address space will still be reserved.
+        // Does nothing for NonGrowbablePolicy
+        void purge();
 
         // Temp... delete me later
-        void PRINT_STATE()
-        {
-            FS_PRINT("Current State:");
-            FS_PRINT("\t_virtualStart    = " << (void*)_virtualStart);
-            FS_PRINT("\t_virtualEnd      = " << (void*)_virtualStart);
-            FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
-            FS_PRINT("\t_phyiscalCurrent = " << (void*)_physicalCurrent);
-            FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
-            FS_PRINT("\tallocatedSpace   = " << getAllocatedSpace());
-        }
+        // void PRINT_STATE()
+        // {
+        //     FS_PRINT("Current State:");
+        //     FS_PRINT("\t_virtualStart    = " << (void*)_virtualStart);
+        //     FS_PRINT("\t_virtualEnd      = " << (void*)_virtualEnd);
+        //     FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
+        //     FS_PRINT("\t_phyiscalCurrent = " << (void*)_physicalCurrent);
+        //     FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
+        //     FS_PRINT("\tallocatedSpace   = " << getAllocatedSpace());
+        // }
     
     private:
         LayoutPolicy _layoutPolicy;
@@ -84,11 +89,15 @@ namespace fs
         template<typename StackAllocator> 
         inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
         template<typename StackAllocator> 
+        inline bool grow(StackAllocator* pStack, size_t allocationSize);
+        template<typename StackAllocator> 
         inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
         template<typename StackAllocator> 
         inline void free(StackAllocator* pStack, void* ptr);
         template<typename StackAllocator> 
         inline size_t getAllocatedSpace(StackAllocator* pStack);
+        template<typename StackAllocator>
+        inline void purge(StackAllocator* pStack);
     };
 
     class AllocateFromBottom
@@ -105,16 +114,21 @@ namespace fs
         template<typename StackAllocator> 
         inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
         template<typename StackAllocator> 
+        inline bool grow(StackAllocator* pStack, size_t allocationSize);
+        template<typename StackAllocator> 
         inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
         template<typename StackAllocator> 
         inline void free(StackAllocator* pStack, void* ptr);
         template<typename StackAllocator> 
         inline size_t getAllocatedSpace(StackAllocator* pStack);
+        template<typename StackAllocator>
+        inline void purge(StackAllocator* pStack);
     };
 
     using StackAllocatorBottom = StackAllocator<AllocateFromBottom, NonGrowable>;
     using StackAllocatorBottomGrowable = StackAllocator<AllocateFromBottom, Growable>;
     using StackAllocatorTop = StackAllocator<AllocateFromTop, NonGrowable>;
+    using StackAllocatorTopGrowable = StackAllocator<AllocateFromTop, Growable>;
     using StandardStackAllocator = StackAllocatorBottom;
 }
 

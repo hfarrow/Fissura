@@ -21,7 +21,7 @@ namespace fs
         friend AllocateFromBottom;
         friend AllocateFromTop;
 
-        // StackAllocator(size_t maxSize, size_t growSize = 0);
+        StackAllocator(size_t maxSize, size_t growSize = 0);
         template<typename BackingAllocator = PageAllocator>
         explicit StackAllocator(size_t size);
         StackAllocator(void* start, void* end);
@@ -60,12 +60,14 @@ namespace fs
     {
     public:
         static const bool canGrow = true;
+
     };
 
     class NonGrowable
     {
     public:
         static const bool canGrow = false;
+
     };
 
     class AllocateFromTop

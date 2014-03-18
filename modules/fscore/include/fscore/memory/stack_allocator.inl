@@ -31,10 +31,11 @@ namespace fs
         FS_ASSERT_MSG(ptr, "Failed too allocate pages for StackAllocator");
     
         // TODO need physical end to be 0 but virtual end be size
-        _layoutPolicy.init(this, (uptr)ptr, 0);
+        _layoutPolicy.init(this, (uptr)ptr, maxSize);
+        _layoutPolicy.reset(this);
         
 
-        _deleter = std::function<void()>([this](){VirtualMemory::releaseAddressSpace(_virtualStart, _virtualEnd);});
+        _deleter = std::function<void()>([&](){VirtualMemory::releaseAddressSpace(ptr, maxSize);});
         
     }
 
@@ -134,7 +135,11 @@ namespace fs
     {
         pStack->_virtualStart = memory;
         pStack->_virtualEnd = pStack->_virtualStart + size;
-        pStack->_physicalEnd = pStack->_virtualEnd;
+        if(pStack->_growthPolicy.canGrow)
+            pStack->_physicalEnd = pStack->_virtualStart;
+        else
+            pStack->_physicalEnd = pStack->_virtualEnd;
+
     }
 
     template<typename StackAllocator> 
@@ -142,7 +147,10 @@ namespace fs
     {
         pStack->_virtualStart = memory + size;
         pStack->_virtualEnd = memory;
-        pStack->_physicalEnd = pStack->_virtualEnd;
+        if(pStack->_growthPolicy.canGrow)
+            pStack->_physicalEnd = pStack->_virtualStart;
+        else
+            pStack->_physicalEnd = pStack->_virtualEnd;
     }
 
     template<typename StackAllocator> 
@@ -150,6 +158,8 @@ namespace fs
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart;
+        if(pStack->_growthPolicy.canGrow)
+            VirtualMemory::freePhysicalMemory((void*)pStack->_virtualStart, pStack->_virtualEnd - pStack->_virtualStart);
     }
 
     template<typename StackAllocator> 
@@ -157,6 +167,8 @@ namespace fs
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart + SIZE_OF_ALLOCATION_OFFSET;
+        if(pStack->_growthPolicy.canGrow)
+            VirtualMemory::freePhysicalMemory((void*)pStack->_virtualEnd, pStack->_virtualStart - pStack->_virtualEnd);
     }
 
     template<typename StackAllocator> 

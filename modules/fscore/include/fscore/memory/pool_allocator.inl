@@ -26,9 +26,9 @@ namespace fs
         _virtualStart = ptr;
         _virtualEnd = (void*)((uptr)_virtualStart + maxSize);
         _physicalEnd = (void*)((uptr)_virtualStart + initalSize);
-        VirtualMemory::allocatePhysicalMemory(_virtualStart, _physicalEnd);
+        VirtualMemory::allocatePhysicalMemory(_virtualStart, initalSize);
 
-        _freelist = Freelist<IndexSize::systemDefault>(_virtualStart, _physicalEnd, maxElementSize, maxAlignment, offset);
+        _freelist = PoolFreelist(_virtualStart, _physicalEnd, maxElementSize, maxAlignment, offset);
     }
 
     template<typename GrowthPolicy>
@@ -49,7 +49,7 @@ namespace fs
         _virtualStart = ptr;
         _virtualEnd = (void*)((uptr)_virtualStart + size);
         _physicalEnd = _virtualEnd;
-        _freelist = Freelist<IndexSize::systemDefault>(_virtualStart, _virtualEnd, _maxElementSize, _maxAlignment, _offset);
+        _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, _maxAlignment, _offset);
 
         _deleter = std::function<void()>([this](){allocator.free(_virtualStart, (uptr)_virtualEnd - (uptr)_virtualStart);});
     }
@@ -100,7 +100,7 @@ namespace fs
 
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
-                _freelist = Freelist<IndexSize::systemDefault>(_physicalEnd, newPhysicalEnd, _maxElementSize, _maxAlignment, _offset);
+                _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, _maxElementSize, _maxAlignment, _offset);
                 _physicalEnd = newPhysicalEnd;
                 userPtr = _freelist.obtain();
                 FS_ASSERT_MSG(userPtr, "Failed to allocate object after growing the pool. Is _growSize large enough?");
@@ -124,7 +124,7 @@ namespace fs
     template<typename GrowthPolicy>
     void PoolAllocator<GrowthPolicy>::reset()
     {
-        _freelist = Freelist<IndexSize::systemDefault>(_virtualStart, _virtualEnd, _maxElementSize, _maxAlignment, _offset);
+        _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, _maxAlignment, _offset);
     }
 
 }

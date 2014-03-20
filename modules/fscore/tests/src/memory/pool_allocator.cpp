@@ -239,6 +239,55 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
     allocator.free(ptr);
 }
 
+BOOST_AUTO_TEST_CASE(allocate_and_free_from_growable)
+{
+    PoolAllocatorGrowable allocator(allocatorSize / 2, allocatorSize, largeAllocationSize, defaultAlignment, 0, largeAllocationSize);
+    //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+
+    void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+
+    // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
+    //BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
+
+    //size_t oldSize = allocator.getAllocatedSpace();
+    allocator.free(ptr);
+    //BOOST_CHECK(oldSize > allocator.getAllocatedSpace());
+    
+    ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
+    BOOST_REQUIRE(ptr);
+    allocator.free(ptr);
+}
+
+BOOST_AUTO_TEST_CASE(allocate_and_grow)
+{
+    PoolAllocatorGrowable allocator(largeAllocationSize, allocatorSize, largeAllocationSize, defaultAlignment, 0, largeAllocationSize);
+    
+    const size_t slotSize = bitUtil::roundUpToMultiple(largeAllocationSize, defaultAlignment);
+    void* ptr = allocator.allocate(slotSize, defaultAlignment, 0);
+    void* ptr2 = allocator.allocate(slotSize, defaultAlignment, 0);
+    (void)ptr;
+    (void)ptr2;
+    
+    // API doesn't provide any way to know if the allocator grew but the above should grow and not crash.
+}
+
+BOOST_AUTO_TEST_CASE(allocate_and_grow_out_of_memory)
+{
+    // grow size is large which should cause out of memory the first time the allocator grows.
+    PoolAllocatorGrowable allocator(largeAllocationSize, allocatorSize, largeAllocationSize, defaultAlignment, 0, allocatorSize);
+    allocator.allocate(largeAllocationSize, defaultAlignment, 0);
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment, 0);});
+}
+
+BOOST_AUTO_TEST_CASE(allocate_invalid)
+{
+    PoolAllocatorNonGrowable allocator(allocatorSize, largeAllocationSize, defaultAlignment, 0);
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize + tinyAllocationSize, defaultAlignment, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment * 2, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment, 4);});
+}
+
 BOOST_AUTO_TEST_CASE(allocate_aligned)
 {
     PoolAllocatorNonGrowable allocator(allocatorSize, smallAllocationSize, 32, 0);

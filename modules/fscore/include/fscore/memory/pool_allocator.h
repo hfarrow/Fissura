@@ -9,6 +9,8 @@
 
 namespace fs
 {
+    using PoolFreelist = Freelist<IndexSize::systemDefault>;
+
     class PageAllocator;
 
     template<typename GrowthPolicy>
@@ -39,7 +41,7 @@ namespace fs
         void* _virtualStart;
         void* _virtualEnd;
         void* _physicalEnd;
-        Freelist<IndexSize::systemDefault> _freelist;
+        PoolFreelist _freelist;
         size_t _growSize;
         std::function<void()> _deleter;
         GrowthPolicy _growthPolicy;

@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 {
-    PoolAllocator allocator(allocatorSize, largeAllocationSize, defaultAlignment, 0);
+    PoolAllocatorNonGrowable allocator(allocatorSize, largeAllocationSize, defaultAlignment, 0);
     //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
 {
     u8 pMemory[allocatorSize];
 
-    PoolAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize), largeAllocationSize, defaultAlignment, 0);
+    PoolAllocatorNonGrowable allocator((void*)pMemory, (void*)(pMemory + allocatorSize), largeAllocationSize, defaultAlignment, 0);
     //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
 
     void* ptr = allocator.allocate(VirtualMemory::getPageSize(), defaultAlignment, 0);
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
 
 BOOST_AUTO_TEST_CASE(allocate_aligned)
 {
-    PoolAllocator allocator(allocatorSize, smallAllocationSize, 32, 0);
+    PoolAllocatorNonGrowable allocator(allocatorSize, smallAllocationSize, 32, 0);
 
     void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
     BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 8) == 0);
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(allocate_aligned)
 
 BOOST_AUTO_TEST_CASE(allocate_offset)
 {
-    PoolAllocator allocator(allocatorSize, smallAllocationSize, 8, 4);
+    PoolAllocatorNonGrowable allocator(allocatorSize, smallAllocationSize, 8, 4);
 
     void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
     FS_ASSERT(ptr);

@@ -24,9 +24,8 @@ namespace fs
         _growSize = growSize;
         
         void* ptr = VirtualMemory::reserveAddressSpace(maxSize);
-        FS_ASSERT_MSG(ptr, "Failed too allocate pages for StackAllocator");
+        FS_ASSERT_MSG(ptr, "Failed to allocate pages for StackAllocator");
     
-        // TODO need physical end to be 0 but virtual end be size
         _layoutPolicy.init(this, (uptr)ptr, maxSize);
         _layoutPolicy.reset(this);
         
@@ -38,7 +37,7 @@ namespace fs
     StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t size)
     {
         FS_ASSERT(size > 0);
-        FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size page memory");
+        FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size backed memory");
 
         static BackingAllocator allocator;
         void* ptr = allocator.allocate(size);
@@ -132,7 +131,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromBottom::init(StackAllocator* pStack, uptr memory, size_t size)
+    void AllocateFromStackBottom::init(StackAllocator* pStack, uptr memory, size_t size)
     {
         pStack->_virtualStart = memory;
         pStack->_virtualEnd = pStack->_virtualStart + size;
@@ -144,7 +143,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromTop::init(StackAllocator* pStack, uptr memory, size_t size)
+    void AllocateFromStackTop::init(StackAllocator* pStack, uptr memory, size_t size)
     {
         pStack->_virtualStart = memory + size;
         pStack->_virtualEnd = memory;
@@ -155,7 +154,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromBottom::reset(StackAllocator* pStack)
+    void AllocateFromStackBottom::reset(StackAllocator* pStack)
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart;
@@ -164,7 +163,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromTop::reset(StackAllocator* pStack)
+    void AllocateFromStackTop::reset(StackAllocator* pStack)
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart + SIZE_OF_ALLOCATION_OFFSET;
@@ -173,48 +172,48 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    uptr AllocateFromBottom::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
+    uptr AllocateFromStackBottom::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
     {
         (void)size;
         return pointerUtil::alignTop(pStack->_physicalCurrent + offset, alignment) - offset;
     }
 
     template<typename StackAllocator> 
-    uptr AllocateFromTop::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
+    uptr AllocateFromStackTop::alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset)
     {
         offset -= SIZE_OF_ALLOCATION_OFFSET;
         return pointerUtil::alignBottom(pStack->_physicalCurrent - size + offset, alignment) - offset - SIZE_OF_ALLOCATION_OFFSET;
     }
 
     template<typename StackAllocator> 
-    u32 AllocateFromBottom::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
+    u32 AllocateFromStackBottom::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
     {
         (void)size;
         return static_cast<u32>(pStack->_physicalCurrent - prevCurrent) + SIZE_OF_ALLOCATION_OFFSET;
     }
 
     template<typename StackAllocator> 
-    u32 AllocateFromTop::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
+    u32 AllocateFromStackTop::calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size)
     {
         (void)prevCurrent;
         return prevCurrent - (pStack->_physicalCurrent + size);
     }
 
     template<typename StackAllocator> 
-    bool AllocateFromBottom::checkOutOfMemory(StackAllocator* pStack, size_t size)
+    bool AllocateFromStackBottom::checkOutOfMemory(StackAllocator* pStack, size_t size)
     {
         return pStack->_physicalCurrent + size > pStack->_physicalEnd;
     }
 
     template<typename StackAllocator> 
-    bool AllocateFromTop::checkOutOfMemory(StackAllocator* pStack, size_t size)
+    bool AllocateFromStackTop::checkOutOfMemory(StackAllocator* pStack, size_t size)
     {
         (void)size;
         return pStack->_physicalCurrent < pStack->_physicalEnd;
     }
 
     template<typename StackAllocator>
-    bool AllocateFromBottom::grow(StackAllocator* pStack, size_t allocationSize)
+    bool AllocateFromStackBottom::grow(StackAllocator* pStack, size_t allocationSize)
     {
         const size_t neededPhysicalSize = bitUtil::roundUpToMultiple(allocationSize, pStack->_growSize);
         if(pStack->_physicalEnd + neededPhysicalSize > pStack->_virtualEnd)
@@ -228,7 +227,7 @@ namespace fs
     }
 
     template<typename StackAllocator>
-    bool AllocateFromTop::grow(StackAllocator* pStack, size_t allocationSize)
+    bool AllocateFromStackTop::grow(StackAllocator* pStack, size_t allocationSize)
     {
         const size_t neededPhysicalSize = bitUtil::roundUpToMultiple(allocationSize, pStack->_growSize);
         if(pStack->_physicalEnd - neededPhysicalSize < pStack->_virtualEnd)
@@ -242,7 +241,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void* AllocateFromBottom::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
+    void* AllocateFromStackBottom::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
     {
         union
         {
@@ -270,7 +269,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void* AllocateFromTop::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
+    void* AllocateFromStackTop::allocate(StackAllocator* pStack, u32 headerSize, size_t size)
     {
         (void)size;
         union
@@ -298,7 +297,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromBottom::free(StackAllocator* pStack, void* ptr)
+    void AllocateFromStackBottom::free(StackAllocator* pStack, void* ptr)
     {
         union
         {
@@ -320,7 +319,7 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromTop::free(StackAllocator* pStack, void* ptr)
+    void AllocateFromStackTop::free(StackAllocator* pStack, void* ptr)
     {
         union
         {
@@ -342,19 +341,19 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromBottom::getAllocatedSpace(StackAllocator* pStack)
+    size_t AllocateFromStackBottom::getAllocatedSpace(StackAllocator* pStack)
     {
         return pStack->_physicalCurrent - pStack->_virtualStart;
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromTop::getAllocatedSpace(StackAllocator* pStack)
+    size_t AllocateFromStackTop::getAllocatedSpace(StackAllocator* pStack)
     {
         return pStack->_virtualStart - pStack->_physicalCurrent;
     }
 
     template<typename StackAllocator>
-    void AllocateFromBottom::purge(StackAllocator* pStack)
+    void AllocateFromStackBottom::purge(StackAllocator* pStack)
     {
         // Make sure we free from a page aligned location.
         uptr addressToFree = pointerUtil::alignTop(pStack->_physicalCurrent, pStack->_growSize);
@@ -366,7 +365,7 @@ namespace fs
     }
 
     template<typename StackAllocator>
-    void AllocateFromTop::purge(StackAllocator* pStack)
+    void AllocateFromStackTop::purge(StackAllocator* pStack)
     {
         // Make sure we free from a page aligned location.
         uptr addressToFree = pointerUtil::alignBottom(pStack->_physicalCurrent, pStack->_growSize);

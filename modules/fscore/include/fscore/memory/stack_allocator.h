@@ -5,21 +5,22 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
+#include "fscore/memory/policies.h"
 
 namespace fs
 {
     class PageAllocator;
 
-    class AllocateFromBottom;
+    class AllocateFromStackBottom;
 
-    class AllocateFromTop;
+    class AllocateFromStackTop;
 
     template<typename LayoutPolicy, typename GrowthPolicy>
     class StackAllocator
     {
     public:
-        friend AllocateFromBottom;
-        friend AllocateFromTop;
+        friend AllocateFromStackBottom;
+        friend AllocateFromStackTop;
 
         // Constructor for Growable stacks only.
         StackAllocator(size_t maxSize, size_t growSize);
@@ -66,90 +67,11 @@ namespace fs
         std::function<void()> _deleter;
     };
 
-    class Growable
-    {
-    public:
-        static const bool canGrow = true;
-    };
 
-    class NonGrowable
-    {
-    public:
-        static const bool canGrow = false;
-    };
-
-    class AllocateFromTop
-    {
-    public:
-        template<typename StackAllocator>
-        inline void init(StackAllocator* pStack, uptr memory, size_t size);
-
-        template<typename StackAllocator>
-        inline void reset(StackAllocator* pStack);
-
-        template<typename StackAllocator> 
-        inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
-
-        template<typename StackAllocator> 
-        inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
-
-        template<typename StackAllocator> 
-        inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
-
-        template<typename StackAllocator> 
-        inline bool grow(StackAllocator* pStack, size_t allocationSize);
-
-        template<typename StackAllocator> 
-        inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
-
-        template<typename StackAllocator> 
-        inline void free(StackAllocator* pStack, void* ptr);
-
-        template<typename StackAllocator> 
-        inline size_t getAllocatedSpace(StackAllocator* pStack);
-
-        template<typename StackAllocator>
-        inline void purge(StackAllocator* pStack);
-    };
-
-    class AllocateFromBottom
-    {
-    public:
-        template<typename StackAllocator>
-        inline void init(StackAllocator* pStack, uptr memory, size_t size);
-
-        template<typename StackAllocator> 
-        inline void reset(StackAllocator* pStack);
-
-        template<typename StackAllocator> 
-        inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
-
-        template<typename StackAllocator> 
-        inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
-
-        template<typename StackAllocator> 
-        inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
-
-        template<typename StackAllocator> 
-        inline bool grow(StackAllocator* pStack, size_t allocationSize);
-
-        template<typename StackAllocator> 
-        inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
-
-        template<typename StackAllocator> 
-        inline void free(StackAllocator* pStack, void* ptr);
-
-        template<typename StackAllocator> 
-        inline size_t getAllocatedSpace(StackAllocator* pStack);
-
-        template<typename StackAllocator>
-        inline void purge(StackAllocator* pStack);
-    };
-
-    using StackAllocatorBottom = StackAllocator<AllocateFromBottom, NonGrowable>;
-    using StackAllocatorBottomGrowable = StackAllocator<AllocateFromBottom, Growable>;
-    using StackAllocatorTop = StackAllocator<AllocateFromTop, NonGrowable>;
-    using StackAllocatorTopGrowable = StackAllocator<AllocateFromTop, Growable>;
+    using StackAllocatorBottom = StackAllocator<AllocateFromStackBottom, NonGrowable>;
+    using StackAllocatorBottomGrowable = StackAllocator<AllocateFromStackBottom, Growable>;
+    using StackAllocatorTop = StackAllocator<AllocateFromStackTop, NonGrowable>;
+    using StackAllocatorTopGrowable = StackAllocator<AllocateFromStackTop, Growable>;
     using StandardStackAllocator = StackAllocatorBottom;
 }
 

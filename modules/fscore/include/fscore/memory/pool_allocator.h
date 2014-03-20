@@ -19,6 +19,7 @@ namespace fs
 
     public:
         // Constructor for Growable Pool only.
+        // initialSize, maxSize, and growSize are bytes and not num of elements.
         PoolAllocator(size_t initialSize, size_t maxSize, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize);
 
         // Constructor for NonGrowable Pool only.
@@ -33,6 +34,17 @@ namespace fs
         void* allocate(size_t size, size_t alignment, size_t offset);
         inline void free(void* ptr);
         inline void reset();
+
+        // Purge not implemented currently. In order to purge, book keeping info would need to be added to
+        // track all empty pages. Alternatively, purge could walk the free list marking all free slots
+        // and then loop over marked slots to determine if a page is empty. The first option would make
+        // allocating a freeing slower and the second option would make purge an expesnive
+        // operation that should be used sparingly (ie, during level unload or other loading screens).
+        // Another complication of purging a pool allocator is that it would leave holes of unallocated
+        // memory. This means a list of unallocated pages would need to be kept and reallocated when needed.
+        // Overall purge would greatly increase the complexity of a pool allocator. A better solutions would
+        // be to reset the allocator when possible (ie, between levels).
+        // void purge(){};
 
     private:
         const size_t _maxElementSize;

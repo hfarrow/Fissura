@@ -15,7 +15,9 @@ namespace fs
     public:
         template<typename BackingAllocator = PageAllocator>
         explicit LinearAllocator(size_t size);
+
         LinearAllocator(void* start, void* end);
+
         ~LinearAllocator();
 
         void* allocate(size_t  size, size_t alignment, size_t offset);

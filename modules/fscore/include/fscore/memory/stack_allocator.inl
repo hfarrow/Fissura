@@ -251,8 +251,7 @@ namespace fs
             uptr as_uptr;
         };
 
-        as_char = (char*)pStack->_physicalCurrent;
-
+        as_uptr = pStack->_physicalCurrent;
         
         // store lastUserPtr in the first 4 bytes
         // store allocation offset in the second 4 bytes
@@ -280,7 +279,7 @@ namespace fs
             uptr as_uptr;
         };
 
-        as_char = (char*)pStack->_physicalCurrent;
+        as_uptr = pStack->_physicalCurrent;
         
         // store lastUserPtr in the first 4 bytes
         // store allocation offset in the second 4 bytes

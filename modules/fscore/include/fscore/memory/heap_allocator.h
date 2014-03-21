@@ -46,6 +46,7 @@ namespace fs
 
         _start = ptr;
         _end = (void*)((uptr)_start + size);
+        createHeap();
 
         _deleter = std::function<void()>([this](){allocator.free((void*)_start, (uptr)_end - (uptr)_start);});
     }

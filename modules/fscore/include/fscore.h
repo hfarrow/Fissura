@@ -18,5 +18,6 @@
 #include "fscore/memory/linear_allocator.h"
 #include "fscore/memory/stack_allocator.h"
 #include "fscore/memory/pool_allocator.h"
+#include "fscore/memory/heap_allocator.h"
 
 #endif

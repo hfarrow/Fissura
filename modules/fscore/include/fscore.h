@@ -19,5 +19,6 @@
 #include "fscore/memory/stack_allocator.h"
 #include "fscore/memory/pool_allocator.h"
 #include "fscore/memory/heap_allocator.h"
+#include "fscore/memory/memory_arena.h"
 
 #endif

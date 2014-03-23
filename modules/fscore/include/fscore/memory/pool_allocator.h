@@ -13,25 +13,25 @@ namespace fs
 
     class PageAllocator;
 
-    template<typename GrowthPolicy>
+    template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     class PoolAllocator
     {
 
     public:
         // Constructor for Growable Pool only.
         // initialSize, maxSize, and growSize are bytes and not num of elements.
-        PoolAllocator(size_t initialSize, size_t maxSize, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize);
+        PoolAllocator(size_t initialSize, size_t maxSize);
 
         // Constructor for NonGrowable Pool only.
         template<typename BackingAllocator = PageAllocator>
-        explicit PoolAllocator(size_t size, size_t maxElementSize, size_t maxAlignment, size_t offset);
+        explicit PoolAllocator(size_t size);
 
         // Constructor for NonGrowable Pool only.
-        PoolAllocator(void* start, void* end, size_t maxElementSize, size_t maxAlignment, size_t offset);
+        PoolAllocator(void* start, void* end);
         
         ~PoolAllocator();
 
-        void* allocate(size_t size, size_t alignment, size_t offset);
+        void* allocate(size_t size, size_t alignment, size_t userOffset);
         inline void free(void* ptr);
         inline void reset();
 
@@ -47,20 +47,16 @@ namespace fs
         // void purge(){};
 
     private:
-        const size_t _maxElementSize;
-        const size_t _maxAlignment;
-        const size_t _offset;
         void* _virtualStart;
         void* _virtualEnd;
         void* _physicalEnd;
         PoolFreelist _freelist;
-        size_t _growSize;
         std::function<void()> _deleter;
         GrowthPolicy _growthPolicy;
     };
 
-    using PoolAllocatorGrowable = PoolAllocator<Growable>;
-    using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable>;
+    //using PoolAllocatorGrowable = PoolAllocator<Growable>;
+    //using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable>;
 }
 
 #include "fscore/memory/pool_allocator.inl"

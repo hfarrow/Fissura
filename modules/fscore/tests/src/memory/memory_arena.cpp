@@ -8,14 +8,17 @@ using namespace fs;
 BOOST_AUTO_TEST_SUITE(core)
 BOOST_AUTO_TEST_SUITE(memory)
 
+const size_t allocatorSize = 1024;
+const size_t largeAllocationSize = 128;
+const size_t smallAllocationSize = 32;
+const size_t tinyAllocationSize = 4;
+const size_t defaultAlignment = 8;
+const size_t pageSize = 4096;
+
 struct MemoryArenaFixture
 {
     MemoryArenaFixture() :
-        allocatorSize(VirtualMemory::getPageSize() * 2),
-        largeAllocationSize(VirtualMemory::getPageSize()),
-        smallAllocationSize(32),
-        tinyAllocationSize(4),
-        defaultAlignment(8)
+        allocatorSize(VirtualMemory::getPageSize() * 2)
     {
     }
 
@@ -42,10 +45,6 @@ struct MemoryArenaFixture
     }
 
     const size_t allocatorSize;
-    const size_t largeAllocationSize;
-    const size_t smallAllocationSize;
-    const size_t tinyAllocationSize;
-    const size_t defaultAlignment;
 };
 
 template<typename Alloc>
@@ -76,11 +75,10 @@ BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
     // Do not create heaps on the stack.
     //INIT_FROM_AREA(StackArea, stackArea, BasicArena<HeapAllocator>);
     
-
-    // todo:: how to test pool allocator generically?
-    // move object size, alignment, and offset from ctor to template params
-    // INIT_FROM_AREA(HeapArea, heapArea, BasicArena<PoolAllocator<NonGrowable>>);
-    // INIT_FROM_AREA(StackArea, stackArea, BasicArena<PoolAllocator>);
+    arenaInitFromArea<HeapArea, BasicArena<PoolAllocator<NonGrowable, largeAllocationSize, defaultAlignment, 0, pageSize>>>(heapArea);
+    arenaInitFromArea<StackArea, BasicArena<PoolAllocator<NonGrowable, largeAllocationSize, defaultAlignment, 0, pageSize>>>(stackArea);
+    //INIT_FROM_AREA(HeapArea, heapArea, BasicArena<PoolType>);
+    //INIT_FROM_AREA(StackArea, stackArea, BasicArena<PoolType>);
 
 #undef INIT_FROM_AREA
 }

@@ -111,6 +111,26 @@ namespace fs
             _allocator.free(ptr);
         }
 
+        inline void reset()
+        {
+            
+        }
+
+        inline void purge()
+        {
+        
+        }
+
+        inline size_t getAllocatedSize()
+        {
+            return 0;
+        }
+
+        inline size_t getOverheadSize()
+        {
+            return 0;
+        }
+
     private:
         Alloc _allocator;
         HeaderPolicy _header;
@@ -177,17 +197,21 @@ namespace fs
     template<class AllocationPolicy, class ThreadPolicy, class BoundsCheckingPolicy, class MemoryTrackingPolicy, class MemoryTaggingPolicy>
     class MemoryArena
     {
+        // Allocation size is used to perfrom BoundsCheckingPolicy::checkBack.
+        // Using Bounds checking at back requires the allocation size to be stored in a header.
         static_assert(BoundsCheckingPolicy::SIZE_BACK == 0 || AllocationPolicy::HEADER_SIZE > 0,
-                          "BoundsCheckingPolicy requires an AllocationPolicy with a header size greater than 0 in order to store allocation size. Allocation size is used to perfrom BoundsCheckingPolicy::checkBack.");
+                          "BoundsCheckingPolicy requires an AllocationPolicy with a header size greater than 0 in order to store allocation size.");
     public:
-        explicit MemoryArena(size_t size) :
-            _allocator(size)
+        explicit MemoryArena(size_t size, const char* name = "UnkownArena") :
+            _allocator(size),
+            _name(name)
         {
         }
 
         template<class AreaPolicy>
-        explicit MemoryArena(const AreaPolicy& area) :
-            _allocator(area.getStart(), area.getEnd())
+        explicit MemoryArena(const AreaPolicy& area, const char* name = "UnkownArena") :
+            _allocator(area.getStart(), area.getEnd()),
+            _name(name)
         {            
         }
 
@@ -233,12 +257,19 @@ namespace fs
             _threadGuard.leave();
         }
 
+        inline const char* getName()
+        {
+            return _name;
+        }
+
     private:
         AllocationPolicy _allocator;
         ThreadPolicy _threadGuard;
         BoundsCheckingPolicy _boundsChecker;
         MemoryTrackingPolicy _memoryTracker;
         MemoryTaggingPolicy _memoryTagger;
+
+        const char* _name;
     };
 }
 

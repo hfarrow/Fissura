@@ -206,7 +206,6 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
-    FS_PRINT("done allocate");
 
     // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
     //BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
@@ -289,7 +288,6 @@ BOOST_AUTO_TEST_CASE(allocate_invalid)
     PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0, pageSize> allocator(allocatorSize);
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize + smallAllocationSize, defaultAlignment, 0);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment * 2, 0);});
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment, 4);});
 }
 
 BOOST_AUTO_TEST_CASE(allocate_aligned)

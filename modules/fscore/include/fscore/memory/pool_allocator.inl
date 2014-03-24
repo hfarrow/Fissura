@@ -8,8 +8,9 @@
 
 namespace
 {
-    static const size_t SIZE_OF_HEADER = sizeof(fs::u8);
-    static_assert(SIZE_OF_HEADER == 1, "Header size has wrong size.");
+    using AllocationHeader = fs::u8;
+    static const size_t SIZE_OF_HEADER = sizeof(AllocationHeader);
+    static_assert(SIZE_OF_HEADER >= 1, "Header size has wrong size.");
 }
 
 namespace fs
@@ -86,7 +87,6 @@ namespace fs
         FS_ASSERT(alignment <= maxAlignment);
 
         void* userPtr = _freelist.obtain();
-        //FS_PRINT("\nPoolAllocator.allocate(" << size << ", " << alignment << ", " << userOffset << ")");
 
         if(!userPtr)
         {
@@ -116,24 +116,20 @@ namespace fs
         }
 
         uptr newPtr = pointerUtil::alignTop((uptr)userPtr + userOffset, alignment) - userOffset;
-        //FS_PRINT("\t userPtr = " << userPtr);
-        //FS_PRINT("\t newPtr  = " << (void*)newPtr);
-        const u8 headerSize = newPtr - (uptr)userPtr;
-        //FS_PRINT("\t headerSize = " << (u32)headerSize);
-        FS_ASSERT(headerSize > sizeof(u8));
+        const size_t offsetSize = newPtr - (uptr)userPtr;
+        FS_ASSERT_MSG(offsetSize >> sizeof(AllocationHeader) == 0, "offsetSize must be less that sizeof(AllocationHeader)");
         FS_ASSERT(newPtr + size - SIZE_OF_HEADER < (uptr)userPtr + _maxElementSize);
         
         union
         {
             void* as_void;
-            u8* as_u8;
+            AllocationHeader* as_header;
             uptr as_uptr;
         };
 
         as_uptr = newPtr;
-        *(as_u8 - 1) = headerSize;
-
-        FS_PRINT("\t return " << as_void);
+        *(as_header) = static_cast<AllocationHeader>(offsetSize);
+        as_header++;
 
         return as_void;
     }
@@ -149,7 +145,6 @@ namespace fs
         };
         as_void = ptr;
         const u8 headerSize = *(as_u8 - 1);
-        FS_PRINT("headerSize = " << headerSize);
         as_uptr -= headerSize;
 
         _freelist.release(as_void);

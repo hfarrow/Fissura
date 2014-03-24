@@ -57,13 +57,13 @@ namespace fs
             _alignedStart = alignedStart;
 
             // Add padding to elementSize to ensure all following slots are also aligned.
-            const size_t slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
-            FS_ASSERT(slotSize >= elementSize);
+            _slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
+            FS_ASSERT(_slotSize >= elementSize);
             
             // Calculate total available memory after alignment is factored in.
             const size_t size = (uptr)end - alignedStart;
-            const u32 numElements = size / slotSize;
-            _end = _start + size;
+            const u32 numElements = size / _slotSize;
+            _end = _alignedStart + size;
             _numElements = numElements;
 
             union
@@ -75,7 +75,7 @@ namespace fs
 
             as_uptr = alignedStart;
             _next = as_self;
-            as_uptr += slotSize;
+            as_uptr += _slotSize;
 
             // initialize the free list. Each element points to the next free element.
             FreelistNode<indexSize>* runner = _next;
@@ -83,7 +83,7 @@ namespace fs
             {
                 runner->offset = as_uptr - (uptr)start;
                 runner = as_self;
-                as_uptr += slotSize;
+                as_uptr += _slotSize;
             }
             
             runner->offset = 0;
@@ -115,7 +115,9 @@ namespace fs
             FS_ASSERT(ptr);
             FS_ASSERT((uptr)ptr >= _start);
             FS_ASSERT((uptr)ptr < _end); 
-            FS_ASSERT_MSG(((uptr)ptr - _alignedStart) % ((_end - _alignedStart) / _numElements) == 0, 
+            
+
+            FS_ASSERT_MSG(((uptr)ptr - _alignedStart) % _slotSize == 0, 
                           "ptr was not the beginning of a slot");
 
             FreelistNode<indexSize>* head = static_cast<FreelistNode<indexSize>*>(ptr);
@@ -147,12 +149,22 @@ namespace fs
             return _numElements;
         }
 
+        // void PRINT_STATE()
+        // {
+        //     FS_PRINT("_start = " << (void*)_start);
+        //     FS_PRINT("_alignedStart = " << (void*)_alignedStart);
+        //     FS_PRINT("_end = " << (void*)_end);
+        //     FS_PRINT("_numElements = " << _numElements);
+        //     FS_PRINT("_next = " << (void*)_next);
+        // }
+
     private:
         uptr _start;
         uptr _alignedStart;
         uptr _end;
         size_t _numElements;
         FreelistNode<indexSize>* _next;
+        size_t _slotSize;
     };
 }
 

@@ -35,7 +35,7 @@ struct PoolAllocatorFixture
     template<IndexSize indexSize>
     Freelist<indexSize> createAndVerifyFreelist(u8* pMemory, size_t memorySize, size_t elementSize, size_t alignment, size_t offset)
     {
-        //BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
+        BOOST_TEST_MESSAGE("createAndVerifyFreelist(" << elementSize << ", " << alignment << ", " << offset << ")");
         if(elementSize < sizeof(FreelistNode<indexSize>))
         {
             elementSize = sizeof(FreelistNode<indexSize>);
@@ -55,6 +55,7 @@ struct PoolAllocatorFixture
     template<IndexSize indexSize>
     void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_t slotSize, size_t elementSize, size_t alignment, size_t offset)
     {
+        BOOST_TEST_MESSAGE("verifyEmptyFreelistStructure ...");
         union
         {
             void* as_void;
@@ -205,6 +206,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
+    FS_PRINT("done allocate");
 
     // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
     //BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
@@ -285,7 +287,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_grow_out_of_memory)
 BOOST_AUTO_TEST_CASE(allocate_invalid)
 {
     PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0, pageSize> allocator(allocatorSize);
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize + tinyAllocationSize, defaultAlignment, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize + smallAllocationSize, defaultAlignment, 0);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment * 2, 0);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment, 4);});
 }

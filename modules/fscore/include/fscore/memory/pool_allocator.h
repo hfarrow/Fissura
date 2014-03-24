@@ -50,6 +50,7 @@ namespace fs
         void* _virtualStart;
         void* _virtualEnd;
         void* _physicalEnd;
+        size_t _maxElementSize;
         PoolFreelist _freelist;
         std::function<void()> _deleter;
         GrowthPolicy _growthPolicy;

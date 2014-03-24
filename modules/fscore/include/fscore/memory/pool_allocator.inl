@@ -6,10 +6,17 @@
 #include "fscore/debugging/assert.h"
 #include "fscore/utils/types.h"
 
+namespace
+{
+    static const size_t SIZE_OF_HEADER = sizeof(fs::u8);
+    static_assert(SIZE_OF_HEADER == 1, "Header size has wrong size.");
+}
+
 namespace fs
 {
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t initalSize, size_t maxSize) :
+        _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
         _freelist()
     {
         FS_ASSERT_MSG(_growthPolicy.canGrow, "Cannot use a non-growable policy with growable memory.");
@@ -24,12 +31,14 @@ namespace fs
         _physicalEnd = (void*)((uptr)_virtualStart + initalSize);
         VirtualMemory::allocatePhysicalMemory(_virtualStart, initalSize);
 
-        _freelist = PoolFreelist(_virtualStart, _physicalEnd, maxElementSize, maxAlignment, offset);
+        // need to add maxAlignment to maxElement size to ensure userOffset is allocate will fit.
+        _freelist = PoolFreelist(_virtualStart, _physicalEnd, _maxElementSize, maxAlignment, offset);
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     template<typename BackingAllocator>
     PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t size) :
+        _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
         _freelist()
     {
         FS_ASSERT(size > 0);
@@ -42,7 +51,7 @@ namespace fs
         _virtualStart = ptr;
         _virtualEnd = (void*)((uptr)_virtualStart + size);
         _physicalEnd = _virtualEnd;
-        _freelist = PoolFreelist(_virtualStart, _virtualEnd, maxElementSize, maxAlignment, offset);
+        _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, offset);
 
         _deleter = std::function<void()>([this](){allocator.free(_virtualStart, (uptr)_virtualEnd - (uptr)_virtualStart);});
     }
@@ -52,7 +61,8 @@ namespace fs
         _virtualStart(start),
         _virtualEnd(end),
         _physicalEnd(end),
-        _freelist(start, end, maxElementSize, maxAlignment, offset)
+        _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
+        _freelist(start, end, _maxElementSize, maxAlignment, offset)
     {
         FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size memory.");
     }
@@ -69,11 +79,14 @@ namespace fs
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     void* PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::allocate(size_t size, size_t alignment, size_t userOffset)
     {
-        FS_ASSERT(size <= maxElementSize);
+        size += SIZE_OF_HEADER;
+        userOffset += SIZE_OF_HEADER;
+
+        FS_ASSERT(size <= _maxElementSize);
         FS_ASSERT(alignment <= maxAlignment);
-        FS_ASSERT(userOffset == 0);
 
         void* userPtr = _freelist.obtain();
+        //FS_PRINT("\nPoolAllocator.allocate(" << size << ", " << alignment << ", " << userOffset << ")");
 
         if(!userPtr)
         {
@@ -90,7 +103,7 @@ namespace fs
 
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
-                _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, maxElementSize, maxAlignment, offset);
+                _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, _maxElementSize, maxAlignment, offset);
                 _physicalEnd = newPhysicalEnd;
                 userPtr = _freelist.obtain();
                 FS_ASSERT_MSG(userPtr, "Failed to allocate object after growing the pool. Is growSize large enough?");
@@ -102,19 +115,50 @@ namespace fs
             }
         }
 
-        return userPtr;
+        uptr newPtr = pointerUtil::alignTop((uptr)userPtr + userOffset, alignment) - userOffset;
+        //FS_PRINT("\t userPtr = " << userPtr);
+        //FS_PRINT("\t newPtr  = " << (void*)newPtr);
+        const u8 headerSize = newPtr - (uptr)userPtr;
+        //FS_PRINT("\t headerSize = " << (u32)headerSize);
+        FS_ASSERT(headerSize > sizeof(u8));
+        FS_ASSERT(newPtr + size - SIZE_OF_HEADER < (uptr)userPtr + _maxElementSize);
+        
+        union
+        {
+            void* as_void;
+            u8* as_u8;
+            uptr as_uptr;
+        };
+
+        as_uptr = newPtr;
+        *(as_u8 - 1) = headerSize;
+
+        FS_PRINT("\t return " << as_void);
+
+        return as_void;
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     void PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::free(void* ptr)
     {
-        _freelist.release(ptr);
+        union
+        {
+            void* as_void;
+            u8* as_u8;
+            uptr as_uptr;
+        };
+        as_void = ptr;
+        const u8 headerSize = *(as_u8 - 1);
+        FS_PRINT("headerSize = " << headerSize);
+        as_uptr -= headerSize;
+
+        _freelist.release(as_void);
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     void PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::reset()
     {
-        _freelist = PoolFreelist(_virtualStart, _virtualEnd, maxElementSize, maxAlignment, offset);
+        _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, offset);
     }
 }
 

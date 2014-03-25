@@ -44,20 +44,28 @@ namespace fs
         // memory. This means a list of unallocated pages would need to be kept and reallocated when needed.
         // Overall purge would greatly increase the complexity of a pool allocator. A better solutions would
         // be to reset the allocator when possible (ie, between levels).
-        // void purge(){};
+        void purge(){};
+
+        size_t getTotalUsedSize();
 
     private:
         void* _virtualStart;
         void* _virtualEnd;
         void* _physicalEnd;
         size_t _maxElementSize;
+        size_t _growSize;
         PoolFreelist _freelist;
         std::function<void()> _deleter;
         GrowthPolicy _growthPolicy;
+        size_t _usedCount;
+        size_t _wastedSpace;
     };
 
-    //using PoolAllocatorGrowable = PoolAllocator<Growable>;
-    //using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable>;
+    template<size_t maxElementSize, size_t maxAlignment, size_t offset>
+    using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable, maxElementSize, maxAlignment, offset, 0>;
+
+    template<size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
+    using PoolAllocatorGrowable = PoolAllocator<Growable, maxElementSize, maxAlignment, offset, growSize>;
 }
 
 #include "fscore/memory/pool_allocator.inl"

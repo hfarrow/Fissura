@@ -24,6 +24,8 @@ namespace fs
         void* allocate(size_t size, size_t alignment, size_t offset);
         void free(void* ptr);
         void reset();
+        inline void purge() {}
+        size_t getTotalUsedSize();
 
     private:
         void* _start;

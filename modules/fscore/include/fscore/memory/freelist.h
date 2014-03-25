@@ -87,6 +87,7 @@ namespace fs
             }
             
             runner->offset = 0;
+            _physicalEnd = as_uptr;
         }
         
         inline void* obtain()
@@ -149,6 +150,16 @@ namespace fs
             return _numElements;
         }
 
+        inline size_t getSlotSize() const
+        {
+            return _slotSize;
+        }
+
+        inline size_t getWastedSize()
+        {
+            return (_alignedStart - _start) + (_end - _physicalEnd);
+        }
+
         // void PRINT_STATE()
         // {
         //     FS_PRINT("_start = " << (void*)_start);
@@ -156,12 +167,14 @@ namespace fs
         //     FS_PRINT("_end = " << (void*)_end);
         //     FS_PRINT("_numElements = " << _numElements);
         //     FS_PRINT("_next = " << (void*)_next);
+        //     FS_PRINT("getWastedSize = " << getWastedSize());
         // }
 
     private:
         uptr _start;
         uptr _alignedStart;
         uptr _end;
+        uptr _physicalEnd;
         size_t _numElements;
         FreelistNode<indexSize>* _next;
         size_t _slotSize;

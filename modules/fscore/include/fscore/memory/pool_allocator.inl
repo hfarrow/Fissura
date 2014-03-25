@@ -18,11 +18,11 @@ namespace fs
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t initalSize, size_t maxSize) :
         _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
-        _freelist()
+        _freelist(),
+        _usedCount(0),
+        _wastedSpace(0)
     {
         FS_ASSERT_MSG(_growthPolicy.canGrow, "Cannot use a non-growable policy with growable memory.");
-        FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
-                      "growSize should be a multiple of page size.");
 
         void* ptr = VirtualMemory::reserveAddressSpace(maxSize);
         FS_ASSERT_MSG(ptr, "Failed to allocate pages for growable PoolAllocator.");
@@ -34,13 +34,20 @@ namespace fs
 
         // need to add maxAlignment to maxElement size to ensure userOffset is allocate will fit.
         _freelist = PoolFreelist(_virtualStart, _physicalEnd, _maxElementSize, maxAlignment, offset);
+        _wastedSpace += _freelist.getWastedSize();
+
+        _growSize = bitUtil::roundUpToMultiple(growSize * _freelist.getSlotSize(), VirtualMemory::getPageSize());
+        FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
+                      "growSize should be a multiple of page size.");
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     template<typename BackingAllocator>
     PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t size) :
         _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
-        _freelist()
+        _freelist(),
+        _usedCount(0),
+        _wastedSpace(0)
     {
         FS_ASSERT(size > 0);
         FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size backed memory");
@@ -53,6 +60,7 @@ namespace fs
         _virtualEnd = (void*)((uptr)_virtualStart + size);
         _physicalEnd = _virtualEnd;
         _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, offset);
+        _wastedSpace += _freelist.getWastedSize();
 
         _deleter = std::function<void()>([this](){allocator.free(_virtualStart, (uptr)_virtualEnd - (uptr)_virtualStart);});
     }
@@ -63,9 +71,12 @@ namespace fs
         _virtualEnd(end),
         _physicalEnd(end),
         _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
-        _freelist(start, end, _maxElementSize, maxAlignment, offset)
+        _freelist(start, end, _maxElementSize, maxAlignment, offset),
+        _usedCount(0),
+        _wastedSpace(0)
     {
         FS_ASSERT_MSG(!_growthPolicy.canGrow, "Cannot use a growable policy with fixed size memory.");
+        _wastedSpace += _freelist.getWastedSize();
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
@@ -92,7 +103,7 @@ namespace fs
         {
             if(_growthPolicy.canGrow)
             {
-                const size_t neededPhysicalSize = growSize;
+                const size_t neededPhysicalSize = _growSize;
                 const uptr physicalEnd = (uptr)_physicalEnd;
                 const uptr virtualEnd = (uptr)_virtualEnd;
                 if(physicalEnd + neededPhysicalSize > virtualEnd)
@@ -101,12 +112,15 @@ namespace fs
                     return nullptr;
                 }
 
+                FS_PRINT("GROWING");
+
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
                 _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, _maxElementSize, maxAlignment, offset);
+                _wastedSpace += _freelist.getWastedSize();
                 _physicalEnd = newPhysicalEnd;
                 userPtr = _freelist.obtain();
-                FS_ASSERT_MSG(userPtr, "Failed to allocate object after growing the pool. Is growSize large enough?");
+                FS_ASSERT_MSG(userPtr, "Failed to allocate object after growing the pool. Is _growSize large enough?");
             }
             else
             {
@@ -131,6 +145,8 @@ namespace fs
         *(as_header) = static_cast<AllocationHeader>(offsetSize);
         as_header++;
 
+        _usedCount++;
+
         return as_void;
     }
 
@@ -148,12 +164,19 @@ namespace fs
         as_uptr -= headerSize;
 
         _freelist.release(as_void);
+        _usedCount--;
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
     void PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::reset()
     {
         _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, offset);
+    }
+
+    template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
+    size_t PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::getTotalUsedSize()
+    {
+        return (_usedCount * _freelist.getSlotSize()) + _wastedSpace;
     }
 }
 

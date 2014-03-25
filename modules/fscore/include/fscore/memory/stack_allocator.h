@@ -36,12 +36,13 @@ namespace fs
         void* allocate(size_t size, size_t alignment, size_t offset);
         void free(void* ptr);
         inline void reset();
-        inline size_t getAllocatedSpace();
         
         // Free physical memory that is no longer in use.
         // The address space will still be reserved.
         // Does nothing for NonGrowbable Policy.
         void purge();
+
+        size_t getTotalUsedSize();
 
         // Temp... delete me later
         // void PRINT_STATE()
@@ -52,7 +53,7 @@ namespace fs
         //     FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
         //     FS_PRINT("\t_phyiscalCurrent = " << (void*)_physicalCurrent);
         //     FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
-        //     FS_PRINT("\tallocatedSpace   = " << getAllocatedSpace());
+        //     FS_PRINT("\tallocatedSpace   = " << getTotalUsedSize());
         // }
     
     private:

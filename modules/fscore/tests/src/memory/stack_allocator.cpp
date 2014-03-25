@@ -63,20 +63,20 @@ struct StackAllocatorFixture
     template<typename Stack>
     void allocateAndFree(Stack& allocator)
     {
-        BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+        BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
         void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
         BOOST_REQUIRE(ptr);
-        // Alignment and overhead can cause getAllocatedSpace to be greater than the request size.
-        BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
+        // Alignment and overhead can cause getTotalUsedSize to be greater than the request size.
+        BOOST_CHECK(allocator.getTotalUsedSize() >= largeAllocationSize);
 
         void* ptr2 = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
-        BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize * 2);
+        BOOST_CHECK(allocator.getTotalUsedSize() >= largeAllocationSize * 2);
 
         FS_REQUIRE_ASSERT([&](){allocator.free(ptr);});
         allocator.free(ptr2);
         allocator.free(ptr);
-        BOOST_CHECK(0 == allocator.getAllocatedSpace());
+        BOOST_CHECK(0 == allocator.getTotalUsedSize());
     }
 
     template<typename Stack>

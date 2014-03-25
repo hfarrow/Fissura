@@ -26,6 +26,9 @@ namespace fs
         {
             FS_ASSERT(!"PageAllocator cannot reset allocated pages");
         }
+
+        inline void purge() {}
+        inline size_t getTotalUsedSize() {return 0;}
     };
 }
 

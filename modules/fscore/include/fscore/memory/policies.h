@@ -45,7 +45,7 @@ namespace fs
         inline void free(StackAllocator* pStack, void* ptr);
 
         template<typename StackAllocator> 
-        inline size_t getAllocatedSpace(StackAllocator* pStack);
+        inline size_t getTotalUsedSize(StackAllocator* pStack);
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);
@@ -79,7 +79,7 @@ namespace fs
         inline void free(StackAllocator* pStack, void* ptr);
 
         template<typename StackAllocator> 
-        inline size_t getAllocatedSpace(StackAllocator* pStack);
+        inline size_t getTotalUsedSize(StackAllocator* pStack);
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);

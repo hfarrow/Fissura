@@ -121,22 +121,17 @@ namespace fs
 
         inline void reset()
         {
-            
+            _allocator.reset();
         }
 
         inline void purge()
         {
-        
+            _allocator.purge();
         }
 
-        inline size_t getAllocatedSize()
+        inline size_t getTotalUsedSize()
         {
-            return 0;
-        }
-
-        inline size_t getOverheadSize()
-        {
-            return 0;
+            return _allocator.getTotalUsedSize();
         }
 
     private:
@@ -268,6 +263,21 @@ namespace fs
         inline const char* getName()
         {
             return _name;
+        }
+
+        inline void reset()
+        {
+            _allocator.reset();
+        }
+
+        inline void purge()
+        {
+            _allocator.purge();
+        }
+
+        inline size_t getTotalUsedSize()
+        {
+            return _allocator.getTotalUsedSize();
         }
 
     private:

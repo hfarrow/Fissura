@@ -36,13 +36,13 @@ BOOST_FIXTURE_TEST_SUITE(heap_allocator, HeapAllocatorFixture)
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 {
     HeapAllocator allocator(allocatorSize);
-    //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+    //BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
-    // Alignment can cause getAllocatedSpace to be greater than the request size.
-    //BOOST_CHECK(allocator.getAllocatedSpace() >= largeAllocationSize);
+    // Alignment can cause getTotalUsedSize to be greater than the request size.
+    //BOOST_CHECK(allocator.getTotalUsedSize() >= largeAllocationSize);
 
     allocator.free(ptr);
 }
@@ -52,13 +52,13 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
     u8 pMemory[allocatorSize];
 
     HeapAllocator allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
-    //BOOST_CHECK(allocator.getAllocatedSpace() == 0);
+    //BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
-    // Alignment can cause getAllocatedSpace to be greater than the request size.
-    //BOOST_CHECK(allocator.getAllocatedSpace() >= VirtualMemory::getPageSize());
+    // Alignment can cause getTotalUsedSize to be greater than the request size.
+    //BOOST_CHECK(allocator.getTotalUsedSize() >= VirtualMemory::getPageSize());
 
     allocator.free(ptr);
 }

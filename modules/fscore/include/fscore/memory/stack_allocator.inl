@@ -119,15 +119,15 @@ namespace fs
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
-    size_t StackAllocator<LayoutPolicy, GrowthPolicy>::getAllocatedSpace()
+    size_t StackAllocator<LayoutPolicy, GrowthPolicy>::getTotalUsedSize()
     {
-        return _layoutPolicy.getAllocatedSpace(this);
+        return _layoutPolicy.getTotalUsedSize(this);
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
     void StackAllocator<LayoutPolicy, GrowthPolicy>::purge()
     {
-        
+        FS_ASSERT(!"StackAllocator purge() NOT IMPLEMENTED");
     }
 
     template<typename StackAllocator> 
@@ -340,13 +340,13 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromStackBottom::getAllocatedSpace(StackAllocator* pStack)
+    size_t AllocateFromStackBottom::getTotalUsedSize(StackAllocator* pStack)
     {
         return pStack->_physicalCurrent - pStack->_virtualStart;
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromStackTop::getAllocatedSpace(StackAllocator* pStack)
+    size_t AllocateFromStackTop::getTotalUsedSize(StackAllocator* pStack)
     {
         return pStack->_virtualStart - pStack->_physicalCurrent;
     }

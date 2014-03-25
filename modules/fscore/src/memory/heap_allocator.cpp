@@ -96,3 +96,8 @@ void HeapAllocator::reset()
     destroy_mspace(_mspace);
     createHeap();
 }
+
+size_t HeapAllocator::getTotalUsedSize()
+{
+    return mspace_mallinfo(_mspace).uordblks;
+}

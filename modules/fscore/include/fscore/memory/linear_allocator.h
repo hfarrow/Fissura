@@ -33,7 +33,7 @@ namespace fs
             _current = _start;
         }
 
-        inline size_t getAllocatedSpace()
+        inline size_t getTotalUsedSize()
         {
             return _current - _start;
         }

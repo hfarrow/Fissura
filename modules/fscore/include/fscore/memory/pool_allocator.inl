@@ -120,8 +120,6 @@ namespace fs
                     return nullptr;
                 }
 
-                FS_PRINT("GROWING");
-
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
                 _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, _maxElementSize, maxAlignment, offset);
@@ -139,18 +137,18 @@ namespace fs
 
         uptr newPtr = pointerUtil::alignTop((uptr)userPtr + userOffset, alignment) - userOffset;
         const size_t offsetSize = newPtr - (uptr)userPtr;
-        FS_ASSERT_MSG(offsetSize >> sizeof(AllocationHeader) == 0, "offsetSize must be less that sizeof(AllocationHeader)");
+        FS_ASSERT_MSG(offsetSize >> (sizeof(::AllocationHeader) * 8) == 0, "offsetSize must be less that sizeof(AllocationHeader)");
         FS_ASSERT(newPtr + size - SIZE_OF_HEADER < (uptr)userPtr + _maxElementSize);
         
         union
         {
             void* as_void;
-            AllocationHeader* as_header;
+            ::AllocationHeader* as_header;
             uptr as_uptr;
         };
 
         as_uptr = newPtr;
-        *(as_header) = static_cast<AllocationHeader>(offsetSize);
+        *(as_header) = static_cast<::AllocationHeader>(offsetSize);
         as_header++;
 
         _usedCount++;

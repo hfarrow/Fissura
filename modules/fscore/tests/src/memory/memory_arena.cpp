@@ -17,8 +17,7 @@ const size_t pageSize = 4096;
 
 struct MemoryArenaFixture
 {
-    MemoryArenaFixture() :
-        allocatorSize(VirtualMemory::getPageSize() * 2)
+    MemoryArenaFixture()
     {
     }
 
@@ -31,6 +30,7 @@ struct MemoryArenaFixture
     void arenaInitFromArea(Area& area)
     {
         Arena arena(area);
+        allocateAndFreeFromArena(arena);
     }
 
     template<class Arena>
@@ -41,10 +41,8 @@ struct MemoryArenaFixture
         info.lineNumber = 1234;
         void* ptr = arena.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_REQUIRE(ptr);
-        arena.free(ptr);
+        arena.reset();
     }
-
-    const size_t allocatorSize;
 };
 
 template<typename Alloc>
@@ -56,8 +54,8 @@ BOOST_FIXTURE_TEST_SUITE(memory_arena, MemoryArenaFixture)
 
 BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
 {
-    HeapArea heapArea(allocatorSize);
-    StackArea stackArea(allocatorSize);
+    HeapArea heapArea(allocatorSize * 20);
+    DECLARE_STACK_AREA(stackArea, allocatorSize);
     GrowableHeapArea growableHeap(allocatorSize / 2, allocatorSize);
 
 #define INIT_FROM_AREA(area_type, area, arena_type) \

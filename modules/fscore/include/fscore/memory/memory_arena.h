@@ -50,6 +50,23 @@ namespace fs
         void* _end;
     };
 
+    class GrowableHeapArea : Uncopyable
+    {
+    public:
+        GrowableHeapArea(size_t initialSize, size_t maxSize) :
+            _initialSize(initialSize),
+            _maxSize(maxSize)
+        {
+        }
+
+        inline size_t getInitialSize() const {return _initialSize;}
+        inline size_t getMaxSize() const {return _maxSize;}
+
+    private:
+        size_t _initialSize;
+        size_t _maxSize;
+    };
+
     class NoAllocationHeader
     {
     public:
@@ -91,7 +108,12 @@ namespace fs
 
         explicit Allocator(size_t size) :
             _allocator(size)
-        {        
+        {
+        }
+
+        Allocator(size_t initialSize, size_t maxSize) :
+            _allocator(initialSize, maxSize)
+        {
         }
         
         Allocator(void* start, void* end) :
@@ -217,6 +239,13 @@ namespace fs
             _name(name)
         {            
         }
+
+        MemoryArena(const GrowableHeapArea& area, const char* name = "UnkownArena") :
+            _allocator(area.getInitialSize(), area.getMaxSize()),
+            _name(name)
+        {
+        }
+
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
         {

@@ -74,6 +74,7 @@ namespace fs
             
             if(userPtr == MAP_FAILED)
             {
+                FS_PRINT("Failed to allocate requested ptr " << ptr << " of size " << size << ". errno: " << errno);
                 FS_ASSERT_MSG_FORMATTED(false,
                                         boost::format("Failed to allocate requested ptr of size %u. errno: %i")
                                         % size % errno);

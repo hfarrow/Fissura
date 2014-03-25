@@ -38,7 +38,7 @@ struct StackAllocatorFixture
     template<typename Stack>
     void allocateAndFreeFromGrowable()
     {
-        Stack allocator(allocatorSize, VirtualMemory::getPageSize());
+        Stack allocator(0, allocatorSize);
         allocateAndFree(allocator);
     }
 
@@ -48,7 +48,7 @@ struct StackAllocatorFixture
         // allocate, free, allocate again. Require ptr is same both times.
         Stack* pAllocator = nullptr;
         if(growable)
-            pAllocator = new Stack(allocatorSize, VirtualMemory::getPageSize());
+            pAllocator = new Stack(0, allocatorSize);
         else
             pAllocator = new Stack(allocatorSize);
 
@@ -84,7 +84,7 @@ struct StackAllocatorFixture
     {
         Stack* pAllocator = nullptr;
         if(growable)
-            pAllocator = new Stack(allocatorSize, VirtualMemory::getPageSize());
+            pAllocator = new Stack(0, allocatorSize);
         else
             pAllocator = new Stack(allocatorSize);
 
@@ -105,7 +105,7 @@ struct StackAllocatorFixture
     {
         Stack* pAllocator = nullptr;
         if(growable)
-            pAllocator = new Stack(allocatorSize, VirtualMemory::getPageSize());
+            pAllocator = new Stack(0, allocatorSize);
         else
             pAllocator = new Stack(allocatorSize);
 
@@ -130,7 +130,7 @@ struct StackAllocatorFixture
     {
         Stack* pAllocator = nullptr;
         if(growable)
-            pAllocator = new Stack(allocatorSize, VirtualMemory::getPageSize());
+            pAllocator = new Stack(0, allocatorSize);
         else
             pAllocator = new Stack(allocatorSize);
 
@@ -153,7 +153,7 @@ struct StackAllocatorFixture
     template<typename Stack>
     void allocateAndGrowAndPurge()
     {
-        Stack allocator(allocatorSize, growSize);
+        Stack allocator(0, allocatorSize);
         void* ptr = allocator.allocate(largeAllocationSize + 32, 8, 0);
         BOOST_REQUIRE(ptr);
 
@@ -169,11 +169,11 @@ struct StackAllocatorFixture
     template<typename Stack>
     void allocateGrowableOutOfMemory()
     {
-        Stack allocator(allocatorSize, growSize);
+        Stack allocator(0, allocatorSize);
 
         FS_REQUIRE_ASSERT([&](){allocator.allocate(allocatorSize + 1, 8, 0);});
 
-        StackAllocatorBottomGrowable allocator2(allocatorSize, growSize);
+        StackAllocatorBottomGrowable allocator2(0, allocatorSize);
         void* ptr = allocator2.allocate(allocatorSize - smallAllocationSize, 8, 0);
         BOOST_REQUIRE(ptr);
         FS_REQUIRE_ASSERT([&](){allocator2.allocate(smallAllocationSize, 8, 0);});
@@ -245,15 +245,15 @@ BOOST_AUTO_TEST_CASE(allocate_aligned_offset)
     allocateAlignedOffset<StackAllocatorTopGrowable>(true);
 }
 
-BOOST_AUTO_TEST_CASE(invalid_grow_size)
-{
-    FS_REQUIRE_ASSERT([this]()
-            {StackAllocatorBottomGrowable allocator(allocatorSize, VirtualMemory::getPageSize() - 1);});
-    FS_REQUIRE_ASSERT([this]()
-            {StackAllocatorBottomGrowable allocator(allocatorSize, VirtualMemory::getPageSize() + 1);});
-    FS_REQUIRE_ASSERT([this]()
-            {StackAllocatorBottomGrowable allocator(allocatorSize, 0);});
-}
+// BOOST_AUTO_TEST_CASE(invalid_grow_size)
+// {
+//     FS_REQUIRE_ASSERT([this]()
+//             {StackAllocatorBottomGrowable allocator(allocatorSize, VirtualMemory::getPageSize() - 1);});
+//     FS_REQUIRE_ASSERT([this]()
+//             {StackAllocatorBottomGrowable allocator(allocatorSize, VirtualMemory::getPageSize() + 1);});
+//     FS_REQUIRE_ASSERT([this]()
+//             {StackAllocatorBottomGrowable allocator(allocatorSize, 0);});
+// }
 
 BOOST_AUTO_TEST_CASE(allocate_and_grow_and_purge)
 {

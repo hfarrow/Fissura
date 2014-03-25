@@ -15,21 +15,27 @@ namespace
 namespace fs
 {
     template<typename LayoutPolicy, typename GrowthPolicy>
-    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t maxSize, size_t growSize)
+    StackAllocator<LayoutPolicy, GrowthPolicy>::StackAllocator(size_t initialSize, size_t maxSize)
     {
         FS_ASSERT_MSG(_growthPolicy.canGrow, "Cannot use a non-growable policy with growable memory.");
-        FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
-                      "growSize should be a multiple of page size.");
+        //FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
+        //              "growSize should be a multiple of page size.");
 
-        _growSize = growSize;
+        //_growSize = growSize;
+        _growSize = VirtualMemory::getPageSize();
         
         void* ptr = VirtualMemory::reserveAddressSpace(maxSize);
         FS_ASSERT_MSG(ptr, "Failed to allocate pages for StackAllocator");
+
+        if(initialSize > 0)
+        {
+            VirtualMemory::allocatePhysicalMemory(ptr, initialSize);
+        }
     
-        _layoutPolicy.init(this, (uptr)ptr, maxSize);
-        _layoutPolicy.reset(this);
+        _layoutPolicy.init(this, (uptr)ptr, initialSize, maxSize);
+        _layoutPolicy.reset(this, initialSize);
         
-        _deleter = std::function<void()>([&](){VirtualMemory::releaseAddressSpace(ptr, maxSize);});
+        _deleter = std::function<void()>([ptr, maxSize](){VirtualMemory::releaseAddressSpace(ptr, maxSize);});
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -43,12 +49,12 @@ namespace fs
         void* ptr = allocator.allocate(size);
         FS_ASSERT_MSG(ptr, "Failed to allocate pages for StackAllocator");
         
-        _layoutPolicy.init(this, (uptr)ptr, size);
-        _layoutPolicy.reset(this);
+        _layoutPolicy.init(this, (uptr)ptr, 0, size);
+        _layoutPolicy.reset(this, 0);
 
         _physicalEnd = _virtualEnd;
         
-        _deleter = std::function<void()>([this](){allocator.free((void*)_virtualStart, _physicalEnd - _virtualStart);});
+        _deleter = std::function<void()>([ptr, size](){allocator.free(ptr, size);});
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -60,8 +66,8 @@ namespace fs
         FS_ASSERT(end);
         FS_ASSERT(start < end);
 
-        _layoutPolicy.init(this, (uptr)start, (uptr)end - (uptr)start);
-        _layoutPolicy.reset(this);
+        _layoutPolicy.init(this, (uptr)start, 0, (uptr)end - (uptr)start);
+        _layoutPolicy.reset(this, 0);
 
     }
 
@@ -113,9 +119,9 @@ namespace fs
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
-    void StackAllocator<LayoutPolicy, GrowthPolicy>::reset()
+    void StackAllocator<LayoutPolicy, GrowthPolicy>::reset(size_t initialSize)
     {
-        _layoutPolicy.reset(this);
+        _layoutPolicy.reset(this, initialSize);
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -131,44 +137,44 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    void AllocateFromStackBottom::init(StackAllocator* pStack, uptr memory, size_t size)
+    void AllocateFromStackBottom::init(StackAllocator* pStack, uptr memory, size_t initialSize, size_t maxSize)
     {
         pStack->_virtualStart = memory;
-        pStack->_virtualEnd = pStack->_virtualStart + size;
+        pStack->_virtualEnd = pStack->_virtualStart + maxSize;
         if(pStack->_growthPolicy.canGrow)
-            pStack->_physicalEnd = pStack->_virtualStart;
+            pStack->_physicalEnd = pStack->_virtualStart + initialSize;
         else
             pStack->_physicalEnd = pStack->_virtualEnd;
 
     }
 
     template<typename StackAllocator> 
-    void AllocateFromStackTop::init(StackAllocator* pStack, uptr memory, size_t size)
+    void AllocateFromStackTop::init(StackAllocator* pStack, uptr memory, size_t initialSize, size_t maxSize)
     {
-        pStack->_virtualStart = memory + size;
+        pStack->_virtualStart = memory + maxSize;
         pStack->_virtualEnd = memory;
         if(pStack->_growthPolicy.canGrow)
-            pStack->_physicalEnd = pStack->_virtualStart;
+            pStack->_physicalEnd = pStack->_virtualStart - initialSize;
         else
             pStack->_physicalEnd = pStack->_virtualEnd;
     }
 
     template<typename StackAllocator> 
-    void AllocateFromStackBottom::reset(StackAllocator* pStack)
+    void AllocateFromStackBottom::reset(StackAllocator* pStack, size_t initialSize)
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart;
         if(pStack->_growthPolicy.canGrow)
-            VirtualMemory::freePhysicalMemory((void*)pStack->_virtualStart, pStack->_virtualEnd - pStack->_virtualStart);
+            VirtualMemory::freePhysicalMemory((void*)(pStack->_virtualStart + initialSize), pStack->_virtualEnd - (pStack->_virtualStart + initialSize));
     }
 
     template<typename StackAllocator> 
-    void AllocateFromStackTop::reset(StackAllocator* pStack)
+    void AllocateFromStackTop::reset(StackAllocator* pStack, size_t initialSize)
     {
         pStack->_physicalCurrent = pStack->_virtualStart;
         pStack->_lastUserPtr = pStack->_virtualStart + SIZE_OF_ALLOCATION_OFFSET;
         if(pStack->_growthPolicy.canGrow)
-            VirtualMemory::freePhysicalMemory((void*)pStack->_virtualEnd, pStack->_virtualStart - pStack->_virtualEnd);
+            VirtualMemory::freePhysicalMemory((void*)pStack->_virtualEnd, (pStack->_virtualStart - pStack->_virtualEnd) - initialSize);
     }
 
     template<typename StackAllocator> 

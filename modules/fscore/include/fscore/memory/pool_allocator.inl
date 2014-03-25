@@ -16,7 +16,7 @@ namespace
 namespace fs
 {
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
-    PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t initalSize, size_t maxSize) :
+    PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, offset, growSize>::PoolAllocator(size_t initialSize, size_t maxSize) :
         _maxElementSize(maxElementSize + maxAlignment + SIZE_OF_HEADER),
         _freelist(),
         _usedCount(0),
@@ -24,21 +24,29 @@ namespace fs
     {
         FS_ASSERT_MSG(_growthPolicy.canGrow, "Cannot use a non-growable policy with growable memory.");
 
+        if(initialSize == 0)
+        {
+            initialSize = maxSize / 2;
+        }
+
         void* ptr = VirtualMemory::reserveAddressSpace(maxSize);
         FS_ASSERT_MSG(ptr, "Failed to allocate pages for growable PoolAllocator.");
 
         _virtualStart = ptr;
         _virtualEnd = (void*)((uptr)_virtualStart + maxSize);
-        _physicalEnd = (void*)((uptr)_virtualStart + initalSize);
-        VirtualMemory::allocatePhysicalMemory(_virtualStart, initalSize);
+        _physicalEnd = (void*)((uptr)_virtualStart + initialSize);
+
+        VirtualMemory::allocatePhysicalMemory(_virtualStart, initialSize);
 
         // need to add maxAlignment to maxElement size to ensure userOffset is allocate will fit.
         _freelist = PoolFreelist(_virtualStart, _physicalEnd, _maxElementSize, maxAlignment, offset);
         _wastedSpace += _freelist.getWastedSize();
 
         _growSize = bitUtil::roundUpToMultiple(growSize * _freelist.getSlotSize(), VirtualMemory::getPageSize());
-        FS_ASSERT_MSG(growSize % VirtualMemory::getPageSize() == 0 && growSize != 0,
-                      "growSize should be a multiple of page size.");
+        FS_ASSERT_MSG(_growSize % VirtualMemory::getPageSize() == 0 && _growSize != 0,
+                      "_growSize should be a multiple of page size.");
+
+        _deleter = std::function<void()>([ptr, maxSize](){VirtualMemory::releaseAddressSpace(ptr, maxSize);});
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
@@ -62,7 +70,7 @@ namespace fs
         _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, offset);
         _wastedSpace += _freelist.getWastedSize();
 
-        _deleter = std::function<void()>([this](){allocator.free(_virtualStart, (uptr)_virtualEnd - (uptr)_virtualStart);});
+        _deleter = std::function<void()>([ptr, size](){allocator.free(ptr, size);});
     }
 
     template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>

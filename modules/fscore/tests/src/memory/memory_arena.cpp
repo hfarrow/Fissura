@@ -58,6 +58,7 @@ BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
 {
     HeapArea heapArea(allocatorSize);
     StackArea stackArea(allocatorSize);
+    GrowableHeapArea growableHeap(allocatorSize / 2, allocatorSize);
 
 #define INIT_FROM_AREA(area_type, area, arena_type) \
     arenaInitFromArea<area_type, arena_type>((area))
@@ -75,10 +76,9 @@ BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
     // Do not create heaps on the stack.
     //INIT_FROM_AREA(StackArea, stackArea, BasicArena<HeapAllocator>);
     
-    arenaInitFromArea<HeapArea, BasicArena<PoolAllocator<NonGrowable, largeAllocationSize, defaultAlignment, 0, pageSize>>>(heapArea);
-    arenaInitFromArea<StackArea, BasicArena<PoolAllocator<NonGrowable, largeAllocationSize, defaultAlignment, 0, pageSize>>>(stackArea);
-    //INIT_FROM_AREA(HeapArea, heapArea, BasicArena<PoolType>);
-    //INIT_FROM_AREA(StackArea, stackArea, BasicArena<PoolType>);
+    arenaInitFromArea<HeapArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0>>>(heapArea);
+    arenaInitFromArea<StackArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0>>>(stackArea);
+    arenaInitFromArea<GrowableHeapArea, BasicArena<PoolAllocator<Growable, largeAllocationSize, defaultAlignment, 0, 1>>>(growableHeap);
 
 #undef INIT_FROM_AREA
 }

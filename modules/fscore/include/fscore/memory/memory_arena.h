@@ -59,21 +59,29 @@ namespace fs
         inline size_t getAllocationSize(void*){ return 0; }
     };
 
-    class AllocationHeaderU32
+    template<typename IntegerType>
+    class AllocationHeader
     {
+        static_assert(sizeof(IntegerType) > 1 && sizeof(IntegerType) <= 64, "IntegerType must be u8, u16, u32, or u64.");
+
     public:
-        static const size_t SIZE = sizeof(u32);
+        static const size_t SIZE = sizeof(IntegerType);
 
         inline void storeAllocationSize(void* ptr, size_t size)
         {
-            *((u32*)ptr) = static_cast<u32>(size);
+            *((IntegerType*)ptr) = static_cast<IntegerType>(size);
         }
 
         inline size_t getAllocationSize(void* ptr)
         {
-            return *((u32*)ptr);
+            return *((IntegerType*)ptr);
         }
     };
+
+    using AllocationHeaderU8 = AllocationHeader<u8>;
+    using AllocationHeaderU16 = AllocationHeader<u16>;
+    using AllocationHeaderU32 = AllocationHeader<u32>;
+    using AllocationHeaderU64 = AllocationHeader<u64>;
 
     template<class Alloc, class HeaderPolicy>
     class Allocator : Uncopyable

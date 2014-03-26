@@ -2,9 +2,23 @@
 #define FS_POLICIES_H
 
 #include "fscore/utils/types.h"
+#include "fscore/debugging/assert.h"
+
+// namespace
+// {
+//     const fs::u32 BOUNDS_FRONT_PATTERN = 0xdf;
+//     const fs::u32 BOUNDS_BACK_PATTERN = 0xfd;
+//     const fs::u32 BOUNDS_EXTENDED_FRONT_PATTERN = 0xdf;
+//     const fs::u32 BOUNDS_EXTENDED_BACK_PATTERN = 0xfd;
+// }
 
 namespace fs
 {
+    const fs::u32 BOUNDS_FRONT_PATTERN = 0xdf;
+    const fs::u32 BOUNDS_BACK_PATTERN = 0xfd;
+    const fs::u32 BOUNDS_EXTENDED_FRONT_PATTERN = 0xdf;
+    const fs::u32 BOUNDS_EXTENDED_BACK_PATTERN = 0xfd;
+
     struct SourceInfo
     {
         SourceInfo(){}
@@ -91,7 +105,7 @@ namespace fs
     template<typename IntegerType>
     class AllocationHeader
     {
-        static_assert(sizeof(IntegerType) > 1 && sizeof(IntegerType) <= 64, "IntegerType must be u8, u16, u32, or u64.");
+        static_assert(sizeof(IntegerType) >= 1 && sizeof(IntegerType) <= 64, "IntegerType must be u8, u16, u32, or u64.");
 
     public:
         static const size_t SIZE = sizeof(IntegerType);
@@ -184,6 +198,9 @@ namespace fs
 
         inline void checkFront(const void*) const {}
         inline void checkBack(const void*) const {}
+
+        template<class MemoryTrackingPolicy>
+        inline void checkAll(MemoryTrackingPolicy&) {}
     };
 
     class SimpleBoundsChecking
@@ -192,11 +209,62 @@ namespace fs
         static const size_t SIZE_FRONT = sizeof(u32);
         static const size_t SIZE_BACK = sizeof(u32);
 
-        inline void guardFront(void*) const {}
-        inline void guardBack(void*) const {}
+        inline void guardFront(void* ptr) const
+        {
+            *static_cast<u32*>(ptr) = BOUNDS_FRONT_PATTERN;
+        }
+        
+        inline void guardBack(void* ptr) const
+        {
+            *static_cast<u32*>(ptr) = BOUNDS_BACK_PATTERN;
+        }
 
-        inline void checkFront(const void*) const {}
-        inline void checkBack(const void*) const {}
+        inline void checkFront(const void* ptr) const
+        {
+            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_FRONT_PATTERN);
+        }
+
+        inline void checkBack(const void* ptr) const
+        {
+            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_BACK_PATTERN);
+        }
+
+        template<class MemoryTrackingPolicy>
+        inline void checkAll(MemoryTrackingPolicy&) {}
+    };
+
+    class ExtendedBoundsChecking
+    {
+    public:
+        static const size_t SIZE_FRONT = sizeof(u32);
+        static const size_t SIZE_BACK = sizeof(u32);
+
+        inline void guardFront(void* ptr) const
+        {
+            *static_cast<u32*>(ptr) = BOUNDS_EXTENDED_FRONT_PATTERN;
+        }
+        
+        inline void guardBack(void* ptr) const
+        {
+            *static_cast<u32*>(ptr) = BOUNDS_EXTENDED_BACK_PATTERN;
+        }
+
+        inline void checkFront(const void* ptr) const
+        {
+            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_EXTENDED_FRONT_PATTERN);
+        }
+
+        inline void checkBack(const void* ptr) const
+        {
+            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_EXTENDED_BACK_PATTERN);
+        }
+
+        template<class MemoryTrackingPolicy>
+        inline void checkAll(MemoryTrackingPolicy& memoryTracker)
+        {
+            // TODO: implement
+            (void)memoryTracker;
+        }
     };
 
     class NoMemoryTracking

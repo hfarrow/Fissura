@@ -50,6 +50,8 @@ namespace fs
             _memoryTagger.tagAllocation(plainMemory + headerSize, originalSize);
             _boundsChecker.guardBack(plainMemory + headerSize + originalSize);
 
+            _boundsChecker.checkAll(_memoryTracker);
+
             _memoryTracker.onAllocation(plainMemory, newSize, alignment, sourceInfo);
 
             _threadGuard.leave();
@@ -67,6 +69,8 @@ namespace fs
 
             _boundsChecker.checkFront(originalMemory + AllocationPolicy::HEADER_SIZE);
             _boundsChecker.checkBack(originalMemory + headerSize + allocationSize);
+
+            _boundsChecker.checkAll(_memoryTracker);
             
             _memoryTracker.onDeallocation(originalMemory);
 

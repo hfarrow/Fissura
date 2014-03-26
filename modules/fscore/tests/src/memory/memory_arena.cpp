@@ -45,9 +45,17 @@ struct MemoryArenaFixture
     }
 };
 
-template<typename Alloc>
+template<class Alloc>
 using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
                       SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+
+template<class HeaderPolicy>
+using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
+                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+
+template<class BoundCheckingPolicy>
+using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
+                                    SingleThreadPolicy, BoundCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
 
 BOOST_FIXTURE_TEST_SUITE(memory_arena, MemoryArenaFixture)
 
@@ -81,8 +89,85 @@ BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
 #undef INIT_FROM_AREA
 }
 
-BOOST_AUTO_TEST_CASE(arena_incompatible_header_and_bounds_checker)
+BOOST_AUTO_TEST_CASE(arena_with_header)
 {
+    union
+    {
+        void* as_void;
+        u8* as_u8;
+        u16* as_u16;
+        u32* as_u32;
+        u64* as_u64;
+    };
+
+    SourceInfo info;
+    info.fileName = "testFileName";
+    info.lineNumber = 1234;
+
+    HeapArea heapArea(allocatorSize);
+    
+    {
+        ArenaWithHeader<AllocationHeaderU8> arena_u8(heapArea);
+        as_void = arena_u8.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_CHECK(as_void);
+        BOOST_CHECK(*(as_u8-1) == smallAllocationSize);
+    }
+    {
+        ArenaWithHeader<AllocationHeaderU16> arena_u16(heapArea);
+        as_void = arena_u16.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_CHECK(as_void);
+        BOOST_CHECK(*(as_u16-1) == smallAllocationSize);
+    }
+    {
+        ArenaWithHeader<AllocationHeaderU32> arena_u32(heapArea);
+        as_void = arena_u32.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_CHECK(as_void);
+        BOOST_CHECK(*(as_u32-1) == smallAllocationSize);
+    }
+    {
+        ArenaWithHeader<AllocationHeaderU64> arena_u64(heapArea);
+        as_void = arena_u64.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_CHECK(as_void);
+        BOOST_CHECK(*(as_u64-1) == smallAllocationSize);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(arean_with_simple_bounds_checking)
+{
+    union
+    {
+        void* as_void;
+        char* as_char;
+        u32* as_u32;
+    };
+
+    SourceInfo info;
+    info.fileName = "testFileName";
+    info.lineNumber = 1234;
+
+    HeapArea heapArea(allocatorSize);
+    
+    {
+        ArenaWithBoundsChecking<SimpleBoundsChecking> arena_simple(heapArea);
+        as_void = arena_simple.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_REQUIRE(as_void);
+        BOOST_REQUIRE(SimpleBoundsChecking::SIZE_FRONT >= sizeof(u32));
+        char* front = as_char - SimpleBoundsChecking::SIZE_FRONT;
+        for(u32 i = 0; i < SimpleBoundsChecking::SIZE_FRONT / 4; ++i)
+        {
+            BOOST_REQUIRE((*((u32*)front) == BOUNDS_FRONT_PATTERN));
+            front += 4;
+        }
+
+        u32 size = *(as_char - SimpleBoundsChecking::SIZE_FRONT - sizeof(u32));
+        as_char = as_char + size;
+        char* back = as_char;
+        for(u32 i = 0; i < SimpleBoundsChecking::SIZE_BACK / 4; ++i)
+        {
+            BOOST_REQUIRE((*((u32*)back) == BOUNDS_BACK_PATTERN));
+            back += 4;
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

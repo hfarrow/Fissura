@@ -15,6 +15,18 @@ const size_t tinyAllocationSize = 4;
 const size_t defaultAlignment = 8;
 const size_t pageSize = 4096;
 
+template<class Alloc>
+using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
+                      SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+
+template<class HeaderPolicy>
+using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
+                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+
+template<class BoundCheckingPolicy>
+using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
+                                    SingleThreadPolicy, BoundCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
+
 struct MemoryArenaFixture
 {
     MemoryArenaFixture()
@@ -43,19 +55,43 @@ struct MemoryArenaFixture
         BOOST_REQUIRE(ptr);
         arena.reset();
     }
+
+    template<class BoundsCheckingPolicy, class Area>
+    void testBoundsChecking(Area& area)
+    {
+        SourceInfo info;
+        info.fileName = "testFileName";
+        info.lineNumber = 1234;
+
+        ArenaWithBoundsChecking<BoundsCheckingPolicy> arena(area);
+
+        union
+        {
+            void* as_void;
+            char* as_char;
+            u32* as_u32;
+        };
+
+        as_void = arena.allocate(smallAllocationSize, defaultAlignment, info);
+        BOOST_REQUIRE(as_void);
+        BOOST_REQUIRE(BoundsCheckingPolicy::SIZE_FRONT >= sizeof(u32));
+        char* front = as_char - BoundsCheckingPolicy::SIZE_FRONT;
+        for(u32 i = 0; i < BoundsCheckingPolicy::SIZE_FRONT / 4; ++i)
+        {
+            BOOST_REQUIRE((*((u32*)front) == BOUNDS_FRONT_PATTERN));
+            front += 4;
+        }
+
+        u32 size = *(as_char - BoundsCheckingPolicy::SIZE_FRONT - sizeof(u32));
+        as_char = as_char + size;
+        char* back = as_char;
+        for(u32 i = 0; i < BoundsCheckingPolicy::SIZE_BACK / 4; ++i)
+        {
+            BOOST_REQUIRE((*((u32*)back) == BOUNDS_BACK_PATTERN));
+            back += 4;
+        }
+    }
 };
-
-template<class Alloc>
-using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
-                      SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
-
-template<class HeaderPolicy>
-using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
-                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
-
-template<class BoundCheckingPolicy>
-using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
-                                    SingleThreadPolicy, BoundCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
 
 BOOST_FIXTURE_TEST_SUITE(memory_arena, MemoryArenaFixture)
 
@@ -141,32 +177,13 @@ BOOST_AUTO_TEST_CASE(arean_with_simple_bounds_checking)
         u32* as_u32;
     };
 
-    SourceInfo info;
-    info.fileName = "testFileName";
-    info.lineNumber = 1234;
-
-    HeapArea heapArea(allocatorSize);
-    
     {
-        ArenaWithBoundsChecking<SimpleBoundsChecking> arena_simple(heapArea);
-        as_void = arena_simple.allocate(smallAllocationSize, defaultAlignment, info);
-        BOOST_REQUIRE(as_void);
-        BOOST_REQUIRE(SimpleBoundsChecking::SIZE_FRONT >= sizeof(u32));
-        char* front = as_char - SimpleBoundsChecking::SIZE_FRONT;
-        for(u32 i = 0; i < SimpleBoundsChecking::SIZE_FRONT / 4; ++i)
-        {
-            BOOST_REQUIRE((*((u32*)front) == BOUNDS_FRONT_PATTERN));
-            front += 4;
-        }
-
-        u32 size = *(as_char - SimpleBoundsChecking::SIZE_FRONT - sizeof(u32));
-        as_char = as_char + size;
-        char* back = as_char;
-        for(u32 i = 0; i < SimpleBoundsChecking::SIZE_BACK / 4; ++i)
-        {
-            BOOST_REQUIRE((*((u32*)back) == BOUNDS_BACK_PATTERN));
-            back += 4;
-        }
+        HeapArea heapArea(allocatorSize);
+        testBoundsChecking<SimpleBoundsChecking>(heapArea);
+    }
+    {
+        HeapArea heapArea(allocatorSize);
+        testBoundsChecking<ExtendedBoundsChecking>(heapArea);
     }
 }
 

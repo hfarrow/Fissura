@@ -16,8 +16,6 @@ namespace fs
 {
     const fs::u32 BOUNDS_FRONT_PATTERN = 0xdf;
     const fs::u32 BOUNDS_BACK_PATTERN = 0xfd;
-    const fs::u32 BOUNDS_EXTENDED_FRONT_PATTERN = 0xdf;
-    const fs::u32 BOUNDS_EXTENDED_BACK_PATTERN = 0xfd;
 
     struct SourceInfo
     {
@@ -233,32 +231,9 @@ namespace fs
         inline void checkAll(MemoryTrackingPolicy&) {}
     };
 
-    class ExtendedBoundsChecking
+    class ExtendedBoundsChecking : public SimpleBoundsChecking
     {
     public:
-        static const size_t SIZE_FRONT = sizeof(u32);
-        static const size_t SIZE_BACK = sizeof(u32);
-
-        inline void guardFront(void* ptr) const
-        {
-            *static_cast<u32*>(ptr) = BOUNDS_EXTENDED_FRONT_PATTERN;
-        }
-        
-        inline void guardBack(void* ptr) const
-        {
-            *static_cast<u32*>(ptr) = BOUNDS_EXTENDED_BACK_PATTERN;
-        }
-
-        inline void checkFront(const void* ptr) const
-        {
-            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_EXTENDED_FRONT_PATTERN);
-        }
-
-        inline void checkBack(const void* ptr) const
-        {
-            FS_ASSERT(*static_cast<const u32*>(ptr) == BOUNDS_EXTENDED_BACK_PATTERN);
-        }
-
         template<class MemoryTrackingPolicy>
         inline void checkAll(MemoryTrackingPolicy& memoryTracker)
         {

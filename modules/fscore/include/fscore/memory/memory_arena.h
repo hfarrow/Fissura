@@ -52,17 +52,17 @@ namespace fs
             
             char* plainMemory = reinterpret_cast<char*>(_allocator.allocate(newSize, alignment, headerSize));
 
-            _allocator.storeAllocationSize(plainMemory, originalSize);
+            _allocator.storeAllocationSize(plainMemory, newSize);
 
             _boundsChecker.guardFront(plainMemory + AllocationPolicy::HEADER_SIZE);
+            _memoryTagger.tagAllocation(plainMemory + headerSize, originalSize);
             _boundsChecker.guardBack(plainMemory + headerSize + originalSize);
             _boundsChecker.checkAll(_memoryTracker);
 
-            _memoryTagger.tagAllocation(plainMemory + headerSize, originalSize);
             _memoryTracker.onAllocation(plainMemory, newSize, alignment, sourceInfo);
 
             _threadGuard.leave();
-            
+
             return (plainMemory + headerSize);
         }
 
@@ -79,7 +79,7 @@ namespace fs
             _boundsChecker.checkAll(_memoryTracker);
             
             _memoryTracker.onDeallocation(originalMemory, allocationSize);
-            _memoryTagger.tagDeallocation(ptr, allocationSize);
+            _memoryTagger.tagDeallocation(originalMemory, allocationSize);
 
             _allocator.free(reinterpret_cast<void*>(originalMemory));
 

@@ -87,6 +87,9 @@ struct MemoryArenaFixture
         }
 
         u32 size = *(as_char - BoundsCheckingPolicy::SIZE_FRONT - sizeof(u32));
+        // dont include header as part of the size.
+        size -= (BoundsCheckingPolicy::SIZE_FRONT + BoundsCheckingPolicy::SIZE_BACK + sizeof(u32));
+
         as_char = as_char + size;
         char* back = as_char;
         for(u32 i = 0; i < BoundsCheckingPolicy::SIZE_BACK / 4; ++i)
@@ -150,25 +153,25 @@ BOOST_AUTO_TEST_CASE(arena_with_header)
         ArenaWithHeader<AllocationHeaderU8> arena_u8(heapArea);
         as_void = arena_u8.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_CHECK(as_void);
-        BOOST_CHECK(*(as_u8-1) == smallAllocationSize);
+        BOOST_CHECK(*(as_u8-1) == smallAllocationSize + AllocationHeaderU8::SIZE);
     }
     {
         ArenaWithHeader<AllocationHeaderU16> arena_u16(heapArea);
         as_void = arena_u16.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_CHECK(as_void);
-        BOOST_CHECK(*(as_u16-1) == smallAllocationSize);
+        BOOST_CHECK(*(as_u16-1) == smallAllocationSize + AllocationHeaderU16::SIZE);
     }
     {
         ArenaWithHeader<AllocationHeaderU32> arena_u32(heapArea);
         as_void = arena_u32.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_CHECK(as_void);
-        BOOST_CHECK(*(as_u32-1) == smallAllocationSize);
+        BOOST_CHECK(*(as_u32-1) == smallAllocationSize + AllocationHeaderU32::SIZE);
     }
     {
         ArenaWithHeader<AllocationHeaderU64> arena_u64(heapArea);
         as_void = arena_u64.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_CHECK(as_void);
-        BOOST_CHECK(*(as_u64-1) == smallAllocationSize);
+        BOOST_CHECK(*(as_u64-1) == smallAllocationSize + AllocationHeaderU64::SIZE);
     }
 }
 

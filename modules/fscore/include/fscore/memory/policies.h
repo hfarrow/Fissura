@@ -36,21 +36,19 @@ namespace fs
     public:
         static const bool canGrow = false;
     };
-
+    
+    template<size_t size>
     class StackArea : Uncopyable
     {
     public:
-        StackArea(void* start, size_t size)
+        StackArea()
         {
-            _start = start;
-            _end = reinterpret_cast<void*>((uptr)_start + size);
         }
 
-        inline void* getStart() const {return _start;}
-        inline void* getEnd() const {return _end;}
+        inline void* getStart() const {return (void*)memory;}
+        inline void* getEnd() const {return (void*)(memory + size);}
     private:
-        void* _start;
-        void* _end;
+        u8 memory[size];
     };
 
     class HeapArea : Uncopyable

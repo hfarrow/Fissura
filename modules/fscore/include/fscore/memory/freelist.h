@@ -66,6 +66,12 @@ namespace fs
             _end = _alignedStart + size;
             _numElements = numElements;
 
+            if(_numElements == 0)
+            {
+                _next = nullptr;
+                return;
+            }
+
             union
             {
                 void* as_void;
@@ -107,7 +113,7 @@ namespace fs
             {
                 _next = reinterpret_cast<FreelistNode<indexSize>*>(_start + head->offset);
             }
-
+    
             return head;
         }
 

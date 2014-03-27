@@ -4,8 +4,6 @@
 #include "fscore/utils/types.h"
 #include "fscore/memory/policies.h"
 
-#define DECLARE_STACK_AREA(name, size) StackArea name(alloca(size), size)
-
 namespace fs
 {
     template<class AllocationPolicy, class ThreadPolicy, class BoundsCheckingPolicy, class MemoryTrackingPolicy, class MemoryTaggingPolicy>

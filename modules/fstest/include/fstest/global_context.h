@@ -39,7 +39,9 @@ namespace test
             //fs::Logger::setSurpressStdOutput(true);
             fs::setAssertTriggered(false);
 
+            fs::setIgnoreAsserts(true);
             func();
+            fs::setIgnoreAsserts(false);
 
             //fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
             return fs::getAssertTriggered();

@@ -75,6 +75,7 @@ struct MemoryArenaFixture
         as_void = arena.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_REQUIRE(as_void);
         BOOST_REQUIRE(BoundsCheckingPolicy::SIZE_FRONT >= sizeof(u32));
+        BOOST_REQUIRE(BoundsCheckingPolicy::SIZE_FRONT % sizeof(u32) == 0);
         char* front = as_char - BoundsCheckingPolicy::SIZE_FRONT;
         for(u32 i = 0; i < BoundsCheckingPolicy::SIZE_FRONT / 4; ++i)
         {
@@ -99,28 +100,28 @@ BOOST_FIXTURE_TEST_SUITE(memory_arena, MemoryArenaFixture)
 BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
 {
     HeapArea heapArea(allocatorSize * 20);
-    DECLARE_STACK_AREA(stackArea, allocatorSize);
+    StackArea<allocatorSize> stackArea;
     GrowableHeapArea growableHeap(allocatorSize / 2, allocatorSize);
 
 #define INIT_FROM_AREA(area_type, area, arena_type) \
     arenaInitFromArea<area_type, arena_type>((area))
 
     INIT_FROM_AREA(HeapArea, heapArea, BasicArena<LinearAllocator>);
-    INIT_FROM_AREA(StackArea, stackArea, BasicArena<LinearAllocator>);
+    INIT_FROM_AREA(StackArea<allocatorSize>, stackArea, BasicArena<LinearAllocator>);
 
     INIT_FROM_AREA(HeapArea, heapArea, BasicArena<StackAllocatorBottom>);
-    INIT_FROM_AREA(StackArea, stackArea, BasicArena<StackAllocatorBottom>);
+    INIT_FROM_AREA(StackArea<allocatorSize>, stackArea, BasicArena<StackAllocatorBottom>);
 
     INIT_FROM_AREA(HeapArea, heapArea, BasicArena<StackAllocatorTop>);
-    INIT_FROM_AREA(StackArea, stackArea, BasicArena<StackAllocatorTop>);
+    INIT_FROM_AREA(StackArea<allocatorSize>, stackArea, BasicArena<StackAllocatorTop>);
 
     INIT_FROM_AREA(HeapArea, heapArea, BasicArena<HeapAllocator>);
     // Do not create heaps on the stack.
     //INIT_FROM_AREA(StackArea, stackArea, BasicArena<HeapAllocator>);
     
-    arenaInitFromArea<HeapArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0>>>(heapArea);
-    arenaInitFromArea<StackArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0>>>(stackArea);
-    arenaInitFromArea<GrowableHeapArea, BasicArena<PoolAllocator<Growable, largeAllocationSize, defaultAlignment, 0, 1>>>(growableHeap);
+    arenaInitFromArea<HeapArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment>>>(heapArea);
+    arenaInitFromArea<StackArea<allocatorSize>, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment>>>(stackArea);
+    arenaInitFromArea<GrowableHeapArea, BasicArena<PoolAllocator<Growable, largeAllocationSize, defaultAlignment, 1>>>(growableHeap);
 
 #undef INIT_FROM_AREA
 }

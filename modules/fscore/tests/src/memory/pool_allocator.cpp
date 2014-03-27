@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_SUITE(pool_allocator, PoolAllocatorFixture)
 
 BOOST_AUTO_TEST_CASE(get_total_used_size)
 {
-    PoolAllocatorNonGrowable<tinyAllocationSize, defaultAlignment, 0> allocator(allocatorSize);
+    PoolAllocatorNonGrowable<tinyAllocationSize, defaultAlignment> allocator(allocatorSize);
     BOOST_CHECK(allocator.getTotalUsedSize() == 0);
     
     // Allocation of 4 bytes should be a slot size of 16. (8 + defaultAlignment rounded up to nearest alignment)
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
 
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
 {
-    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0> allocator(allocatorSize);
+    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment> allocator(allocatorSize);
     //BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
@@ -236,10 +236,10 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
 {
     u8 pMemory[allocatorSize];
 
-    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0> allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
+    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment> allocator((void*)pMemory, (void*)(pMemory + allocatorSize));
     //BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
-    void* ptr = allocator.allocate(VirtualMemory::getPageSize(), defaultAlignment, 0);
+    void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
 
     // Stack allocator has memory overhead so getTotalUsedSize will be greater than what
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
 
 BOOST_AUTO_TEST_CASE(allocate_and_free_from_growable)
 {
-    PoolAllocatorGrowable<largeAllocationSize, defaultAlignment, 0, 1> allocator(allocatorSize / 2, allocatorSize);
+    PoolAllocatorGrowable<largeAllocationSize, defaultAlignment, 1> allocator(allocatorSize / 2, allocatorSize);
     //BOOST_CHECK(allocator.getTotalUsedSize() == 0);
 
     void* ptr = allocator.allocate(largeAllocationSize, defaultAlignment, 0);
@@ -277,35 +277,53 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_growable)
 
 BOOST_AUTO_TEST_CASE(allocate_and_grow)
 {
-    PoolAllocatorGrowable<largeAllocationSize, defaultAlignment, 0, 1> allocator(largeAllocationSize, allocatorSize);
+    PoolAllocatorGrowable<pageSize, defaultAlignment, 1> allocator(pageSize*2, pageSize*4);
     
-    const size_t slotSize = bitUtil::roundUpToMultiple(largeAllocationSize, defaultAlignment);
-    void* ptr = allocator.allocate(slotSize, defaultAlignment, 0);
-    void* ptr2 = allocator.allocate(slotSize, defaultAlignment, 0);
+    // const size_t slotSize = bitUtil::roundUpToMultiple(pageSize, defaultAlignment);
+    // slot size will be greater thant he requested pageSize because of extra overhead
+    // for alignment and offsets. Initialally, there is 1 free slot and some unused memory.
+    // When the second allocation is requested there is not enough space because two slots
+    // is greater than pageSize * 2 so then the allocator grows.
+
+    void* ptr = allocator.allocate(pageSize, defaultAlignment, 0);
+    void* ptr2 = allocator.allocate(pageSize, defaultAlignment, 0);
+    BOOST_CHECK(ptr);
+    BOOST_CHECK(ptr2);
     (void)ptr;
     (void)ptr2;
     
-    // API doesn't provide any way to know if the allocator grew but the above should grow and not crash.
+    // API doesn't provide any way to know if the allocator grew but the above
+    // should grow and not assert or crash.
 }
 
 BOOST_AUTO_TEST_CASE(allocate_and_grow_out_of_memory)
 {
     // grow size is large which should cause out of memory the first time the allocator grows.
-    PoolAllocatorGrowable<largeAllocationSize, defaultAlignment, 0, allocatorSize/largeAllocationSize + 1> allocator(largeAllocationSize, allocatorSize);
-    allocator.allocate(largeAllocationSize, defaultAlignment, 0);
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment, 0);});
+    PoolAllocatorGrowable<pageSize, defaultAlignment, 2> allocator(pageSize*2, pageSize*5);
+
+    // initially there is one slot free so the following allocation fits.
+    allocator.allocate(pageSize, defaultAlignment, 0);
+
+    // next allocation does not fit so allocator will grow.
+    allocator.allocate(pageSize, defaultAlignment, 0);
+
+    // After growth there is one slot free.
+    allocator.allocate(pageSize, defaultAlignment, 0);
+
+    // next allocation will fail because there is not enough memory remaining to grow.
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(pageSize, defaultAlignment, 0);});
 }
 
 BOOST_AUTO_TEST_CASE(allocate_invalid)
 {
-    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment, 0> allocator(allocatorSize);
+    PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment> allocator(allocatorSize);
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize + smallAllocationSize, defaultAlignment, 0);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(largeAllocationSize, defaultAlignment * 2, 0);});
 }
 
 BOOST_AUTO_TEST_CASE(allocate_aligned)
 {
-    PoolAllocatorNonGrowable<smallAllocationSize, 32, 0> allocator(allocatorSize);
+    PoolAllocatorNonGrowable<smallAllocationSize, 32> allocator(allocatorSize);
 
     void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
     BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr, 8) == 0);
@@ -319,14 +337,14 @@ BOOST_AUTO_TEST_CASE(allocate_aligned)
 
 BOOST_AUTO_TEST_CASE(allocate_offset)
 {
-    PoolAllocatorNonGrowable<smallAllocationSize, 8, 4> allocator(allocatorSize);
+    PoolAllocatorNonGrowable<smallAllocationSize, 8> allocator(allocatorSize);
 
-    void* ptr = allocator.allocate(smallAllocationSize, 8, 0);
-    FS_ASSERT(ptr);
-    FS_ASSERT(pointerUtil::alignTopAmount((uptr)ptr + 4, 8) == 0);
+    void* ptr = allocator.allocate(smallAllocationSize, 8, 4);
+    BOOST_REQUIRE(ptr);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 8) == 0);
  
-    ptr = allocator.allocate(smallAllocationSize, 4, 0);
-    FS_ASSERT(pointerUtil::alignTopAmount((uptr)ptr + 4, 4) == 0);
+    ptr = allocator.allocate(smallAllocationSize, 4, 4);
+    BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 4) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

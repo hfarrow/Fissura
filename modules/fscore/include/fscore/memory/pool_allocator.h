@@ -13,7 +13,7 @@ namespace fs
 
     class PageAllocator;
 
-    template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
+    template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t growSize>
     class PoolAllocator
     {
 
@@ -61,11 +61,11 @@ namespace fs
         size_t _wastedSpace;
     };
 
-    template<size_t maxElementSize, size_t maxAlignment, size_t offset>
-    using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable, maxElementSize, maxAlignment, offset, 0>;
+    template<size_t maxElementSize, size_t maxAlignment>
+    using PoolAllocatorNonGrowable = PoolAllocator<NonGrowable, maxElementSize, maxAlignment, 0>;
 
-    template<size_t maxElementSize, size_t maxAlignment, size_t offset, size_t growSize>
-    using PoolAllocatorGrowable = PoolAllocator<Growable, maxElementSize, maxAlignment, offset, growSize>;
+    template<size_t maxElementSize, size_t maxAlignment, size_t growSize>
+    using PoolAllocatorGrowable = PoolAllocator<Growable, maxElementSize, maxAlignment, growSize>;
 }
 
 #include "fscore/memory/pool_allocator.inl"

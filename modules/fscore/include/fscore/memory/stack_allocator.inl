@@ -115,7 +115,9 @@ namespace fs
     {
         FS_ASSERT(ptr);
         FS_ASSERT(ptr == (void*)_lastUserPtr);
-        _layoutPolicy.free(this, ptr);
+        
+        if(ptr == (void*)_lastUserPtr)
+            _layoutPolicy.free(this, ptr);
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
@@ -133,7 +135,7 @@ namespace fs
     template<typename LayoutPolicy, typename GrowthPolicy>
     void StackAllocator<LayoutPolicy, GrowthPolicy>::purge()
     {
-        FS_ASSERT(!"StackAllocator purge() NOT IMPLEMENTED");
+        _layoutPolicy.purge(this);
     }
 
     template<typename StackAllocator> 
@@ -363,10 +365,15 @@ namespace fs
         // Make sure we free from a page aligned location.
         uptr addressToFree = pointerUtil::alignTop(pStack->_physicalCurrent, pStack->_growSize);
 
-        const size_t sizeToFree = pStack->_physicalEnd - addressToFree;
-        VirtualMemory::freePhysicalMemory((void*)addressToFree, sizeToFree);
-
-        pStack->_physicalEnd = addressToFree;
+        if(addressToFree <= pStack->_physicalEnd)
+        {
+            const size_t sizeToFree = pStack->_physicalEnd - addressToFree;
+            if(sizeToFree > 0)
+            {
+                VirtualMemory::freePhysicalMemory((void*)addressToFree, sizeToFree);
+                pStack->_physicalEnd = addressToFree;
+            }
+        }
     }
 
     template<typename StackAllocator>
@@ -375,10 +382,15 @@ namespace fs
         // Make sure we free from a page aligned location.
         uptr addressToFree = pointerUtil::alignBottom(pStack->_physicalCurrent, pStack->_growSize);
 
-        const size_t sizeToFree = addressToFree - pStack->_physicalEnd;
-        VirtualMemory::freePhysicalMemory((void*)pStack->physicalEnd, sizeToFree);
-
-        pStack->_physicalEnd = addressToFree;
+        if(addressToFree >= pStack->_physicalEnd)
+        {
+            const size_t sizeToFree = addressToFree - pStack->_physicalEnd;
+            if(sizeToFree > 0)
+            {
+                VirtualMemory::freePhysicalMemory((void*)pStack->_physicalEnd, sizeToFree);
+                pStack->_physicalEnd = addressToFree;
+            }
+        }
     }
 }
 

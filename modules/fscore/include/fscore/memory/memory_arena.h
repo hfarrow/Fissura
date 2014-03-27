@@ -33,6 +33,15 @@ namespace fs
         {
         }
 
+        ~MemoryArena()
+        {
+            // if(_memoryTracker.getNumAllocations() > 0)
+            // {
+            //     // There could be use cases where you discard an arena and all allocations it made.
+            //     // FS_ASSERT(!"MemoryArena was destroyed before allocations were freed. Memory Leak?");
+            // }
+        }
+
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
         {
             _threadGuard.enter();
@@ -44,16 +53,16 @@ namespace fs
             char* plainMemory = reinterpret_cast<char*>(_allocator.allocate(newSize, alignment, headerSize));
 
             _allocator.storeAllocationSize(plainMemory, originalSize);
-            _boundsChecker.guardFront(plainMemory + AllocationPolicy::HEADER_SIZE);
-            _memoryTagger.tagAllocation(plainMemory + headerSize, originalSize);
-            _boundsChecker.guardBack(plainMemory + headerSize + originalSize);
 
+            _boundsChecker.guardFront(plainMemory + AllocationPolicy::HEADER_SIZE);
+            _boundsChecker.guardBack(plainMemory + headerSize + originalSize);
             _boundsChecker.checkAll(_memoryTracker);
 
+            _memoryTagger.tagAllocation(plainMemory + headerSize, originalSize);
             _memoryTracker.onAllocation(plainMemory, newSize, alignment, sourceInfo);
 
             _threadGuard.leave();
-
+            
             return (plainMemory + headerSize);
         }
 
@@ -67,12 +76,10 @@ namespace fs
 
             _boundsChecker.checkFront(originalMemory + AllocationPolicy::HEADER_SIZE);
             _boundsChecker.checkBack(originalMemory + headerSize + allocationSize);
-
             _boundsChecker.checkAll(_memoryTracker);
             
-            _memoryTracker.onDeallocation(originalMemory);
-
-            _memoryTagger.tagDeallocation(originalMemory, allocationSize);
+            _memoryTracker.onDeallocation(originalMemory, allocationSize);
+            _memoryTagger.tagDeallocation(ptr, allocationSize);
 
             _allocator.free(reinterpret_cast<void*>(originalMemory));
 

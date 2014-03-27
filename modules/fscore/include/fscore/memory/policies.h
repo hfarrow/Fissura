@@ -4,18 +4,13 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 
-// namespace
-// {
-//     const fs::u32 BOUNDS_FRONT_PATTERN = 0xdf;
-//     const fs::u32 BOUNDS_BACK_PATTERN = 0xfd;
-//     const fs::u32 BOUNDS_EXTENDED_FRONT_PATTERN = 0xdf;
-//     const fs::u32 BOUNDS_EXTENDED_BACK_PATTERN = 0xfd;
-// }
-
 namespace fs
 {
-    const fs::u32 BOUNDS_FRONT_PATTERN = 0xdf;
-    const fs::u32 BOUNDS_BACK_PATTERN = 0xfd;
+    const fs::u32 BOUNDS_FRONT_PATTERN = 0xDFDFDFDF;
+    const fs::u32 BOUNDS_BACK_PATTERN = 0xFDFDFDFD;
+
+    const fs::u32 ALLLOCATED_TAG_PATTERN = 0xCDCDCDCD;
+    const fs::u32 DEALLLOCATED_TAG_PATTERN = 0xDDDDDDDD;
 
     struct SourceInfo
     {
@@ -244,7 +239,39 @@ namespace fs
     {
     public:
         inline void onAllocation(void*, size_t, size_t, const SourceInfo&) const {}
-        inline void onDeallocation(void*) const {}
+        inline void onDeallocation(void*, size_t) const {}
+        inline size_t getNumAllocations() const {return 0;}
+        inline size_t getUsedSize() const {return 0;}
+    };
+
+    class SimpleMemoryTracking
+    {
+    public:
+        inline void onAllocation(void*, size_t size, size_t, const SourceInfo&)
+        {
+            _numAllocations++;
+            _usedSize += size;
+        }
+
+        inline void onDeallocation(void*, size_t size)
+        {
+            FS_ASSERT_MSG(_numAllocations > 0, "This arena has no current allocations and therfore cannot free.");
+            _numAllocations--;
+            _usedSize -= size;
+        }
+
+        inline size_t getNumAllocations() const
+        {
+            return _numAllocations;
+        }
+
+        inline size_t getUsedSpace() const
+        {
+            return _usedSize;
+        }
+    private:
+        size_t _numAllocations = 0;
+        size_t _usedSize = 0;
     };
 
     class NoMemoryTagging
@@ -252,6 +279,45 @@ namespace fs
     public:
         inline void tagAllocation(void*, size_t) const {}
         inline void tagDeallocation(void*, size_t) const {}
+    };
+
+    class MemoryTagging
+    {
+    public:
+        inline void tagAllocation(void* ptr, size_t size) const
+        {
+            tagMemory(ptr, size, ALLLOCATED_TAG_PATTERN);
+        }
+
+        inline void tagDeallocation(void* ptr, size_t size) const
+        {
+            tagMemory(ptr, size, DEALLLOCATED_TAG_PATTERN);
+        }
+
+        inline void tagMemory(void* ptr, size_t size, const u32 pattern) const
+        {
+            union
+            {
+                u32* as_u32;
+                char* as_char;
+            };
+
+            char* start = static_cast<char*>(ptr);
+            char* current;
+            for(current = start;  static_cast<size_t>(current - start) + sizeof(u32) <= size; current+=sizeof(u32))
+            {
+                as_char = current;
+                *as_u32 = pattern;
+            }
+            
+            u32 numBitsToSet = 8 * (size - (current - start));
+            FS_ASSERT(numBitsToSet <= 32);
+
+            // Set the remaing bytes which did not fit into a u32 above.
+            u32 mask = 0xFFFFFFFF >> (32 - numBitsToSet);
+            as_char = current;
+            *as_u32 = (mask & pattern) + (~mask & *as_u32);
+        }
     };
 
     class SingleThreadPolicy

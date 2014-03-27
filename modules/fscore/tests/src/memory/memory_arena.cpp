@@ -23,9 +23,12 @@ template<class HeaderPolicy>
 using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
                                     SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 
-template<class BoundCheckingPolicy>
+template<class BoundsCheckingPolicy>
 using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
-                                    SingleThreadPolicy, BoundCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
+                                    SingleThreadPolicy, BoundsCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
+
+using ArenaWithMemoryTagging = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
+                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
 
 struct MemoryArenaFixture
 {
@@ -186,6 +189,49 @@ BOOST_AUTO_TEST_CASE(arean_with_simple_bounds_checking)
         HeapArea heapArea(allocatorSize);
         testBoundsChecking<ExtendedBoundsChecking>(heapArea);
     }
+}
+
+BOOST_AUTO_TEST_CASE(arena_with_memory_tagging)
+{
+    SourceInfo info;
+    info.fileName = "testFileName";
+    info.lineNumber = 1234;
+
+    HeapArea area(allocatorSize);
+    ArenaWithMemoryTagging arena(area);
+    u32 value = 0;
+
+    void* ptr1 = arena.allocate(4, defaultAlignment, info);
+    BOOST_REQUIRE(ptr1);
+    BOOST_CHECK(*(static_cast<u32*>(ptr1)) == ALLLOCATED_TAG_PATTERN);
+
+    void* ptr2 = arena.allocate(8, defaultAlignment, info);
+    BOOST_REQUIRE(ptr2);
+    BOOST_CHECK(*(static_cast<u32*>(ptr2)) == ALLLOCATED_TAG_PATTERN);
+    BOOST_CHECK(*(static_cast<u32*>(ptr2) + 1) == ALLLOCATED_TAG_PATTERN);
+    
+    void* ptr3 = arena.allocate(6, defaultAlignment, info);
+    BOOST_REQUIRE(ptr3);
+    value = *(static_cast<u32*>(ptr3));
+    BOOST_CHECK(*(static_cast<u32*>(ptr3)) == ALLLOCATED_TAG_PATTERN);
+    value = *(static_cast<u32*>(ptr3) + 1);
+    BOOST_CHECK((value & 0xFFFF) == (ALLLOCATED_TAG_PATTERN & 0xFFFF));
+    BOOST_CHECK((value & 0xFFFF0000) != (ALLLOCATED_TAG_PATTERN & 0xFFFF0000));
+
+    arena.free(ptr3);
+    value = *(static_cast<u32*>(ptr3));
+    BOOST_CHECK(*(static_cast<u32*>(ptr3)) == DEALLLOCATED_TAG_PATTERN);
+    value = *(static_cast<u32*>(ptr3) + 1);
+    BOOST_CHECK((value & 0xFFFF) == (DEALLLOCATED_TAG_PATTERN & 0xFFFF));
+    BOOST_CHECK((value & 0xFFFF0000) != (DEALLLOCATED_TAG_PATTERN & 0xFFFF0000));
+
+    arena.free(ptr2);
+    BOOST_CHECK(*(static_cast<u32*>(ptr2)) == DEALLLOCATED_TAG_PATTERN);
+    BOOST_CHECK(*(static_cast<u32*>(ptr2) + 1) == DEALLLOCATED_TAG_PATTERN);
+
+    arena.free(ptr1);
+    BOOST_CHECK(*(static_cast<u32*>(ptr1)) == DEALLLOCATED_TAG_PATTERN);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

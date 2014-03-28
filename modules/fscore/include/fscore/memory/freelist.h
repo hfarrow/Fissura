@@ -163,7 +163,17 @@ namespace fs
 
         inline size_t getWastedSize()
         {
-            return (_alignedStart - _start) + (_end - _physicalEnd);
+            return getWastedSizeAtFront() + getWastedSizeAtBack();
+        }
+
+        inline size_t getWastedSizeAtFront()
+        {
+            return _alignedStart - _start;
+        }
+
+        inline size_t getWastedSizeAtBack()
+        {
+            return _end - _physicalEnd;
         }
 
         // void PRINT_STATE()

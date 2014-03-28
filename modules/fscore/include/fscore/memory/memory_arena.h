@@ -86,11 +86,6 @@ namespace fs
             _threadGuard.leave();
         }
 
-        inline const char* getName()
-        {
-            return _name;
-        }
-
         inline void reset()
         {
             _allocator.reset();
@@ -104,6 +99,11 @@ namespace fs
         inline size_t getTotalUsedSize()
         {
             return _allocator.getTotalUsedSize();
+        }
+
+        inline const char* getName()
+        {
+            return _name;
         }
 
     private:

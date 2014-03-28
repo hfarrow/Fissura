@@ -114,9 +114,7 @@ namespace fs
                 const size_t neededPhysicalSize = _growSize;
                 const uptr physicalEnd = (uptr)_physicalEnd;
                 const uptr virtualEnd = (uptr)_virtualEnd;
-                // TODO: if there is wasted space at the end of the free list, that space is never used
-                // the new free list should start from where the old free list ended instead of where
-                // physical memory ended it on order to utilize that wasted space.
+
                 if(physicalEnd + neededPhysicalSize > virtualEnd)
                 {
                     FS_ASSERT(!"Growable PoolAllocator out of memory");
@@ -125,8 +123,16 @@ namespace fs
                 
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
-                _freelist = PoolFreelist(_physicalEnd, newPhysicalEnd, _maxElementSize, maxAlignment, 0);
+                void* newStart = (void*)((uptr)_physicalEnd + _freelist.getWastedSizeAtFront());
+
+                // The wasted space at the back of the current freelist will be used in the new
+                // freelist that is created below. This is because newStart lands in the current
+                // chunk of physical memory (if there was any wasted back space).
+                _wastedSpace -= _freelist.getWastedSizeAtBack();
+
+                _freelist = PoolFreelist(newStart, newPhysicalEnd, _maxElementSize, maxAlignment, 0);
                 _wastedSpace += _freelist.getWastedSize();
+
                 _physicalEnd = newPhysicalEnd;
                 userPtr = _freelist.obtain();
                 FS_ASSERT_MSG(userPtr, "Failed to allocate object after growing the pool. Is _growSize large enough?");

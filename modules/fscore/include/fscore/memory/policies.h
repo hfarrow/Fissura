@@ -260,19 +260,26 @@ namespace fs
             _usedSize -= size;
         }
 
-        inline size_t getNumAllocations() const
-        {
-            return _numAllocations;
-        }
-
-        inline size_t getUsedSpace() const
-        {
-            return _usedSize;
-        }
     private:
         size_t _numAllocations = 0;
         size_t _usedSize = 0;
     };
+
+    class ExtendedMemoryTracking : public SimpleMemoryTracking
+    {
+    public:
+        inline void onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)
+        {
+            SimpleMemoryTracking::onAllocation(ptr, size, alignment, info);
+        }
+
+        inline void onDeallocation(void* ptr, size_t size)
+        {
+            SimpleMemoryTracking::onDeallocation(ptr, size);
+        }
+    };
+
+    // TODO: FullMemoryTracking
 
     class NoMemoryTagging
     {

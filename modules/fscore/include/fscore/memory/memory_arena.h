@@ -35,11 +35,6 @@ namespace fs
 
         ~MemoryArena()
         {
-            // if(_memoryTracker.getNumAllocations() > 0)
-            // {
-            //     // There could be use cases where you discard an arena and all allocations it made.
-            //     // FS_ASSERT(!"MemoryArena was destroyed before allocations were freed. Memory Leak?");
-            // }
         }
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
@@ -94,11 +89,6 @@ namespace fs
         inline void purge()
         {
             _allocator.purge();
-        }
-
-        inline size_t getTotalUsedSize()
-        {
-            return _allocator.getTotalUsedSize();
         }
 
         inline const char* getName()

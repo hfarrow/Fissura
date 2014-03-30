@@ -2,7 +2,13 @@
 #define FS_MEMORY_ARENA_H
 
 #include "fscore/utils/types.h"
-#include "fscore/memory/policies.h"
+#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/bounds_checking_policy.h"
+#include "fscore/memory/memory_area.h"
+#include "fscore/memory/memory_tagging_policy.h"
+#include "fscore/memory/memory_tracking_policy.h"
+#include "fscore/memory/thread_policy.h"
+#include "fscore/memory/source_info.h"
 
 namespace fs
 {
@@ -35,6 +41,8 @@ namespace fs
 
         ~MemoryArena()
         {
+            FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
+                          "Arena was destroyed before all allocations were freed or reset.");
         }
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
@@ -83,12 +91,16 @@ namespace fs
 
         inline void reset()
         {
+            _threadGuard.enter();
             _allocator.reset();
+            _threadGuard.leave();
         }
 
         inline void purge()
         {
+            _threadGuard.enter();
             _allocator.purge();
+            _threadGuard.leave();
         }
 
         inline const char* getName()

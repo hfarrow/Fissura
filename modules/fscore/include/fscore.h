@@ -20,5 +20,12 @@
 #include "fscore/memory/pool_allocator.h"
 #include "fscore/memory/heap_allocator.h"
 #include "fscore/memory/memory_arena.h"
+#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/bounds_checking_policy.h"
+#include "fscore/memory/memory_area.h"
+#include "fscore/memory/memory_tagging_policy.h"
+#include "fscore/memory/memory_tracking_policy.h"
+#include "fscore/memory/thread_policy.h"
+#include "fscore/memory/source_info.h"
 
 #endif

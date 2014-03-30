@@ -20,14 +20,14 @@ namespace fs
         static_assert(BoundsCheckingPolicy::SIZE_BACK == 0 || AllocationPolicy::HEADER_SIZE > 0,
                           "BoundsCheckingPolicy requires an AllocationPolicy with a header size greater than 0 in order to store allocation size.");
     public:
-        explicit MemoryArena(size_t size, const char* name = "UnkownArena") :
+        MemoryArena(size_t size, const char* name = "UnkownArena") :
             _allocator(size),
             _name(name)
         {
         }
 
         template<class AreaPolicy>
-        explicit MemoryArena(const AreaPolicy& area, const char* name = "UnkownArena") :
+        MemoryArena(const AreaPolicy& area, const char* name = "UnkownArena") :
             _allocator(area.getStart(), area.getEnd()),
             _name(name)
         {            

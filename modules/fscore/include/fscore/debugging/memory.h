@@ -22,27 +22,8 @@ namespace fs
                                    MemoryTagging>;
     namespace memory
     {
-#ifdef FS_NO_DEFAULT_DEBUG_ARENA
-        static DebugArena* pDebugArena = nullptr;
-#else
-#ifndef FS_DEFAULT_DEBUG_ARENA_SIZE
-#define FS_DEFAULT_DEBUG_ARENA_SIZE FS_SIZE_OF_MB * 32
-#endif
-        static DebugArena debugArena((size_t)(FS_DEFAULT_DEBUG_ARENA_SIZE));
-        static DebugArena* pDebugArena = &debugArena;
-#endif
-
-        void setDebugArena(DebugArena& arena)
-        {
-            FS_ASSERT_MSG(!pDebugArena, "Can only set debug arena once.");
-            pDebugArena = &arena;
-        }
-
-        DebugArena* getDebugArena()
-        {
-            FS_ASSERT_MSG(pDebugArena, "Debug arena must be set first.");
-            return pDebugArena;
-        }
+        void setDebugArena(DebugArena& arena);
+        DebugArena* getDebugArena();
     }
 }
 

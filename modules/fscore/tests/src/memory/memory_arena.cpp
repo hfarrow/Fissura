@@ -90,6 +90,12 @@ struct MemoryArenaFixture
         // dont include header as part of the size.
         size -= (BoundsCheckingPolicy::SIZE_FRONT + BoundsCheckingPolicy::SIZE_BACK + sizeof(u32));
 
+        // In addition to checking the bounds manually, also run it through the policy.
+        // boundsChecker should not assert.
+        BoundsCheckingPolicy boundsChecker;
+        boundsChecker.checkFront((void*)(as_char - BoundsCheckingPolicy::SIZE_FRONT));
+        boundsChecker.checkBack((void*)(as_char + size));
+
         as_char = as_char + size;
         char* back = as_char;
         for(u32 i = 0; i < BoundsCheckingPolicy::SIZE_BACK / 4; ++i)
@@ -235,6 +241,22 @@ BOOST_AUTO_TEST_CASE(arena_with_memory_tagging)
     arena.free(ptr1);
     BOOST_CHECK(*(static_cast<u32*>(ptr1)) == DEALLLOCATED_TAG_PATTERN);
 
+}
+
+BOOST_AUTO_TEST_CASE(debug_arena)
+{
+    SourceInfo info;
+    info.fileName = "testFileName";
+    info.lineNumber = 1234;
+
+    DebugArena* pArena = fs::memory::getDebugArena();
+    void* ptr = pArena->allocate(pageSize, defaultAlignment, info);
+    BOOST_REQUIRE(ptr);
+    pArena->free(ptr);
+
+    ptr = pArena->allocate(largeAllocationSize, defaultAlignment, info);
+    BOOST_REQUIRE(ptr);
+    pArena->reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

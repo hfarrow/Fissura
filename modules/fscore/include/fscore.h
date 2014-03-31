@@ -11,6 +11,7 @@
 // Debugging
 #include "fscore/debugging/assert.h"
 //#include "fscore/debugging/logger.h"
+#include "fscore/debugging/memory.h"
 
 // Memory
 #include "fscore/memory/utils.h"

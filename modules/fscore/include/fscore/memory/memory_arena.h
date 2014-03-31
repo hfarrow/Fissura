@@ -78,7 +78,7 @@ namespace fs
             const size_t allocationSize = _allocator.getAllocationSize(originalMemory);
 
             _boundsChecker.checkFront(originalMemory + AllocationPolicy::HEADER_SIZE);
-            _boundsChecker.checkBack(originalMemory + headerSize + allocationSize);
+            _boundsChecker.checkBack(originalMemory + allocationSize - BoundsCheckingPolicy::SIZE_BACK);
             _boundsChecker.checkAll(_memoryTracker);
             
             _memoryTracker.onDeallocation(originalMemory, allocationSize);

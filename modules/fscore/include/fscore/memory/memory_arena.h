@@ -41,8 +41,13 @@ namespace fs
 
         ~MemoryArena()
         {
-            FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
-                          "Arena was destroyed before all allocations were freed or reset.");
+            FS_PRINT("~MemoryArena " << _memoryTracker.getNumAllocations());
+            if(_memoryTracker.getNumAllocations() != 0)
+            {
+                FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
+                              "Arena was destroyed before all allocations were freed or reset.");
+                printLeakReport();
+            }
         }
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
@@ -91,8 +96,10 @@ namespace fs
 
         inline void reset()
         {
+            FS_PRINT("arena reset");
             _threadGuard.enter();
             _allocator.reset();
+            _memoryTracker.reset();
             _threadGuard.leave();
         }
 
@@ -101,6 +108,14 @@ namespace fs
             _threadGuard.enter();
             _allocator.purge();
             _threadGuard.leave();
+        }
+
+        void printLeakReport()
+        {
+            // TODO: change to LOG instead of PRINT
+            FS_PRINT("Printing arena leaks:");
+            FS_PRINT("    Number of Allocations: " << _memoryTracker.getNumAllocations());
+            FS_PRINT("    Used Size: " << _memoryTracker.getUsedSize());
         }
 
         inline const char* getName()

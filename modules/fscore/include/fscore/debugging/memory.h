@@ -18,7 +18,7 @@ namespace fs
     using DebugArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
                                    MultiThreadPolicy<MutexPrimitive>,
                                    SimpleBoundsChecking,
-                                   NoMemoryTracking,
+                                   SimpleMemoryTracking,
                                    MemoryTagging>;
     namespace memory
     {

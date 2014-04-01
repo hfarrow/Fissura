@@ -1,5 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
+#include <vector>
+#include <map>
+
 #include "fstest.h"
 #include "fscore.h"
 
@@ -257,6 +260,35 @@ BOOST_AUTO_TEST_CASE(debug_arena)
     ptr = pArena->allocate(largeAllocationSize, defaultAlignment, info);
     BOOST_REQUIRE(ptr);
     pArena->reset();
+}
+
+BOOST_AUTO_TEST_CASE(stl_allocator)
+{
+    // StlAllocator<u32, DebugArena> allocator(*fs::memory::getDebugArena());
+    // std::vector<u32, StlAllocator<u32, DebugArena>> vector(allocator);
+
+    // vector.push_back(1);
+    // vector.push_back(2);
+    // vector.push_back(3);
+    // vector.push_back(4);
+
+    // vector.erase(vector.begin());
+
+    // vector.clear();
+
+    StlAllocator<u32, DebugArena> allocator(*fs::memory::getDebugArena());
+    std::map<u32, u32, std::less<u32>, StlAllocator<u32, DebugArena>> m(allocator);
+
+    fs::memory::getDebugArena()->printLeakReport();
+    m.insert(std::pair<u32, u32>(1,1));
+
+    for(std::pair<u32, u32> p : m)
+    {
+        FS_PRINT(p.first << ":" << p.second);
+    }
+    
+    m.clear();
+    fs::memory::getDebugArena()->reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

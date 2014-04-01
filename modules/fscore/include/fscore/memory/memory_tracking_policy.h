@@ -12,6 +12,7 @@ namespace fs
     public:
         size_t numAllocations = 0;
         size_t usedSize = 0;
+
     };
 
     class NoMemoryTracking
@@ -21,6 +22,7 @@ namespace fs
         inline void onDeallocation(void*, size_t) const {}
         inline size_t getNumAllocations() const {return 0;}
         inline size_t getUsedSize() const {return 0;}
+        inline void reset() {}
     };
 
     class SimpleMemoryTracking
@@ -37,6 +39,17 @@ namespace fs
             FS_ASSERT_MSG(_profile.numAllocations > 0, "This arena has no current allocations and therfore cannot free.");
             _profile.numAllocations--;
             _profile.usedSize -= size;
+        }
+
+        inline size_t getNumAllocations() const {return _profile.numAllocations;}
+        
+        inline size_t getUsedSize() const {return _profile.usedSize;}
+
+        inline void reset()
+        {
+            FS_PRINT("RESET");
+            _profile.numAllocations = 0;
+            _profile.usedSize = 0;
         }
 
     private:

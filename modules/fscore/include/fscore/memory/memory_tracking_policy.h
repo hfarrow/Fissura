@@ -38,10 +38,11 @@ namespace fs
 
     class MemoryProfile : Uncopyable
     {
-        // Must match fscore/debugging/memory.h -> DebugArena typedef
         // We cannot use the main DebugArena definition because it would
         // introduce a circular dependencies between /debugging/memory.h and
-        // policy headers.
+        // policy headers. The Debug<Policy> typedefs should be changed
+        // instead of this typedef or the one in memory.h
+        // Must match fscore/debugging/memory.h -> DebugArena typedef
         using DebugArena = MemoryArena<DebugAllocationPolicy,
                                   DebugThreadPolicy,
                                   DebugBoundsCheckingPolicy,

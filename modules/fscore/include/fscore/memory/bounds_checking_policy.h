@@ -65,6 +65,8 @@ namespace fs
             (void)memoryTracker;
         }
     };
+
+    using DebugBoundsCheckingPolicy = SimpleBoundsChecking;
 }
 
 #endif

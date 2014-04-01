@@ -20,18 +20,18 @@ const size_t pageSize = 4096;
 
 template<class Alloc>
 using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
-                      SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+                      SingleThreadP, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 
 template<class HeaderPolicy>
 using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
-                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+                                    SingleThreadP, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 
 template<class BoundsCheckingPolicy>
 using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
-                                    SingleThreadPolicy, BoundsCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
+                                    SingleThreadP, BoundsCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
 
 using ArenaWithMemoryTagging = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
-                                    SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
+                                    SingleThreadP, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
 
 struct MemoryArenaFixture
 {
@@ -264,30 +264,26 @@ BOOST_AUTO_TEST_CASE(debug_arena)
 
 BOOST_AUTO_TEST_CASE(stl_allocator)
 {
-    // StlAllocator<u32, DebugArena> allocator(*fs::memory::getDebugArena());
-    // std::vector<u32, StlAllocator<u32, DebugArena>> vector(allocator);
-
-    // vector.push_back(1);
-    // vector.push_back(2);
-    // vector.push_back(3);
-    // vector.push_back(4);
-
-    // vector.erase(vector.begin());
-
-    // vector.clear();
-
-    StlAllocator<u32, DebugArena> allocator(*fs::memory::getDebugArena());
-    std::map<u32, u32, std::less<u32>, StlAllocator<u32, DebugArena>> m(allocator);
-
-    fs::memory::getDebugArena()->printLeakReport();
-    m.insert(std::pair<u32, u32>(1,1));
-
-    for(std::pair<u32, u32> p : m)
+    // TODO: Determine how to properly test all aspects of an stl allocator.
     {
-        FS_PRINT(p.first << ":" << p.second);
+        StlAllocator<u32, DebugArena> allocator_vector(*fs::memory::getDebugArena());
+        std::vector<u32, StlAllocator<u32, DebugArena>> vector(allocator_vector);
+
+        vector.push_back(1);
+        vector.push_back(2);
+        vector.push_back(3);
+        vector.push_back(4);
+
+        vector.erase(vector.begin());
+
+        vector.clear();
+
+        StlAllocator<u32, DebugArena> allocator_map(*fs::memory::getDebugArena());
+        std::map<u32, u32, std::less<u32>, StlAllocator<u32, DebugArena>> map(allocator_map);
+
+        map.insert(std::pair<u32, u32>(1,1));
+        map.clear();
     }
-    
-    m.clear();
     fs::memory::getDebugArena()->reset();
 }
 

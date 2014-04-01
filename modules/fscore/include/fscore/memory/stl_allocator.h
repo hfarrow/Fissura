@@ -152,7 +152,6 @@ namespace fs
 		/// Reinit the allocator. All existing allocated memory will be lost
 		void reset()
 		{
-            FS_PRINT("stl reset");
 			_pArena->reset();
 		}
  

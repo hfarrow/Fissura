@@ -54,6 +54,8 @@ namespace fs
             *as_u32 = (mask & pattern) + (~mask & *as_u32);
         }
     };
+
+    using DebugMemoryTaggingPolicy = MemoryTagging;
 }
 
 #endif

@@ -1,17 +1,56 @@
 #ifndef FS_MEMORY_TRACKING_POLICY_H
 #define FS_MEMORY_TRACKING_POLICY_H
 
+#include <map>
+
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/source_info.h"
+#include "fscore/memory/heap_allocator.h"
+#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/bounds_checking_policy.h"
+#include "fscore/memory/memory_tagging_policy.h"
+#include "fscore/memory/memory_tracking_policy.h"
+#include "fscore/memory/thread_policy.h"
+#include "fscore/memory/memory_arena.h"
 
 namespace fs
 {
+    class SimpleMemoryTracking;
+    using DebugMemoryTrackingPolicy = SimpleMemoryTracking;
+
+    class AllocationInfo
+    {
+    public:
+        AllocationInfo(const char* fileName, u32 lineNumber, uptr* stackTrace, size_t stackTraceSize) :
+            fileName(fileName),
+            lineNumber(lineNumber),
+            stackTrace(stackTrace),
+            stackTraceSize(stackTraceSize)
+        {        
+        }
+
+        const char* fileName;
+        const u32 lineNumber;
+        const uptr* stackTrace;
+        const size_t stackTraceSize;
+    };
+
     class MemoryProfile : Uncopyable
     {
+        // Must match fscore/debugging/memory.h -> DebugArena typedef
+        // We cannot use the main DebugArena definition because it would
+        // introduce a circular dependencies between /debugging/memory.h and
+        // policy headers.
+        using DebugArena = MemoryArena<DebugAllocationPolicy,
+                                  DebugThreadPolicy,
+                                  DebugBoundsCheckingPolicy,
+                                  DebugMemoryTrackingPolicy,
+                                  DebugMemoryTaggingPolicy>;
     public:
         size_t numAllocations = 0;
         size_t usedSize = 0;
+        std::map<uptr, AllocationInfo, std::less<uptr>, DebugArena>* allocations;
 
     };
 
@@ -36,7 +75,7 @@ namespace fs
 
         inline void onDeallocation(void*, size_t size)
         {
-            FS_ASSERT_MSG(_profile.numAllocations > 0, "This arena has no current allocations and therfore cannot free.");
+            FS_ASSERT_MSG(_profile.numAllocations > 0, "This arena has no current allocations and therefore cannot free.");
             _profile.numAllocations--;
             _profile.usedSize -= size;
         }
@@ -47,7 +86,6 @@ namespace fs
 
         inline void reset()
         {
-            FS_PRINT("RESET");
             _profile.numAllocations = 0;
             _profile.usedSize = 0;
         }

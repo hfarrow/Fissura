@@ -113,6 +113,9 @@ namespace fs
         HeaderPolicy _header;
     };
 
+    class HeapAllocator;
+    using DebugAllocationPolicy = Allocator<HeapAllocator, AllocationHeaderU32>;
+
 }
 
 #endif

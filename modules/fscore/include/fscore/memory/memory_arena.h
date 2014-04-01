@@ -2,13 +2,10 @@
 #define FS_MEMORY_ARENA_H
 
 #include "fscore/utils/types.h"
-#include "fscore/memory/allocation_policy.h"
-#include "fscore/memory/bounds_checking_policy.h"
 #include "fscore/memory/memory_area.h"
-#include "fscore/memory/memory_tagging_policy.h"
-#include "fscore/memory/memory_tracking_policy.h"
-#include "fscore/memory/thread_policy.h"
 #include "fscore/memory/source_info.h"
+
+#define FS_SIZE_OF_MB 33554432
 
 namespace fs
 {
@@ -41,12 +38,11 @@ namespace fs
 
         ~MemoryArena()
         {
-            FS_PRINT("~MemoryArena " << _memoryTracker.getNumAllocations());
             if(_memoryTracker.getNumAllocations() != 0)
             {
                 FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
                               "Arena was destroyed before all allocations were freed or reset.");
-                printLeakReport();
+                logLeakReport();
             }
         }
 
@@ -96,7 +92,6 @@ namespace fs
 
         inline void reset()
         {
-            FS_PRINT("arena reset");
             _threadGuard.enter();
             _allocator.reset();
             _memoryTracker.reset();
@@ -110,10 +105,10 @@ namespace fs
             _threadGuard.leave();
         }
 
-        void printLeakReport()
+        void logLeakReport()
         {
             // TODO: change to LOG instead of PRINT
-            FS_PRINT("Printing arena leaks:");
+            FS_PRINT("logging arena leaks:");
             FS_PRINT("    Number of Allocations: " << _memoryTracker.getNumAllocations());
             FS_PRINT("    Used Size: " << _memoryTracker.getUsedSize());
         }

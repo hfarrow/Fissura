@@ -15,11 +15,12 @@
 
 namespace fs
 {
-    using DebugArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
-                                   MultiThreadPolicy<MutexPrimitive>,
-                                   SimpleBoundsChecking,
-                                   SimpleMemoryTracking,
-                                   MemoryTagging>;
+    using DebugArena = MemoryArena<DebugAllocationPolicy,
+                              DebugThreadPolicy,
+                              DebugBoundsCheckingPolicy,
+                              DebugMemoryTrackingPolicy,
+                              DebugMemoryTaggingPolicy>;
+
     namespace memory
     {
         void setDebugArena(DebugArena& arena);

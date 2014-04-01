@@ -25,7 +25,7 @@ namespace fs
         std::mutex _mutex;
     };
 
-    class SingleThreadPolicy
+    class SingleThreadP
     {
     public:
         inline void enter() {};
@@ -33,7 +33,7 @@ namespace fs
     };
 
     template<class SynchronizationPrimitive>
-    class MultiThreadPolicy
+    class MultiThread
     {
     public:
         inline void enter() {_primitive.enter();}
@@ -42,6 +42,8 @@ namespace fs
     private:
         SynchronizationPrimitive _primitive;
     };
+
+    using DebugThreadPolicy = MultiThread<MutexPrimitive>;
 }
 
 #endif

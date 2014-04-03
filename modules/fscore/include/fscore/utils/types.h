@@ -13,30 +13,34 @@
 
 namespace fs
 {
-    /*
-	template<typename T> class StlAllocator;
+	template<typename T, typename Arena> class StlAllocator;
 
     template<typename T>
     using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
 
-    template<typename K, typename V>
-    using MapAllocator = StlAllocator<std::pair<const K, V>>;
-
-    template<typename K, typename V>
-    using Map = std::map<K, V, std::less<K>, MapAllocator<K, V>>;
+    template<typename T>
+    using SharedPtr = std::shared_ptr<T>;
 
     template<typename T>
-    using Vector = std::vector<T, StlAllocator<T>>;
+    using WeakPtr = std::weak_ptr<T>;
 
-    template<typename T>
-    using List = std::list<T, StlAllocator<T>>;
+    template<typename K, typename V, typename Arena>
+    using MapAllocator = StlAllocator<std::pair<const K, V>, Arena>;
+
+    template<typename K, typename V, typename Arena>
+    using Map = std::map<K, V, std::less<K>, MapAllocator<K, V, Arena>>;
+
+    template<typename T, typename Arena>
+    using Vector = std::vector<T, StlAllocator<T, Arena>>;
+
+    template<typename T, typename Arena>
+    using List = std::list<T, StlAllocator<T, Arena>>;
     
     // Pre C++11... Use above template alaises if possible.
-	#define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
-	#define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>>>
-	#define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
-	#define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
-    */
+	// #define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
+	// #define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>>>
+	// #define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
+	// #define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
 
 	typedef wchar_t fswchar;
 	typedef char fschar;

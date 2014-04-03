@@ -16,10 +16,10 @@
 namespace fs
 {
     using DebugArena = MemoryArena<DebugAllocationPolicy,
-                              DebugThreadPolicy,
-                              DebugBoundsCheckingPolicy,
-                              DebugMemoryTrackingPolicy,
-                              DebugMemoryTaggingPolicy>;
+                                   DebugThreadPolicy,
+                                   DebugBoundsCheckingPolicy,
+                                   DebugMemoryTrackingPolicy,
+                                   DebugMemoryTaggingPolicy>;
 
     namespace memory
     {

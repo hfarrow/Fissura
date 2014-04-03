@@ -7,13 +7,14 @@
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/memory_arena.h"
 #include "fscore/memory/source_info.h"
+#include "fscore/debugging/memory.h"
 
 namespace fs
 {
 	template<typename T, typename Arena>
 	class StlAllocator
 	{
-		template<typename U, typename UArena>
+		template<typename U, typename ArenaU>
 		friend class StlAllocator;
 
 	public:
@@ -24,11 +25,6 @@ namespace fs
 		typedef T& reference;
 		typedef const T& const_reference;
 		typedef T value_type;
-
-        // StlAllocator()
-        // {
-        //     _pArena = Memory::getDefaultAllocator();
-        // }
 
 		StlAllocator(Arena& allocator) :
             _pArena(&allocator)
@@ -41,8 +37,8 @@ namespace fs
 			*this = other;
 		}
 
-		template<typename U, typename UArena>
-		StlAllocator(const StlAllocator<U, UArena>& other) throw()
+		template<typename U>
+		StlAllocator(const StlAllocator<U, Arena>& other) throw()
 		{
 			*this = other;
 		}
@@ -58,8 +54,8 @@ namespace fs
 			return *this;
 		}
 
-		template<typename U, typename UArena>
-		StlAllocator& operator=(const StlAllocator<U, UArena>& b)
+		template<typename U>
+		StlAllocator& operator=(const StlAllocator<U, Arena>& b)
 		{
 			_pArena = b._pArena;
 			return *this;
@@ -79,6 +75,7 @@ namespace fs
 		/// Allocate memory
 		pointer allocate(size_type n, const void* hint = 0)
 		{
+            FS_PRINT("stl allocate " << n);
 			(void)hint;
 			size_type size = n * sizeof(value_type);
 
@@ -96,6 +93,7 @@ namespace fs
 		/// Deallocate memory
 		void deallocate(void* p, size_type n)
 		{
+            FS_PRINT("stl deallocate " << p << " " << n);
 			(void)n;
  
 			// if(_pArena->canDeallocate())
@@ -143,10 +141,10 @@ namespace fs
 		}
  
 		/// A struct to rebind the allocator to another allocator of type U
-		template<typename U, typename UArena>
+		template<typename U>
 		struct rebind
 		{
-			typedef StlAllocator<U, UArena> other;
+			typedef StlAllocator<U, Arena> other;
 		};
  
 		/// Reinit the allocator. All existing allocated memory will be lost
@@ -162,6 +160,8 @@ namespace fs
 
 		private:
 			Arena* _pArena;
+
+            StlAllocator();
 	};
 
 	/// Another allocator of the same type can deallocate from this one
@@ -172,8 +172,8 @@ namespace fs
 	}
  
 	/// Another allocator of the another type cannot deallocate from this one
-	template<typename T1, typename Arena1, typename AnotherAllocator>
-	inline bool operator==(	const StlAllocator<T1, Arena1>&, const AnotherAllocator&)
+	template<typename T1, typename AnotherAllocator, typename Arena>
+	inline bool operator==(	const StlAllocator<T1, Arena>&, const AnotherAllocator&)
 	{
 		return false;
 	}
@@ -186,8 +186,8 @@ namespace fs
 	}
  
 	/// Another allocator of the another type cannot deallocate from this one
-	template<typename T1, typename Arena1, typename AnotherAllocator>
-	inline bool operator!=(const StlAllocator<T1, Arena1>&, const AnotherAllocator&)
+	template<typename T1, typename AnotherAllocator, typename Arena>
+	inline bool operator!=(const StlAllocator<T1, Arena>&, const AnotherAllocator&)
 	{
 		return true;
 	}

@@ -19,20 +19,23 @@ namespace fs
     public:
         MemoryArena(size_t size, const char* name = "UnkownArena") :
             _allocator(size),
-            _name(name)
+            _name(name),
+            _arenaSize(size)
         {
         }
 
         template<class AreaPolicy>
         MemoryArena(const AreaPolicy& area, const char* name = "UnkownArena") :
             _allocator(area.getStart(), area.getEnd()),
-            _name(name)
+            _name(name),
+            _arenaSize((uptr)area.getEnd() - (uptr)area.getStart())
         {            
         }
 
         MemoryArena(const GrowableHeapArea& area, const char* name = "UnkownArena") :
             _allocator(area.getInitialSize(), area.getMaxSize()),
-            _name(name)
+            _name(name),
+            _arenaSize(area.getMaxSize())
         {
         }
 
@@ -40,9 +43,9 @@ namespace fs
         {
             if(_memoryTracker.getNumAllocations() != 0)
             {
+                logTrackerReport();
                 FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
                               "Arena was destroyed before all allocations were freed or reset.");
-                logLeakReport();
             }
         }
 
@@ -105,18 +108,15 @@ namespace fs
             _threadGuard.leave();
         }
 
-        void logLeakReport()
+        void logTrackerReport()
         {
-            // TODO: change to LOG instead of PRINT
-            FS_PRINT("logging arena leaks:");
-            FS_PRINT("    Number of Allocations: " << _memoryTracker.getNumAllocations());
-            FS_PRINT("    Used Size: " << _memoryTracker.getUsedSize());
+            _memoryTracker.logMemoryReport(*this);
         }
 
-        inline const char* getName()
-        {
-            return _name;
-        }
+        inline const char* getName() const { return _name; }
+        inline size_t getMaxSize() const { return _arenaSize; }
+        inline size_t getTotalUsedSize() { return _allocator.getTotalUsedSize(); }
+
 
     private:
         AllocationPolicy _allocator;
@@ -126,6 +126,7 @@ namespace fs
         MemoryTaggingPolicy _memoryTagger;
 
         const char* _name;
+        const size_t _arenaSize;
     };
 }
 

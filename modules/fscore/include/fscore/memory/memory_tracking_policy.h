@@ -2,57 +2,23 @@
 #define FS_MEMORY_TRACKING_POLICY_H
 
 #include <map>
+#include <memory>
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
+#include "fscore/debugging/memory.h"
 #include "fscore/memory/source_info.h"
-#include "fscore/memory/heap_allocator.h"
-#include "fscore/memory/allocation_policy.h"
-#include "fscore/memory/bounds_checking_policy.h"
-#include "fscore/memory/memory_tagging_policy.h"
-#include "fscore/memory/memory_tracking_policy.h"
-#include "fscore/memory/thread_policy.h"
-#include "fscore/memory/memory_arena.h"
 
 namespace fs
 {
     class SimpleMemoryTracking;
     using DebugMemoryTrackingPolicy = SimpleMemoryTracking;
 
-    class AllocationInfo
+    class MemoryProfileSimple : Uncopyable
     {
-    public:
-        AllocationInfo(const char* fileName, u32 lineNumber, uptr* stackTrace, size_t stackTraceSize) :
-            fileName(fileName),
-            lineNumber(lineNumber),
-            stackTrace(stackTrace),
-            stackTraceSize(stackTraceSize)
-        {        
-        }
-
-        const char* fileName;
-        const u32 lineNumber;
-        const uptr* stackTrace;
-        const size_t stackTraceSize;
-    };
-
-    class MemoryProfile : Uncopyable
-    {
-        // We cannot use the main DebugArena definition because it would
-        // introduce a circular dependencies between /debugging/memory.h and
-        // policy headers. The Debug<Policy> typedefs should be changed
-        // instead of this typedef or the one in memory.h
-        // Must match fscore/debugging/memory.h -> DebugArena typedef
-        using DebugArena = MemoryArena<DebugAllocationPolicy,
-                                  DebugThreadPolicy,
-                                  DebugBoundsCheckingPolicy,
-                                  DebugMemoryTrackingPolicy,
-                                  DebugMemoryTaggingPolicy>;
     public:
         size_t numAllocations = 0;
         size_t usedSize = 0;
-        std::map<uptr, AllocationInfo, std::less<uptr>, DebugArena>* allocations;
-
     };
 
     class NoMemoryTracking
@@ -63,6 +29,9 @@ namespace fs
         inline size_t getNumAllocations() const {return 0;}
         inline size_t getUsedSize() const {return 0;}
         inline void reset() {}
+
+        template<typename Arena>
+        inline void logMemoryReport(Arena&) {}
     };
 
     class SimpleMemoryTracking
@@ -81,8 +50,7 @@ namespace fs
             _profile.usedSize -= size;
         }
 
-        inline size_t getNumAllocations() const {return _profile.numAllocations;}
-        
+        inline size_t getNumAllocations() const {return _profile.numAllocations;}        
         inline size_t getUsedSize() const {return _profile.usedSize;}
 
         inline void reset()
@@ -91,26 +59,22 @@ namespace fs
             _profile.usedSize = 0;
         }
 
-    private:
-        MemoryProfile _profile;
-    };
-
-    class ExtendedMemoryTracking : public SimpleMemoryTracking
-    {
-    public:
-        inline void onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)
+        template<typename Arena>
+        void logMemoryReport(Arena& arena)
         {
-            SimpleMemoryTracking::onAllocation(ptr, size, alignment, info);
+            // TODO: change to LOG instead of PRINT
+            FS_PRINT("logging arena leaks:");
+            FS_PRINT("    Arena Name: " << arena.getName());
+            FS_PRINT("    Number of Allocations: " << getNumAllocations());
+            FS_PRINT("    Arena Size: " << arena.getMaxSize() );
+            FS_PRINT("    Used:      " << arena.getTotalUsedSize() );
+            FS_PRINT("    Allocated: " << getUsedSize() );
+            FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - getUsedSize());
         }
 
-        inline void onDeallocation(void* ptr, size_t size)
-        {
-            SimpleMemoryTracking::onDeallocation(ptr, size);
-        }
+    protected:
+        MemoryProfileSimple _profile;
     };
-
-    // TODO: FullMemoryTracking
-
 }
 
 #endif

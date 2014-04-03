@@ -25,7 +25,7 @@ namespace fs
         std::mutex _mutex;
     };
 
-    class SingleThreadP
+    class SingleThread
     {
     public:
         inline void enter() {};

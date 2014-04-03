@@ -20,18 +20,21 @@ const size_t pageSize = 4096;
 
 template<class Alloc>
 using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
-                      SingleThreadP, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+                      SingleThread, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 
 template<class HeaderPolicy>
 using ArenaWithHeader = MemoryArena<Allocator<LinearAllocator, HeaderPolicy>,
-                                    SingleThreadP, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
+                                    SingleThread, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 
 template<class BoundsCheckingPolicy>
 using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, AllocationHeaderU32>,
-                                    SingleThreadP, BoundsCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
+                                    SingleThread, BoundsCheckingPolicy, NoMemoryTracking, NoMemoryTagging>;
 
 using ArenaWithMemoryTagging = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
-                                    SingleThreadP, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
+                                    SingleThread, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
+
+using ArenaWithExtendedTracking = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
+                                              SingleThread, NoBoundsChecking, ExtendedMemoryTracking, NoMemoryTagging>;
 
 struct MemoryArenaFixture
 {
@@ -285,6 +288,29 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
         map.clear();
     }
     fs::memory::getDebugArena()->reset();
+}
+
+BOOST_AUTO_TEST_CASE(temp_test_arena_leak_report)
+{
+    SourceInfo info;
+    info.fileName = "testFileName";
+    info.lineNumber = 1234;
+    
+    HeapArea area(pageSize * 64);
+    ArenaWithExtendedTracking arena(area);
+
+    arena.logTrackerReport();
+
+    arena.allocate(smallAllocationSize, defaultAlignment, info);
+    arena.allocate(smallAllocationSize, defaultAlignment, info);
+    arena.allocate(smallAllocationSize, defaultAlignment, info);
+    arena.allocate(pageSize * 20, defaultAlignment, info);
+    arena.allocate(smallAllocationSize, defaultAlignment, info);
+    arena.allocate(smallAllocationSize, defaultAlignment, info);
+    arena.allocate(pageSize, defaultAlignment, info);
+    arena.logTrackerReport();
+
+    arena.reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

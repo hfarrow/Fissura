@@ -3,64 +3,57 @@
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
 
 #include "fscore.h"
 
 using namespace fs;
 
-struct AllocationInfo
+struct TestStuct
 {
-    static const size_t maxStackFrames = 10;
-    size_t offsets[maxStackFrames];
+    TestStuct()
+    {
+        FS_PRINT("ctor TestStuct");
+    }
+
+    ~TestStuct()
+    {
+        FS_PRINT("dtor TestStuct");
+    }
+        
+    int a;
 };
 
-typedef Map<uptr, AllocationInfo> AllocationMap;
-typedef MapAllocator<uptr, AllocationInfo> AllocationMapAllocator;
-UniquePtr<AllocationMap> _pAllocationMap;
-
-Allocator* gpFsDebugHeap = nullptr;
-Allocator* gpFsMainHeap = nullptr;
-
-void print_trace(void)
-{
-    void* array[10];
-    size_t size;
-    char** strings;
-    size_t i;
-
-    size = backtrace(array, 10);
-    strings = backtrace_symbols(array, size);
-
-    printf("Obtained %zd stack frames.\n", size);
-    for(i = 0; i < size; ++i)
-    {
-        printf("%s\n", strings[i]);
-    }
-    free(strings);
-}
-
-void dummy_function(void)
-{
-    print_trace();
-}
+using TestMap =  Map<int, TestStuct, DebugArena>;
+using TestMapAlloc =  StlAllocator<AllocationMap, DebugArena>;
 
 int main( int, char **)
 {
-    const u32 mainHeapSize = 1048576;
-    u8 mainHeapMemory[mainHeapSize];
-    u8 debugHeapMemory[mainHeapSize];
-    gpFsDebugHeap = new HeapAllocator("gpFsMainHeap", mainHeapSize, (void*)debugHeapMemory);
-    Memory::setDefaultDebugAllocator(gpFsDebugHeap);
-    gpFsMainHeap = new HeapAllocator("gpFsMainHeap", mainHeapSize, (void*)mainHeapMemory);
-    Memory::setDefaultAllocator(gpFsMainHeap);
+    TestStuct test;
+    test.a = 1;
 
-    dummy_function();
-    
-    gpFsDebugHeap->clear();
-    gpFsMainHeap->clear();
+    {
+        DebugArena* arena = memory::getDebugArena();
+        SharedPtr<TestMap> pAllocationMap = std::allocate_shared<TestMap>(TestMapAlloc(*arena), *arena);
+        // pAllocationMap = new AllocationMap(allocator);
 
-    delete gpFsMainHeap;
-    delete gpFsDebugHeap;
+        pAllocationMap->insert(std::pair<int, TestStuct>(1,TestStuct()));
+
+        for(auto p : *pAllocationMap)
+        {
+            FS_PRINT(p.first << " : " << p.second.a);
+        }
+        FS_PRINT("about to leave scope");
+    }
+
+    FS_PRINT("left scope");
+
+    // StlAllocator<std::pair<const int, TestStuct>> mapAlloc(*memory::getDebugArena());
+    // StlAllocator<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>> sharedAlloc(*memory::getDebugArena());
+    // std::shared_ptr<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>> myMap;
+    // myMap = std::allocate_shared<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>>(sharedAlloc, mapAlloc);
+
+    // myMap->insert(std::pair<int, TestStuct>(1, TestStuct()));
 
     return 0;
 }

@@ -92,8 +92,8 @@ namespace fs
         inline void reset() { _allocator.reset(); }
         inline void purge() { _allocator.purge(); }
         inline size_t getTotalUsedSize() { return _allocator.getTotalUsedSize(); }
-        inline size_t getVirtualSize() { return _allocator.getVirtualSize(); }
-        inline size_t getPhysicalSize() { return _allocator.getPhysicalSize(); }
+        inline size_t getVirtualSize() const { return _allocator.getVirtualSize(); }
+        inline size_t getPhysicalSize() const { return _allocator.getPhysicalSize(); }
 
     private:
         Alloc _allocator;

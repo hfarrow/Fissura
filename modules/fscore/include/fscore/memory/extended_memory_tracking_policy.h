@@ -4,19 +4,20 @@
 #include "fscore/debugging/memory.h"
 #include "fscore/utils/types.h"
 #include "fscore/memory/stl_allocator.h"
+#include "fscore/debugging/memory_reporting.h"
+#include "fscore/debugging/utils.h"
 
 namespace fs
 {
     class AllocationInfo
     {
     public:
-        AllocationInfo(const char* fileName, u32 lineNumber, size_t size, u32 id, uptr* stackTrace, size_t stackTraceSize) :
+        AllocationInfo(const char* fileName, u32 lineNumber, size_t size, u32 id) :
             fileName(fileName),
             lineNumber(lineNumber),
             size(size),
             id(id),
-            stackTrace(stackTrace),
-            stackTraceSize(stackTraceSize)
+            numFrames(0)
         {        
         }
         
@@ -24,8 +25,10 @@ namespace fs
         const u32 lineNumber;
         const size_t size;
         const u32 id;
-        const uptr* stackTrace;
-        const size_t stackTraceSize;
+
+        static const size_t maxStackFrames = 10;
+        void* frames[maxStackFrames];
+        size_t numFrames;
     };
 
     using AllocationMap = Map<uptr, AllocationInfo, DebugArena>;
@@ -45,15 +48,14 @@ namespace fs
         void onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info);
         void onDeallocation(void* ptr, size_t size);
 
-        inline size_t getNumAllocations() const {return _profile.numAllocations;}        
-        inline size_t getUsedSize() const {return _profile.usedSize;}
+        inline size_t getNumAllocations() const { return _profile.numAllocations; }
+        inline size_t getAllocatedSize() const { return _profile.usedSize; }
         void reset();
 
         template<typename Arena>
         void logMemoryReport(Arena& arena);
 
-
-    private:
+    protected:
         u32 _nextId;
         MemoryProfileExtended _profile;
     };
@@ -61,15 +63,7 @@ namespace fs
     template<typename Arena>
     void ExtendedMemoryTracking::logMemoryReport(Arena& arena)
     {
-        // TODO: change to LOG instead of PRINT
-        FS_PRINT("logging arena leaks (extended):");
-        FS_PRINT("    Arena Name: " << arena.getName());
-        FS_PRINT("    Number of Allocations: " << getNumAllocations());
-        FS_PRINT("    Virtual Size:  " << arena.getVirtualSize());
-        FS_PRINT("    Physical Size: " << arena.getPhysicalSize());
-        FS_PRINT("    Used:      " << arena.getTotalUsedSize());
-        FS_PRINT("    Allocated: " << _profile.usedSize);
-        FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - _profile.usedSize);
+        memory::logArenaReport(arena, *this);
 
         for(auto pair : *_profile.pAllocationMap)
         {
@@ -82,7 +76,33 @@ namespace fs
         }
     }
 
-    // TODO: FullMemoryTracking
+    class FullMemoryTracking : public ExtendedMemoryTracking
+    {
+    public: 
+        void onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info);
+
+        template<typename Arena>
+        void logMemoryReport(Arena& arena);
+    };
+
+    template<typename Arena>
+    void FullMemoryTracking::logMemoryReport(Arena& arena)
+    {
+        memory::logArenaReport(arena, *this);
+
+        for(auto pair : *_profile.pAllocationMap)
+        {
+            uptr ptr = pair.first;
+            AllocationInfo& info = pair.second;
+            FS_PRINT("    Allocation(" << info.id << "): " 
+                     << (void*)ptr << " | " 
+                     << info.size << " | " 
+                     << info.fileName << ":" << info.lineNumber << " | ");
+            
+            FS_PRINT("    Stack Trace:");
+            FS_PRINT(StackTraceUtil::getCaller(info.frames, info.numFrames, 2));
+        }
+    }
 }
 
 #endif

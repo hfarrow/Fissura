@@ -42,9 +42,9 @@ namespace fs
         // Does nothing for NonGrowbable Policy.
         void purge();
 
-        inline size_t getTotalUsedSize() { return _layoutPolicy.getTotalUsedSize(this); };
-        inline size_t getVirtualSize() { return _layoutPolicy.getVirtualSize(this); }
-        inline size_t getPhysicalSize() { return _layoutPolicy.getPhysicalSize(this); }
+        inline size_t getTotalUsedSize() const { return _layoutPolicy.getTotalUsedSize(this); };
+        inline size_t getVirtualSize() const { return _layoutPolicy.getVirtualSize(this); }
+        inline size_t getPhysicalSize() const { return _layoutPolicy.getPhysicalSize(this); }
 
         // Temp... delete me later
         void PRINT_STATE()
@@ -104,16 +104,16 @@ namespace fs
         inline void free(StackAllocator* pStack, void* ptr);
 
         template<typename StackAllocator> 
-        inline size_t getTotalUsedSize(StackAllocator* pStack);
+        inline size_t getTotalUsedSize(StackAllocator* pStack) const;
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);
 
         template<typename StackAllocator>
-        inline size_t getVirtualSize(StackAllocator* pStack);
+        inline size_t getVirtualSize(StackAllocator* pStack) const;;
 
         template<typename StackAllocator>
-        inline size_t getPhysicalSize(StackAllocator* pStack);
+        inline size_t getPhysicalSize(StackAllocator* pStack) const;;
     };
 
     class AllocateFromStackBottom
@@ -144,16 +144,16 @@ namespace fs
         inline void free(StackAllocator* pStack, void* ptr);
 
         template<typename StackAllocator> 
-        inline size_t getTotalUsedSize(StackAllocator* pStack);
+        inline size_t getTotalUsedSize(StackAllocator* pStack) const;;
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);
 
         template<typename StackAllocator>
-        inline size_t getVirtualSize(StackAllocator* pStack);
+        inline size_t getVirtualSize(StackAllocator* pStack) const;;
 
         template<typename StackAllocator>
-        inline size_t getPhysicalSize(StackAllocator* pStack);
+        inline size_t getPhysicalSize(StackAllocator* pStack) const;;
     };
 }
 

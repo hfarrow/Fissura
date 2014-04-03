@@ -342,13 +342,13 @@ namespace fs
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromStackBottom::getTotalUsedSize(StackAllocator* pStack)
+    size_t AllocateFromStackBottom::getTotalUsedSize(StackAllocator* pStack) const
     {
         return pStack->_physicalCurrent - pStack->_virtualStart;
     }
 
     template<typename StackAllocator> 
-    size_t AllocateFromStackTop::getTotalUsedSize(StackAllocator* pStack)
+    size_t AllocateFromStackTop::getTotalUsedSize(StackAllocator* pStack) const
     {
         return pStack->_virtualStart - pStack->_physicalCurrent;
     }
@@ -388,25 +388,25 @@ namespace fs
     }
 
     template<typename StackAllocator>
-    size_t AllocateFromStackBottom::getVirtualSize(StackAllocator* pStack)
+    size_t AllocateFromStackBottom::getVirtualSize(StackAllocator* pStack) const
     {
         return pStack->_virtualEnd - pStack->_virtualStart;
     }
 
     template<typename StackAllocator>
-    size_t AllocateFromStackTop::getVirtualSize(StackAllocator* pStack)
+    size_t AllocateFromStackTop::getVirtualSize(StackAllocator* pStack) const
     {
         return pStack->_virtualStart - pStack->_virtualEnd;
     }
 
     template<typename StackAllocator>
-    size_t AllocateFromStackBottom::getPhysicalSize(StackAllocator* pStack)
+    size_t AllocateFromStackBottom::getPhysicalSize(StackAllocator* pStack) const
     {
         return pStack->_physicalEnd - pStack->_virtualStart;
     }
 
     template<typename StackAllocator>
-    size_t AllocateFromStackTop::getPhysicalSize(StackAllocator* pStack)
+    size_t AllocateFromStackTop::getPhysicalSize(StackAllocator* pStack) const
     {
         return pStack->_virtualStart - pStack->_physicalEnd;
     }

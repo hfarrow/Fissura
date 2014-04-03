@@ -38,9 +38,9 @@ namespace fs
     
     // Pre C++11... Use above template alaises if possible.
 	// #define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
-	// #define FS_DECL_MAP(K, V) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>>>
-	// #define FS_DECL_MAP_ALLOCATOR(K, V) StlAllocator<std::pair<const K ,V>>
-	// #define FS_DECL_VECTOR(T) std::vector<T, StlAllocator<T>>
+	// #define FS_DECL_MAP(K, V, Arena) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>, Arena>>
+	// #define FS_DECL_MAP_ALLOCATOR(K, V, Arena) StlAllocator<std::pair<const K ,V>, Arena>
+	// #define FS_DECL_VECTOR(T, Arena) std::vector<T, StlAllocator<T, Arena>>
 
 	typedef wchar_t fswchar;
 	typedef char fschar;

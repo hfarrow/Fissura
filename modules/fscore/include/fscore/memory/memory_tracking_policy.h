@@ -7,6 +7,7 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/debugging/memory.h"
+#include "fscore/debugging/memory_reporting.h"
 #include "fscore/memory/source_info.h"
 
 namespace fs
@@ -27,7 +28,7 @@ namespace fs
         inline void onAllocation(void*, size_t, size_t, const SourceInfo&) const {}
         inline void onDeallocation(void*, size_t) const {}
         inline size_t getNumAllocations() const {return 0;}
-        inline size_t getUsedSize() const {return 0;}
+        inline size_t getAllocatedSize() const {return 0;}
         inline void reset() {}
 
         template<typename Arena>
@@ -54,7 +55,7 @@ namespace fs
         }
 
         inline size_t getNumAllocations() const {return _profile.numAllocations;}        
-        inline size_t getUsedSize() const {return _profile.usedSize;}
+        inline size_t getAllocatedSize() const {return _profile.usedSize;}
 
         inline void reset()
         {
@@ -65,15 +66,7 @@ namespace fs
         template<typename Arena>
         void logMemoryReport(Arena& arena)
         {
-            // TODO: change to LOG instead of PRINT
-            FS_PRINT("logging arena leaks (simple):");
-            FS_PRINT("    Arena Name: " << arena.getName());
-            FS_PRINT("    Number of Allocations: " << getNumAllocations());
-            FS_PRINT("    Virtual Size:  " << arena.getVirtualSize());
-            FS_PRINT("    Physical Size: " << arena.getPhysicalSize());
-            FS_PRINT("    Used:      " << arena.getTotalUsedSize());
-            FS_PRINT("    Allocated: " << _profile.usedSize);
-            FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - _profile.usedSize);
+            memory::logArenaReport(arena, *this);
         }
 
     protected:

@@ -119,9 +119,27 @@ namespace fs
         }
 
         inline const char* getName() const { return _name; }
+
+        // The total amount of memory that has been allocated including any internal
+        // overhead of an allocator.
         inline size_t getTotalUsedSize() { return _allocator.getTotalUsedSize(); }
-        inline size_t getVirtualSize() { return _allocator.getVirtualSize(); }
-        inline size_t getPhysicalSize() { return _allocator.getPhysicalSize(); }
+
+        // The maximum amount of memory an allocator could ever use.
+        // For a NonGrowable allocator this will equal the physical size.
+        inline size_t getVirtualSize() const { return _allocator.getVirtualSize(); }
+
+        // The current amount of physical memory used by an allocator.
+        // For a Growable allocator this value can change.
+        inline size_t getPhysicalSize() const { return _allocator.getPhysicalSize(); }
+
+        // The total number of user allocations made ba an allocator.
+        // Will return 0 for Arena using the NoMemoryTracking Policy
+        inline size_t getNumAllocations() const { return _memoryTracker.getNumAllocations(); }
+
+        // The total amount of memory returned for user allocations.
+        // Does not include internal overhead of allocators unlike getTotalUsedSize.
+        // Will return 0 for Arena using the NoMemoryTracking Policy
+        inline size_t getAllocatedSize() const { return _memoryTracker.getAllocatedSize(); }
 
 
     private:

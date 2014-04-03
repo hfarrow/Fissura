@@ -36,6 +36,9 @@ using ArenaWithMemoryTagging = MemoryArena<Allocator<StackAllocatorBottom, Alloc
 using ArenaWithExtendedTracking = MemoryArena<Allocator<StackAllocatorBottomGrowable, AllocationHeaderU32>,
                                               SingleThread, NoBoundsChecking, ExtendedMemoryTracking, NoMemoryTagging>;
 
+using ArenaWithFullTracking = MemoryArena<Allocator<StackAllocatorBottomGrowable, AllocationHeaderU32>,
+                                              SingleThread, NoBoundsChecking, FullMemoryTracking, NoMemoryTagging>;
+
 struct MemoryArenaFixture
 {
     MemoryArenaFixture()
@@ -297,7 +300,7 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 //     info.lineNumber = 1234;
 //     
 //     GrowableHeapArea area(pageSize * 32, pageSize * 64);
-//     ArenaWithExtendedTracking arena(area);
+//     ArenaWithFullTracking arena(area, "trackingTest");
 // 
 //     arena.logTrackerReport();
 // 

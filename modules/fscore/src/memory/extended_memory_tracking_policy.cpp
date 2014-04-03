@@ -1,6 +1,7 @@
 #include "fscore/memory/extended_memory_tracking_policy.h"
 #include "fscore/memory/stl_allocator.h"
 #include "fscore/debugging/assert.h"
+#include "fscore/debugging/utils.h"
 
 using namespace fs;
 
@@ -15,7 +16,7 @@ void ExtendedMemoryTracking::onAllocation(void* ptr, size_t size, size_t alignme
 {
     (void)alignment;
     
-    AllocationMapPair pair((uptr)ptr, AllocationInfo(info.fileName, info.lineNumber, size, _nextId++, nullptr, 0));
+    AllocationMapPair pair((uptr)ptr, AllocationInfo(info.fileName, info.lineNumber, size, _nextId++));
     if(!_profile.pAllocationMap->insert(pair).second)
     {
         FS_ASSERT(!"Allocation already mapped. Must be unmapped (deallocated) before being tracked again.");
@@ -46,4 +47,21 @@ void ExtendedMemoryTracking::reset()
     _profile.numAllocations = 0;
     _profile.usedSize = 0;
     _profile.pAllocationMap->clear();
+}
+
+void FullMemoryTracking::onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)
+{
+    (void)alignment;
+    
+    AllocationInfo ainfo(info.fileName, info.lineNumber, size, _nextId++);
+    ainfo.numFrames = StackTraceUtil::getStackTrace(ainfo.frames, ainfo.maxStackFrames);
+
+    AllocationMapPair pair((uptr)ptr, ainfo);
+    if(!_profile.pAllocationMap->insert(pair).second)
+    {
+        FS_ASSERT(!"Allocation already mapped. Must be unmapped (deallocated) before being tracked again.");
+    }
+
+    _profile.numAllocations++;
+    _profile.usedSize += size;
 }

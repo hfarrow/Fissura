@@ -29,9 +29,9 @@ namespace fs
         }
 
         inline void reset() { _current = _start; }
-        inline size_t getTotalUsedSize() { return _current - _start; }
-        inline size_t getVirtualSize() {  return _end - _start; }
-        inline size_t getPhysicalSize() { return _end - _start; }
+        inline size_t getTotalUsedSize() const { return _current - _start; }
+        inline size_t getVirtualSize() const {  return _end - _start; }
+        inline size_t getPhysicalSize() const { return _end - _start; }
 
     private:
         uptr _start;

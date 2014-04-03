@@ -7,8 +7,10 @@
 #define FS_NEW(type, arena)    new (arena.allocate(sizeof(type), alignof(type), fs::SourceInfo(__FILE__, __LINE__))) type
 #define FS_DELETE(object, arena)    fs::doDelete(object, arena)
 
-#define FS_NEW_ARRAY(type, arena)    newArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, __FILE__, __LINE__)
-#define fS_DELETE_ARRAY(object, arena)    deleteArray(object, arena)
+#define FS_NEW_ARRAY(type, arena)    newArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, __FILE__, __LINE__, \
+                                                                        IntToType<IsPOD<TypeAndCount<type>::Type>::value>())
+
+#define FS_DELETE_ARRAY(object, arena)    deleteArray(object, arena)
 
 namespace fs
 {
@@ -59,6 +61,12 @@ namespace fs
         as_T++;
 
         return as_T;
+    }
+
+    template <typename T, class Arena>
+    void deleteArray(T* ptr, Arena& arena)
+    {
+        deleteArray(ptr, arena, IntToType<IsPOD<T>::value>());
     }
 
     template<typename T, class Arena>

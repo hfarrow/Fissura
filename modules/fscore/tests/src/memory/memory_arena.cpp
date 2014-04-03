@@ -37,7 +37,7 @@ using ArenaWithExtendedTracking = MemoryArena<Allocator<StackAllocatorBottomGrow
                                               SingleThread, NoBoundsChecking, ExtendedMemoryTracking, NoMemoryTagging>;
 
 using ArenaWithFullTracking = MemoryArena<Allocator<StackAllocatorBottomGrowable, AllocationHeaderU32>,
-                                              SingleThread, NoBoundsChecking, FullMemoryTracking, NoMemoryTagging>;
+                                              SingleThread, SimpleBoundsChecking, FullMemoryTracking, MemoryTagging>;
 
 struct MemoryArenaFixture
 {
@@ -305,6 +305,30 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 // 
 //     arena.reset();
 // }
+
+struct TestObject
+{
+    size_t a;
+    size_t b;
+    size_t c;
+};
+
+BOOST_AUTO_TEST_CASE(temp_test_new_macros)
+{
+    SourceInfo info(__FILE__, __LINE__);
+    
+    GrowableHeapArea area(pageSize * 32, pageSize * 64);
+    ArenaWithFullTracking arena(area, "trackingTest");
+
+    TestObject* pObject = FS_NEW(TestObject, arena)();
+    BOOST_REQUIRE(pObject);
+    FS_DELETE(pObject, arena);
+
+    TestObject* pArray = FS_NEW_ARRAY(TestObject[10], arena);
+    BOOST_REQUIRE(pArray);
+    FS_DELETE_ARRAY(pArray, arena);
+    
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

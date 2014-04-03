@@ -33,7 +33,7 @@ namespace fs
                 char* stackSymbol = *(strings + i);
                 char functionSymbol[1024];
                 char moduleName[1024];
-                char* address[1024];
+                char address[1024];
                 int level;
                 int offset;
                 sscanf(stackSymbol, "%d %s %s %s %*s %d", &level, moduleName, address, functionSymbol, &offset);

@@ -42,7 +42,9 @@ namespace fs
         // Does nothing for NonGrowbable Policy.
         void purge();
 
-        size_t getTotalUsedSize();
+        inline size_t getTotalUsedSize() { return _layoutPolicy.getTotalUsedSize(this); };
+        inline size_t getVirtualSize() { return _layoutPolicy.getVirtualSize(this); }
+        inline size_t getPhysicalSize() { return _layoutPolicy.getPhysicalSize(this); }
 
         // Temp... delete me later
         void PRINT_STATE()
@@ -106,6 +108,12 @@ namespace fs
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);
+
+        template<typename StackAllocator>
+        inline size_t getVirtualSize(StackAllocator* pStack);
+
+        template<typename StackAllocator>
+        inline size_t getPhysicalSize(StackAllocator* pStack);
     };
 
     class AllocateFromStackBottom
@@ -140,6 +148,12 @@ namespace fs
 
         template<typename StackAllocator>
         inline void purge(StackAllocator* pStack);
+
+        template<typename StackAllocator>
+        inline size_t getVirtualSize(StackAllocator* pStack);
+
+        template<typename StackAllocator>
+        inline size_t getPhysicalSize(StackAllocator* pStack);
     };
 }
 

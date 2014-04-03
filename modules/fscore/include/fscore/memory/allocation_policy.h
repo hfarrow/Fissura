@@ -88,25 +88,12 @@ namespace fs
             return _allocator.allocate(size, alignment, offset);
         }
 
-        inline void free(void* ptr)
-        {
-            _allocator.free(ptr);
-        }
-
-        inline void reset()
-        {
-            _allocator.reset();
-        }
-
-        inline void purge()
-        {
-            _allocator.purge();
-        }
-
-        inline size_t getTotalUsedSize()
-        {
-            return _allocator.getTotalUsedSize();
-        }
+        inline void free(void* ptr) { _allocator.free(ptr); }
+        inline void reset() { _allocator.reset(); }
+        inline void purge() { _allocator.purge(); }
+        inline size_t getTotalUsedSize() { return _allocator.getTotalUsedSize(); }
+        inline size_t getVirtualSize() { return _allocator.getVirtualSize(); }
+        inline size_t getPhysicalSize() { return _allocator.getPhysicalSize(); }
 
     private:
         Alloc _allocator;

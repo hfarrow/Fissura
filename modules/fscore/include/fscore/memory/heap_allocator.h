@@ -25,6 +25,8 @@ namespace fs
         void reset();
         inline void purge() {}
         size_t getTotalUsedSize();
+        inline size_t getVirtualSize() { return (uptr)_end - (uptr)_start; }
+        inline size_t getPhysicalSize() { return (uptr)_end - (uptr)_start; }
 
     private:
         void* _start;

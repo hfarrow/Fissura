@@ -75,7 +75,6 @@ namespace fs
 		/// Allocate memory
 		pointer allocate(size_type n, const void* hint = 0)
 		{
-            FS_PRINT("stl allocate " << n);
 			(void)hint;
 			size_type size = n * sizeof(value_type);
 
@@ -93,7 +92,6 @@ namespace fs
 		/// Deallocate memory
 		void deallocate(void* p, size_type n)
 		{
-            FS_PRINT("stl deallocate " << p << " " << n);
 			(void)n;
  
 			// if(_pArena->canDeallocate())

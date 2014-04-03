@@ -62,19 +62,23 @@ namespace fs
     void ExtendedMemoryTracking::logMemoryReport(Arena& arena)
     {
         // TODO: change to LOG instead of PRINT
-        FS_PRINT("logging arena leaks:");
+        FS_PRINT("logging arena leaks (extended):");
         FS_PRINT("    Arena Name: " << arena.getName());
         FS_PRINT("    Number of Allocations: " << getNumAllocations());
-        FS_PRINT("    Arena Size: " << arena.getMaxSize() );
-        FS_PRINT("    Used:      " << arena.getTotalUsedSize() );
-        FS_PRINT("    Allocated: " << getUsedSize() );
-        FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - getUsedSize());
+        FS_PRINT("    Virtual Size:  " << arena.getVirtualSize());
+        FS_PRINT("    Physical Size: " << arena.getPhysicalSize());
+        FS_PRINT("    Used:      " << arena.getTotalUsedSize());
+        FS_PRINT("    Allocated: " << _profile.usedSize);
+        FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - _profile.usedSize);
 
         for(auto pair : *_profile.pAllocationMap)
         {
             uptr ptr = pair.first;
             AllocationInfo& info = pair.second;
-            FS_PRINT("    Allocation( " << info.id << "): " << (void*)ptr << " | " << info.size << " | " << info.fileName << ":" << info.lineNumber << " | ");
+            FS_PRINT("    Allocation(" << info.id << "): " 
+                     << (void*)ptr << " | " 
+                     << info.size << " | " 
+                     << info.fileName << ":" << info.lineNumber << " | ");
         }
     }
 

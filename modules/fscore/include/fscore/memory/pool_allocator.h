@@ -46,7 +46,9 @@ namespace fs
         // be to reset the allocator when possible (ie, between levels).
         void purge(){};
 
-        size_t getTotalUsedSize();
+        inline size_t getTotalUsedSize() { return (_usedCount * _freelist.getSlotSize()) + _wastedSpace; }
+        inline size_t getVirtualSize() { return _virtualEnd - _virtualStart; }
+        inline size_t getPhysicalSize() { return _physicalEnd - _virtualStart; }
 
     private:
         void* _virtualStart;

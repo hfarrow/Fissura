@@ -41,12 +41,7 @@ namespace fs
 
         ~MemoryArena()
         {
-            if(_memoryTracker.getNumAllocations() != 0)
-            {
-                logTrackerReport();
-                FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
-                              "Arena was destroyed before all allocations were freed or reset.");
-            }
+            checkForLeaksAndAssert();
         }
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
@@ -108,14 +103,25 @@ namespace fs
             _threadGuard.leave();
         }
 
-        void logTrackerReport()
+        inline void logTrackerReport()
         {
             _memoryTracker.logMemoryReport(*this);
         }
 
+        void checkForLeaksAndAssert()
+        {
+            if(_memoryTracker.getNumAllocations() != 0)
+            {
+                logTrackerReport();
+                FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
+                              "Arena has memory leaks.");
+            }
+        }
+
         inline const char* getName() const { return _name; }
-        inline size_t getMaxSize() const { return _arenaSize; }
         inline size_t getTotalUsedSize() { return _allocator.getTotalUsedSize(); }
+        inline size_t getVirtualSize() { return _allocator.getVirtualSize(); }
+        inline size_t getPhysicalSize() { return _allocator.getPhysicalSize(); }
 
 
     private:

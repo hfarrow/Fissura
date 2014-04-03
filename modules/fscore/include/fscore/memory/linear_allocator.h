@@ -28,15 +28,10 @@ namespace fs
             FS_ASSERT(!"LinearAllocator can not free allocations");
         }
 
-        inline void reset()
-        {
-            _current = _start;
-        }
-
-        inline size_t getTotalUsedSize()
-        {
-            return _current - _start;
-        }
+        inline void reset() { _current = _start; }
+        inline size_t getTotalUsedSize() { return _current - _start; }
+        inline size_t getVirtualSize() {  return _end - _start; }
+        inline size_t getPhysicalSize() { return _end - _start; }
 
     private:
         uptr _start;

@@ -31,7 +31,10 @@ namespace fs
         inline void reset() {}
 
         template<typename Arena>
-        inline void logMemoryReport(Arena&) {}
+        inline void logMemoryReport(Arena& arena)
+        {
+            FS_PRINT(arena.getName() << " does not use memory tracking.");
+        }
     };
 
     class SimpleMemoryTracking
@@ -63,13 +66,14 @@ namespace fs
         void logMemoryReport(Arena& arena)
         {
             // TODO: change to LOG instead of PRINT
-            FS_PRINT("logging arena leaks:");
+            FS_PRINT("logging arena leaks (simple):");
             FS_PRINT("    Arena Name: " << arena.getName());
             FS_PRINT("    Number of Allocations: " << getNumAllocations());
-            FS_PRINT("    Arena Size: " << arena.getMaxSize() );
-            FS_PRINT("    Used:      " << arena.getTotalUsedSize() );
-            FS_PRINT("    Allocated: " << getUsedSize() );
-            FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - getUsedSize());
+            FS_PRINT("    Virtual Size:  " << arena.getVirtualSize());
+            FS_PRINT("    Physical Size: " << arena.getPhysicalSize());
+            FS_PRINT("    Used:      " << arena.getTotalUsedSize());
+            FS_PRINT("    Allocated: " << _profile.usedSize);
+            FS_PRINT("    Wasted:    " << arena.getTotalUsedSize() - _profile.usedSize);
         }
 
     protected:

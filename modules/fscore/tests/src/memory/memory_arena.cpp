@@ -33,7 +33,7 @@ using ArenaWithBoundsChecking = MemoryArena<Allocator<LinearAllocator, Allocatio
 using ArenaWithMemoryTagging = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
                                     SingleThread, NoBoundsChecking, NoMemoryTracking, MemoryTagging>;
 
-using ArenaWithExtendedTracking = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
+using ArenaWithExtendedTracking = MemoryArena<Allocator<StackAllocatorBottomGrowable, AllocationHeaderU32>,
                                               SingleThread, NoBoundsChecking, ExtendedMemoryTracking, NoMemoryTagging>;
 
 struct MemoryArenaFixture
@@ -290,28 +290,28 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
     fs::memory::getDebugArena()->reset();
 }
 
-BOOST_AUTO_TEST_CASE(temp_test_arena_leak_report)
-{
-    SourceInfo info;
-    info.fileName = "testFileName";
-    info.lineNumber = 1234;
-    
-    HeapArea area(pageSize * 64);
-    ArenaWithExtendedTracking arena(area);
-
-    arena.logTrackerReport();
-
-    arena.allocate(smallAllocationSize, defaultAlignment, info);
-    arena.allocate(smallAllocationSize, defaultAlignment, info);
-    arena.allocate(smallAllocationSize, defaultAlignment, info);
-    arena.allocate(pageSize * 20, defaultAlignment, info);
-    arena.allocate(smallAllocationSize, defaultAlignment, info);
-    arena.allocate(smallAllocationSize, defaultAlignment, info);
-    arena.allocate(pageSize, defaultAlignment, info);
-    arena.logTrackerReport();
-
-    arena.reset();
-}
+// BOOST_AUTO_TEST_CASE(temp_test_arena_leak_report)
+// {
+//     SourceInfo info;
+//     info.fileName = "testFileName";
+//     info.lineNumber = 1234;
+//     
+//     GrowableHeapArea area(pageSize * 32, pageSize * 64);
+//     ArenaWithExtendedTracking arena(area);
+// 
+//     arena.logTrackerReport();
+// 
+//     arena.allocate(smallAllocationSize, defaultAlignment, info);
+//     arena.allocate(smallAllocationSize, defaultAlignment, info);
+//     arena.allocate(smallAllocationSize, defaultAlignment, info);
+//     arena.allocate(pageSize * 20, defaultAlignment, info);
+//     arena.allocate(smallAllocationSize, defaultAlignment, info);
+//     arena.allocate(smallAllocationSize, defaultAlignment, info);
+//     arena.allocate(pageSize, defaultAlignment, info);
+//     arena.logTrackerReport();
+// 
+//     arena.reset();
+// }
 
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

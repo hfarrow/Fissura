@@ -28,7 +28,9 @@ namespace fs
         }
 
         inline void purge() {}
-        inline size_t getTotalUsedSize() {return 0;}
+        inline size_t getTotalUsedSize() { return 0;}
+        inline size_t getVirtualSize() { return 0; }
+        inline size_t getPhysicalSize() { return 0; }
     };
 }
 

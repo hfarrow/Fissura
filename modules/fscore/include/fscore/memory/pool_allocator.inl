@@ -186,12 +186,6 @@ namespace fs
     {
         _freelist = PoolFreelist(_virtualStart, _virtualEnd, _maxElementSize, maxAlignment, 0);
     }
-
-    template<typename GrowthPolicy, size_t maxElementSize, size_t maxAlignment, size_t growSize>
-    size_t PoolAllocator<GrowthPolicy, maxElementSize, maxAlignment, growSize>::getTotalUsedSize()
-    {
-        return (_usedCount * _freelist.getSlotSize()) + _wastedSpace;
-    }
 }
 
 #endif

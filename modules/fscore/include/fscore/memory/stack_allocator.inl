@@ -127,12 +127,6 @@ namespace fs
     }
 
     template<typename LayoutPolicy, typename GrowthPolicy>
-    size_t StackAllocator<LayoutPolicy, GrowthPolicy>::getTotalUsedSize()
-    {
-        return _layoutPolicy.getTotalUsedSize(this);
-    }
-
-    template<typename LayoutPolicy, typename GrowthPolicy>
     void StackAllocator<LayoutPolicy, GrowthPolicy>::purge()
     {
         _layoutPolicy.purge(this);
@@ -391,6 +385,30 @@ namespace fs
                 pStack->_physicalEnd = addressToFree;
             }
         }
+    }
+
+    template<typename StackAllocator>
+    size_t AllocateFromStackBottom::getVirtualSize(StackAllocator* pStack)
+    {
+        return pStack->_virtualEnd - pStack->_virtualStart;
+    }
+
+    template<typename StackAllocator>
+    size_t AllocateFromStackTop::getVirtualSize(StackAllocator* pStack)
+    {
+        return pStack->_virtualStart - pStack->_virtualEnd;
+    }
+
+    template<typename StackAllocator>
+    size_t AllocateFromStackBottom::getPhysicalSize(StackAllocator* pStack)
+    {
+        return pStack->_physicalEnd - pStack->_virtualStart;
+    }
+
+    template<typename StackAllocator>
+    size_t AllocateFromStackTop::getPhysicalSize(StackAllocator* pStack)
+    {
+        return pStack->_virtualStart - pStack->_physicalEnd;
     }
 }
 

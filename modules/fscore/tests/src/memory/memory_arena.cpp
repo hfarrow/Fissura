@@ -60,9 +60,7 @@ struct MemoryArenaFixture
     template<class Arena>
     void allocateAndFreeFromArena(Arena& arena)
     {
-        SourceInfo info;
-        info.fileName = "testFileName";
-        info.lineNumber = 1234;
+        SourceInfo info(__FILE__, __LINE__);
         void* ptr = arena.allocate(smallAllocationSize, defaultAlignment, info);
         BOOST_REQUIRE(ptr);
         arena.reset();
@@ -71,7 +69,7 @@ struct MemoryArenaFixture
     template<class BoundsCheckingPolicy, class Area>
     void testBoundsChecking(Area& area)
     {
-        SourceInfo info;
+        SourceInfo info(__FILE__, __LINE__);
         info.fileName = "testFileName";
         info.lineNumber = 1234;
 
@@ -158,9 +156,7 @@ BOOST_AUTO_TEST_CASE(arena_with_header)
         u64* as_u64;
     };
 
-    SourceInfo info;
-    info.fileName = "testFileName";
-    info.lineNumber = 1234;
+    SourceInfo info(__FILE__, __LINE__);
 
     HeapArea heapArea(allocatorSize);
     
@@ -211,9 +207,7 @@ BOOST_AUTO_TEST_CASE(arean_with_simple_bounds_checking)
 
 BOOST_AUTO_TEST_CASE(arena_with_memory_tagging)
 {
-    SourceInfo info;
-    info.fileName = "testFileName";
-    info.lineNumber = 1234;
+    SourceInfo info(__FILE__, __LINE__);
 
     HeapArea area(allocatorSize);
     ArenaWithMemoryTagging arena(area);
@@ -254,9 +248,7 @@ BOOST_AUTO_TEST_CASE(arena_with_memory_tagging)
 
 BOOST_AUTO_TEST_CASE(debug_arena)
 {
-    SourceInfo info;
-    info.fileName = "testFileName";
-    info.lineNumber = 1234;
+    SourceInfo info(__FILE__, __LINE__);
 
     DebugArena* pArena = fs::memory::getDebugArena();
     void* ptr = pArena->allocate(pageSize, defaultAlignment, info);
@@ -295,9 +287,7 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 
 // BOOST_AUTO_TEST_CASE(temp_test_arena_leak_report)
 // {
-//     SourceInfo info;
-//     info.fileName = "testFileName";
-//     info.lineNumber = 1234;
+//     SourceInfo info(__FILE__, __LINE__);
 //     
 //     GrowableHeapArea area(pageSize * 32, pageSize * 64);
 //     ArenaWithFullTracking arena(area, "trackingTest");

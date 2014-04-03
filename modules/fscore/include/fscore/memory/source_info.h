@@ -7,7 +7,11 @@ namespace fs
 {
     struct SourceInfo
     {
-        SourceInfo(){}
+        SourceInfo(const char* fileName, u32 lineNumber) :
+            fileName(fileName),
+            lineNumber(lineNumber)
+        {
+        }
 
         const char* fileName;
         u32 lineNumber;

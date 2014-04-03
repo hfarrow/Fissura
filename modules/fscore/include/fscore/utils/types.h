@@ -73,6 +73,32 @@ namespace fs
 		Uncopyable& operator=(const Uncopyable&);
 	};
 
+    template <class T>
+    struct TypeAndCount
+    {
+    };
+     
+    template <class T, size_t N>
+    struct TypeAndCount<T[N]>
+    {
+        typedef T Type;
+        static const size_t Count = N;
+    };
+
+    template <typename T>
+    struct IsPOD
+    {
+        static const bool value = std::is_pod<T>::value;
+    };
+
+    template <bool I>
+    struct IntToType
+    {
+    };
+     
+    typedef IntToType<false> NonPODType;
+    typedef IntToType<true> PODType;
+
 
 }
 

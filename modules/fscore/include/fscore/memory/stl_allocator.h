@@ -78,9 +78,7 @@ namespace fs
 			(void)hint;
 			size_type size = n * sizeof(value_type);
 
-            SourceInfo info;
-            info.lineNumber = __LINE__;
-            info.fileName = __FILE__;
+            SourceInfo info(__FILE__, __LINE__);
          
 			void* pAllocation = _pArena->allocate(size, __alignof(value_type), info);
 

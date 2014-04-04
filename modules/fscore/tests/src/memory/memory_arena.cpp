@@ -306,12 +306,16 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 //     arena.reset();
 // }
 
-struct TestObject
+struct MyPOD
 {
-    size_t a;
-    size_t b;
-    size_t c;
+    u8 b[3];
 };
+
+struct MyNonPOD
+{
+    virtual void foo(){}
+};
+
 
 BOOST_AUTO_TEST_CASE(temp_test_new_macros)
 {
@@ -320,13 +324,18 @@ BOOST_AUTO_TEST_CASE(temp_test_new_macros)
     GrowableHeapArea area(pageSize * 32, pageSize * 64);
     ArenaWithFullTracking arena(area, "trackingTest");
 
-    TestObject* pObject = FS_NEW(TestObject, arena)();
-    BOOST_REQUIRE(pObject);
-    FS_DELETE(pObject, arena);
+    // MyPOD* pObject = FS_NEW(MyPOD, arena)();
+    // BOOST_REQUIRE(pObject);
+    // FS_DELETE(pObject, arena);
 
-    TestObject* pArray = FS_NEW_ARRAY(TestObject[10], arena);
+    MyPOD* pArray = FS_NEW_ARRAY(MyPOD[10], arena);
     BOOST_REQUIRE(pArray);
+    arena.logTrackerReport();
     FS_DELETE_ARRAY(pArray, arena);
+     
+    MyNonPOD* pArray2 = FS_NEW_ARRAY(MyNonPOD[10], arena);
+    BOOST_REQUIRE(pArray2);
+    FS_DELETE_ARRAY(pArray2, arena);
     
 }
 

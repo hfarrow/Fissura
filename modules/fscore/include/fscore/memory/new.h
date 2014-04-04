@@ -3,6 +3,7 @@
 
 #include "fscore/memory/source_info.h"
 #include "fscore/utils/types.h"
+#include "fscore/debugging/assert.h"
 
 #define FS_NEW(type, arena)    new (arena.allocate(sizeof(type), alignof(type), fs::SourceInfo(__FILE__, __LINE__))) type
 #define FS_DELETE(object, arena)    fs::doDelete(object, arena)
@@ -17,6 +18,7 @@ namespace fs
     template<typename T, class Arena>
     void doDelete(T* object, Arena& arena)
     {
+        // FS_PRINT("doDelete(" << (void*)object << ", " << (void*)&arena << ")");
         object->~T();
         arena.free(object);
     }
@@ -24,6 +26,7 @@ namespace fs
     template<typename T, class Arena>
     T* newArray(Arena& arena, size_t n, const char* file, u32 line, NonPODType)
     {
+        // FS_PRINT("newArray-NonPODType(" << (void*)&arena << ", " << n << ", " << file << ", " << line << ")");
         union
         {
             void* as_void;
@@ -45,6 +48,7 @@ namespace fs
     template<typename T, class Arena>
     T* newArray(Arena& arena, size_t n, const char* file, u32 line, PODType)
     {
+        // FS_PRINT("newArray-PODType(" << (void*)&arena << ", " << n << ", " << file << ", " << line << ")");
         union
         {
             void* as_void;
@@ -52,13 +56,15 @@ namespace fs
             T* as_T;
         };
 
-        static_assert(sizeof(T) >= sizeof(size_t), "T must be at least sizeof(size_t)");
-        as_void = arena.allocate(sizeof(T) * (n+1), alignof(T), SourceInfo(file, line));
+        // ensure we allocate an extra element if so that numHeaderElements * sizeof(T) is always >= sizeof(size_t)
+        // This allows us to allocate an array of objects smaller than sizeof(size_t)
+        size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
+
+        as_void = arena.allocate(sizeof(T) * (n+numHeaderElements), alignof(T), SourceInfo(file, line));
 
         // store number of elements at the back of the first element of the array.
-        as_T++;
+        as_T += numHeaderElements;
         *(as_size_t - 1) = n;
-        as_T++;
 
         return as_T;
     }
@@ -72,6 +78,7 @@ namespace fs
     template<typename T, class Arena>
     void deleteArray(T* ptr, Arena& arena, NonPODType)
     {
+        // FS_PRINT("deleteArray-NonPODType(" << (void*)ptr << ", " << (void*)(&arena) << ")");
         union
         {
             size_t* as_size_t;
@@ -84,12 +91,15 @@ namespace fs
         for(size_t i=n; i > 0; --i)
             as_T[i-1].~T();
 
-        arena.free(as_T-1);
+        size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
+
+        arena.free(as_T-numHeaderElements);
     }
 
     template<typename T, class Arena>
     void deleteArray(T* ptr, Arena& arena, PODType)
     {
+        // FS_PRINT("deleteArray-PODType(" << (void*)ptr << ", " << (void*)(&arena) << ")");
         union
         {
             size_t* as_size_t;
@@ -97,8 +107,9 @@ namespace fs
         };
 
         as_T = ptr;
+        size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
 
-        arena.free(as_T-1);
+        arena.free(as_T-numHeaderElements);
     }
 }
 

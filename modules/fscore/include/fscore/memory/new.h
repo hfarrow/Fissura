@@ -5,20 +5,23 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 
-#define FS_NEW(type, arena)    new (arena.allocate(sizeof(type), alignof(type), fs::SourceInfo(__FILE__, __LINE__))) type
-#define FS_DELETE(object, arena)    fs::doDelete(object, arena)
+#define FS_NEW(type, arena)    FS_NEW_ALIGNED(type, arena, alignof(type))
 
-#define FS_NEW_ARRAY(type, arena)    newArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, __FILE__, __LINE__, \
-                                                                        IntToType<IsPOD<TypeAndCount<type>::Type>::value>())
+#define FS_NEW_ALIGNED(type, arena, alignment)    new (arena.allocate(sizeof(type), alignment, fs::SourceInfo(__FILE__, __LINE__))) type
+
+#define FS_DELETE(object, arena)    fs::deleteSingle(object, arena)
+
+#define FS_NEW_ARRAY(type, arena)    fs::newArray<fs::TypeAndCount<type>::Type>(arena, fs::TypeAndCount<type>::Count, __FILE__, __LINE__, \
+                                                  fs::IntToType<fs::IsPOD<fs::TypeAndCount<type>::Type>::value>())
 
 #define FS_DELETE_ARRAY(object, arena)    deleteArray(object, arena)
 
 namespace fs
 {
     template<typename T, class Arena>
-    void doDelete(T* object, Arena& arena)
+    void deleteSingle(T* object, Arena& arena)
     {
-        // FS_PRINT("doDelete(" << (void*)object << ", " << (void*)&arena << ")");
+        // FS_PRINT("deleteSingle(" << (void*)object << ", " << (void*)&arena << ")");
         object->~T();
         arena.free(object);
     }

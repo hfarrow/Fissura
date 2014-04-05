@@ -5,16 +5,16 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 
-#define FS_NEW(type, arena)    FS_NEW_ALIGNED(type, arena, alignof(type))
+#define FS_NEW(type, arena)    FS_NEW_ALIGNED(type, (arena), alignof(type))
 
-#define FS_NEW_ALIGNED(type, arena, alignment)    new (arena.allocate(sizeof(type), alignment, fs::SourceInfo(__FILE__, __LINE__))) type
+#define FS_NEW_ALIGNED(type, arena, alignment)    new ((arena).allocate(sizeof(type), alignment, fs::SourceInfo(__FILE__, __LINE__))) type
 
-#define FS_DELETE(object, arena)    fs::deleteSingle(object, arena)
+#define FS_DELETE(object, arena)    fs::deleteSingle((object), (arena))
 
-#define FS_NEW_ARRAY(type, arena)    fs::newArray<fs::TypeAndCount<type>::Type>(arena, fs::TypeAndCount<type>::Count, __FILE__, __LINE__, \
+#define FS_NEW_ARRAY(type, arena)    fs::newArray<fs::TypeAndCount<type>::Type>((arena), fs::TypeAndCount<type>::Count, __FILE__, __LINE__, \
                                                   fs::IntToType<fs::IsPOD<fs::TypeAndCount<type>::Type>::value>())
 
-#define FS_DELETE_ARRAY(object, arena)    deleteArray(object, arena)
+#define FS_DELETE_ARRAY(object, arena)    deleteArray((object), (arena))
 
 namespace fs
 {
@@ -59,8 +59,9 @@ namespace fs
             T* as_T;
         };
 
-        // ensure we allocate an extra element if so that numHeaderElements * sizeof(T) is always >= sizeof(size_t)
-        // This allows us to allocate an array of objects smaller than sizeof(size_t)
+        // ensure we allocate an extra element so that numHeaderElements * sizeof(T) is always >= sizeof(size_t)
+        // This allows us to allocate an array of objects smaller than sizeof(size_t) and still be able
+        // to store n ahead of the returned memory.
         size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
 
         as_void = arena.allocate(sizeof(T) * (n+numHeaderElements), alignof(T), SourceInfo(file, line));

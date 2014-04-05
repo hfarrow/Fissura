@@ -307,39 +307,6 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 //     arena.reset();
 // }
 
-// struct MyPOD
-// {
-//     u8 b[3];
-// };
-// 
-// struct MyNonPOD
-// {
-//     virtual void foo(){}
-// };
-// 
-// 
-// BOOST_AUTO_TEST_CASE(temp_test_new_macros)
-// {
-//     SourceInfo info(__FILE__, __LINE__);
-//     
-//     GrowableHeapArea area(pageSize * 32, pageSize * 64);
-//     ArenaWithFullTracking arena(area, "trackingTest");
-// 
-//     // MyPOD* pObject = FS_NEW(MyPOD, arena)();
-//     // BOOST_REQUIRE(pObject);
-//     // FS_DELETE(pObject, arena);
-// 
-//     MyPOD* pArray = FS_NEW_ARRAY(MyPOD[10], arena);
-//     BOOST_REQUIRE(pArray);
-//     arena.logTrackerReport();
-//     FS_DELETE_ARRAY(pArray, arena);
-//      
-//     MyNonPOD* pArray2 = FS_NEW_ARRAY(MyNonPOD[10], arena);
-//     BOOST_REQUIRE(pArray2);
-//     FS_DELETE_ARRAY(pArray2, arena);
-//     
-// }
-
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

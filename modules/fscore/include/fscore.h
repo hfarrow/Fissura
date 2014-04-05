@@ -10,7 +10,7 @@
 
 // Debugging
 #include "fscore/debugging/assert.h"
-//#include "fscore/debugging/logger.h"
+#include "fscore/debugging/logger.h"
 #include "fscore/debugging/memory.h"
 #include "fscore/debugging/utils.h"
 

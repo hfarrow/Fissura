@@ -13,7 +13,7 @@
 
 namespace fs
 {
-	template<typename T, typename Arena> class StlAllocator;
+	template<typename T, class Arena> class StlAllocator;
 
     template<typename T>
     using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;

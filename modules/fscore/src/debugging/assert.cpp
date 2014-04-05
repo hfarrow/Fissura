@@ -52,7 +52,7 @@ namespace fs
     static bool assertTriggered = false;
 }
 
-SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* data, void* /*userdata*/)
+SDL_assert_state SdlAssertionHandler_Ignore(const SDL_assert_data* /*data*/, void* /*userdata*/)
 {
     // FS_WARN("Assertion Triggered... continuing execution.");
     // FS_WARNF(boost::format("at %s : %s : %d -> %s")

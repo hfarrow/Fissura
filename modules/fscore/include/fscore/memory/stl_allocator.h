@@ -2,6 +2,7 @@
 #define FS_STL_ALLOCATOR_H
 
 #include <limits>
+#include <string>
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
@@ -11,7 +12,7 @@
 
 namespace fs
 {
-	template<typename T, typename Arena>
+	template<typename T, class Arena>
 	class StlAllocator
 	{
 		template<typename U, typename ArenaU>
@@ -26,10 +27,14 @@ namespace fs
 		typedef const T& const_reference;
 		typedef T value_type;
 
+        StlAllocator()
+        {
+            FS_PRINT("Base StlAllocator");
+        }
+
 		StlAllocator(Arena& allocator) :
             _pArena(&allocator)
 		{
-
 		}
 
 		StlAllocator(const StlAllocator& other) throw()
@@ -77,6 +82,9 @@ namespace fs
 		{
 			(void)hint;
 			size_type size = n * sizeof(value_type);
+            FS_ASSERT(_pArena);
+            FS_PRINT("allocate " << size);
+            FS_PRINT(_pArena);
 
             SourceInfo info(__FILE__, __LINE__);
          
@@ -154,10 +162,14 @@ namespace fs
 			return *_pArena;
 		}
 
-		private:
-			Arena* _pArena;
+    protected:
+		Arena* _pArena;
 
-            StlAllocator();
+        void setArena(Arena* pArena)
+        {
+            _pArena = pArena;
+            FS_PRINT("set arena " << (void*)_pArena);
+        }
 	};
 
 	/// Another allocator of the same type can deallocate from this one
@@ -184,6 +196,45 @@ namespace fs
 	/// Another allocator of the another type cannot deallocate from this one
 	template<typename T1, typename AnotherAllocator, typename Arena>
 	inline bool operator!=(const StlAllocator<T1, Arena>&, const AnotherAllocator&)
+	{
+		return true;
+	}
+
+    template<typename T>
+    class DebugStlAllocator : public StlAllocator<T, DebugArena>
+    {
+    public:
+        DebugStlAllocator()
+        {
+            FS_PRINT("DebugStlAllocator " << (void*)memory::getDebugArena());
+            StlAllocator<T, DebugArena>::setArena(memory::getDebugArena());
+        }
+    };
+
+	/// Another allocator of the same type can deallocate from this one
+	template<typename T1, typename T2>
+	inline bool operator==(const DebugStlAllocator<T1>& a, const DebugStlAllocator<T2>& b)
+	{
+		return &a.getAllocator() == &b.getAllocator();
+	}
+ 
+	/// Another allocator of the another type cannot deallocate from this one
+	template<typename T1, typename AnotherAllocator, typename Arena>
+	inline bool operator==(	const DebugStlAllocator<T1>&, const AnotherAllocator&)
+	{
+		return false;
+	}
+ 
+	/// Another allocator of the same type can deallocate from this one
+	template<typename T1, typename T2>
+	inline bool operator!=(const DebugStlAllocator<T1>& a, const DebugStlAllocator<T2>& b)
+	{
+		return &a.getAllocator() != &b.getAllocator();
+	}
+ 
+	/// Another allocator of the another type cannot deallocate from this one
+	template<typename T1, typename AnotherAllocator>
+	inline bool operator!=(const DebugStlAllocator<T1>&, const AnotherAllocator&)
 	{
 		return true;
 	}

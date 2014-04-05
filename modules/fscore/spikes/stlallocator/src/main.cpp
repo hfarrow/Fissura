@@ -29,24 +29,24 @@ using TestMapAlloc =  StlAllocator<AllocationMap, DebugArena>;
 
 int main( int, char **)
 {
-    TestStuct test;
-    test.a = 1;
+    // TestStuct test;
+    // test.a = 1;
 
-    {
-        DebugArena* arena = memory::getDebugArena();
-        SharedPtr<TestMap> pAllocationMap = std::allocate_shared<TestMap>(TestMapAlloc(*arena), *arena);
-        // pAllocationMap = new AllocationMap(allocator);
+    // {
+    //     DebugArena* arena = memory::getDebugArena();
+    //     SharedPtr<TestMap> pAllocationMap = std::allocate_shared<TestMap>(TestMapAlloc(*arena), *arena);
+    //     // pAllocationMap = new AllocationMap(allocator);
 
-        pAllocationMap->insert(std::pair<int, TestStuct>(1,TestStuct()));
+    //     pAllocationMap->insert(std::pair<int, TestStuct>(1,TestStuct()));
 
-        for(auto p : *pAllocationMap)
-        {
-            FS_PRINT(p.first << " : " << p.second.a);
-        }
-        FS_PRINT("about to leave scope");
-    }
+    //     for(auto p : *pAllocationMap)
+    //     {
+    //         FS_PRINT(p.first << " : " << p.second.a);
+    //     }
+    //     FS_PRINT("about to leave scope");
+    // }
 
-    FS_PRINT("left scope");
+    // FS_PRINT("left scope");
 
     // StlAllocator<std::pair<const int, TestStuct>> mapAlloc(*memory::getDebugArena());
     // StlAllocator<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>> sharedAlloc(*memory::getDebugArena());
@@ -54,6 +54,15 @@ int main( int, char **)
     // myMap = std::allocate_shared<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>>(sharedAlloc, mapAlloc);
 
     // myMap->insert(std::pair<int, TestStuct>(1, TestStuct()));
+    
+    // DebugString string("hello!");
+    // memory::getDebugArena()->logTrackerReport();
+    
+    // DebugStlAllocator<char> alloc;
+    
+    DebugString string("hello");
+    dformat format = dformat("%s %s") % "hello" % "world";
+    FS_PRINT(format);
 
     return 0;
 }

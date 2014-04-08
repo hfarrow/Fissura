@@ -78,18 +78,7 @@ void LogManager::init(const char* configFilename)
         TiXmlDocument configFile(configFilename);
         if(configFile.LoadFile())
         {
-            // TODO: how to print xml to stream.
-            // linker is telling me 
-            // Undefined symbols for architecture x86_64:
-            //   "operator<<(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, TiXmlNode const&)", referenced from:
-            //       LogManager::init(char const*) in libfscore.a(logger.cpp.o)
-            // ld: symbol(s) not found for architecture x86_64
-            //
-            // const char* pText = configFile.RootElement()->GetText();
-            // boost::format txt = boost::format("hello %1%") % configFile;
-            // FS_ASSERT(pText);
-            // DebugString text(pText);
-            // FS_INFOF(dformat("LogManager::init config xml loaded:") % text);
+            FS_INFOF(dformat("LogManager::init config xml loaded: %1%") % configFile);
             TiXmlElement* pRoot = configFile.RootElement();
             if(!pRoot)
                 return;
@@ -147,30 +136,23 @@ void LogManager::log(const DebugString& tag, const DebugString& message, const c
 
 void LogManager::setDisplayFlags(const DebugString& tag, u32 flags)
 {
-    FS_PRINT("setDisplayFlags(...) start");
     boost::lock_guard<boost::mutex> lock(_tagMutex);
     if(flags != 0)
     {
-        FS_PRINT("tags.find");
         auto findIt = tags.find(tag);
         if(findIt == tags.end())
         {
-            FS_PRINT("tags.insert");
-            FS_PRINT("tag = " << tag);
             tags.insert(std::make_pair(tag, flags));
         }
         else
         {
-            FS_PRINT("set flag");
             findIt->second = flags;
         }
     }
     else
     {
-        FS_PRINT("tags.erase");
         tags.erase(tag);
     }
-    FS_PRINT("setDisplayFlags(...) end");
 }
 
 void LogManager::outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags)

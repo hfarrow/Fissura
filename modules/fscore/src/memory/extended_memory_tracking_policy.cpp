@@ -8,8 +8,8 @@ using namespace fs;
 ExtendedMemoryTracking::ExtendedMemoryTracking() :
     _nextId(0)
 {
-    DebugArena* pArena = fs::memory::getDebugArena();
-    _profile.pAllocationMap = std::allocate_shared<AllocationMap>(AllocationMapAlloc(*pArena), *pArena);
+    _profile.pAllocationMap = std::allocate_shared<AllocationMap>(DebugStlAllocator<AllocationMap>(),
+            AllocationMapAlloc());
 }
 
 void ExtendedMemoryTracking::onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)

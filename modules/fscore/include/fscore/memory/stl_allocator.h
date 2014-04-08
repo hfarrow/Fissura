@@ -27,11 +27,6 @@ namespace fs
 		typedef const T& const_reference;
 		typedef T value_type;
 
-        StlAllocator()
-        {
-            FS_PRINT("Base StlAllocator");
-        }
-
 		StlAllocator(Arena& allocator) :
             _pArena(&allocator)
 		{
@@ -83,8 +78,6 @@ namespace fs
 			(void)hint;
 			size_type size = n * sizeof(value_type);
             FS_ASSERT(_pArena);
-            FS_PRINT("allocate " << size);
-            FS_PRINT(_pArena);
 
             SourceInfo info(__FILE__, __LINE__);
          
@@ -168,7 +161,11 @@ namespace fs
         void setArena(Arena* pArena)
         {
             _pArena = pArena;
-            FS_PRINT("set arena " << (void*)_pArena);
+        }
+
+        StlAllocator()
+        {
+            //FS_PRINT("Base StlAllocator");
         }
 	};
 
@@ -206,7 +203,7 @@ namespace fs
     public:
         DebugStlAllocator()
         {
-            FS_PRINT("DebugStlAllocator " << (void*)memory::getDebugArena());
+            //FS_PRINT("DebugStlAllocator " << (void*)memory::getDebugArena());
             StlAllocator<T, DebugArena>::setArena(memory::getDebugArena());
         }
     };

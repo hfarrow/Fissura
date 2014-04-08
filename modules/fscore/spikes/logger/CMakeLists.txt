@@ -19,7 +19,7 @@ add_custom_target(${PROJECT_NAME}-content
                   ${PROJECT_OUTPUT_DIR}/content/)
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-content)
 
-include_directories(${core_SOURCE_DIR}/include)
+include_directories(${fscore_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
                       fscore
                       ${Boost_LIBRARIES}

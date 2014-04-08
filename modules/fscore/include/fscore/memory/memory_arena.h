@@ -46,7 +46,7 @@ namespace fs
 
         void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo)
         {
-            FS_PRINT("allocate " << size << " from " << getName());
+            // FS_PRINT("allocate " << size << " from " << getName());
             _threadGuard.enter();
 
             const size_t headerSize = AllocationPolicy::HEADER_SIZE + BoundsCheckingPolicy::SIZE_FRONT;
@@ -65,7 +65,7 @@ namespace fs
             _memoryTracker.onAllocation(plainMemory, newSize, alignment, sourceInfo);
 
             _threadGuard.leave();
-            FS_PRINT("allocated " << (void*)(plainMemory + headerSize));
+            // FS_PRINT("allocated " << (void*)(plainMemory + headerSize));
             return (plainMemory + headerSize);
         }
 

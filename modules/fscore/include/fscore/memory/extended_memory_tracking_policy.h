@@ -31,8 +31,8 @@ namespace fs
         size_t numFrames;
     };
 
-    using AllocationMap = Map<uptr, AllocationInfo, DebugArena>;
-    using AllocationMapAlloc = StlAllocator<AllocationMap, DebugArena>;
+    using AllocationMap = DebugMap<uptr, AllocationInfo>;
+    using AllocationMapAlloc = DebugMapAllocator<uptr, AllocationInfo>;
     using AllocationMapPair = std::pair<uptr, AllocationInfo>;
 
     class MemoryProfileExtended : public MemoryProfileSimple

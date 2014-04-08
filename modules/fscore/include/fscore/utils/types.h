@@ -14,6 +14,7 @@
 namespace fs
 {
 	template<typename T, class Arena> class StlAllocator;
+	template<typename T> class DebugStlAllocator;
 
     template<typename T>
     using UniquePtr = std::unique_ptr<T, std::function<void(T*)>>;
@@ -35,6 +36,18 @@ namespace fs
 
     template<typename T, typename Arena>
     using List = std::list<T, StlAllocator<T, Arena>>;
+
+    template<typename K, typename V>
+    using DebugMapAllocator = DebugStlAllocator<std::pair<const K, V>>;
+
+    template<typename K, typename V>
+    using DebugMap = std::map<K, V, std::less<K>, DebugMapAllocator<K, V>>;
+
+    template<typename T>
+    using DebugVector = std::vector<T, DebugStlAllocator<T>>;
+
+    template<typename T>
+    using DebugList = std::list<T, DebugStlAllocator<T>>;
     
     // Pre C++11... Use above template alaises if possible.
 	// #define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>

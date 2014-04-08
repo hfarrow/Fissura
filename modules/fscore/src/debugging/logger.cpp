@@ -33,7 +33,8 @@ static LogManager* s_pLogManager = nullptr;
 class LogManager
 {
 public:
-    typedef Map<DebugString, u8, DebugArena> Tags;
+    using Tags = Map<DebugString, u8, DebugArena>;
+    using TagAllocator = StlAllocator<std::pair<DebugString, u8>, DebugArena>;
     Tags tags;
 
     LogManager();
@@ -53,17 +54,15 @@ private:
                          const char* funcName, const char* sourceFile, u32 lineNum);
 };
 
-LogManager::LogManager()
+LogManager::LogManager() :
+    tags(TagAllocator(*memory::getDebugArena()))
 {
-    FS_PRINT("LogManager() start");
-    FS_PRINT("DebugArena = " << (void*)memory::getDebugArena());
     // set up the default log tags
     setDisplayFlags("FATAL", DEFAULT_FLAG_FATAL);
     setDisplayFlags("ERROR", DEFAULT_FLAG_ERROR);
     setDisplayFlags("WARN", DEFAULT_FLAG_WARNING);
     setDisplayFlags("INFO", DEFAULT_FLAG_LOG);
     setDisplayFlags("DEBUG", DEFAULT_FLAG_DEBUG);
-    FS_PRINT("LogManager() end");
 }
 
 LogManager::~LogManager()
@@ -79,7 +78,18 @@ void LogManager::init(const char* configFilename)
         TiXmlDocument configFile(configFilename);
         if(configFile.LoadFile())
         {
-            // FS_INFOF(dformat("LogManager::init config xml loaded -> %1%") % configFile);
+            // TODO: how to print xml to stream.
+            // linker is telling me 
+            // Undefined symbols for architecture x86_64:
+            //   "operator<<(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, TiXmlNode const&)", referenced from:
+            //       LogManager::init(char const*) in libfscore.a(logger.cpp.o)
+            // ld: symbol(s) not found for architecture x86_64
+            //
+            // const char* pText = configFile.RootElement()->GetText();
+            // boost::format txt = boost::format("hello %1%") % configFile;
+            // FS_ASSERT(pText);
+            // DebugString text(pText);
+            // FS_INFOF(dformat("LogManager::init config xml loaded:") % text);
             TiXmlElement* pRoot = configFile.RootElement();
             if(!pRoot)
                 return;
@@ -111,7 +121,7 @@ void LogManager::init(const char* configFilename)
         }
         else
         {
-            // FS_WARNF(dformat("LogManager::init failed to load config xml: %1%") % configFile.ErrorDesc());
+            FS_WARNF(dformat("LogManager::init failed to load config xml: %1%") % configFile.ErrorDesc());
         }
     }
 }

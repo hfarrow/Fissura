@@ -1,9 +1,9 @@
 #ifndef FS_PAGE_ALLOCATOR_H
 #define FS_PAGE_ALLOCATOR_H
 
+#include "fscore/debugging/assert.h"
 #include "fscore/utils/types.h"
 #include "fscore/utils/platforms.h"
-#include "fscore/debugging/assert.h"
 
 namespace fs
 {

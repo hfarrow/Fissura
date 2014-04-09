@@ -3,6 +3,8 @@
 
 #include "fscore/memory/utils.h"
 #include "fscore/debugging/assert.h"
+#include "fscore/debugging/logger.h"
+#include "fscore/utils/string.h"
 
 #ifndef MAP_ANONYMOUS
 #  define MAP_ANONYMOUS MAP_ANON
@@ -58,7 +60,7 @@ namespace fs
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to reserve requested size %u. errno: %i")
+                                        dformat("Failed to reserve requested size %u. errno: %i")
                                         % size % errno);
                 return nullptr;
             }
@@ -76,7 +78,7 @@ namespace fs
             {
                 FS_PRINT("Failed to allocate requested ptr " << ptr << " of size " << size << ". errno: " << errno);
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to allocate requested ptr of size %u. errno: %i")
+                                        dformat("Failed to allocate requested ptr of size %u. errno: %i")
                                         % size % errno);
                 return nullptr;
             }
@@ -93,7 +95,7 @@ namespace fs
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to allocate requested size %u. errno: %i")
+                                        dformat("Failed to allocate requested size %u. errno: %i")
                                         % size % errno);
                 return nullptr;
             }
@@ -110,7 +112,7 @@ namespace fs
             if(userPtr == MAP_FAILED)
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to free requested ptr of size %u. errno: %i")
+                                        dformat("Failed to free requested ptr of size %u. errno: %i")
                                         % size % errno);
 
                 return;
@@ -126,7 +128,7 @@ namespace fs
             if(munmap(ptr, size))
             {
                 FS_ASSERT_MSG_FORMATTED(false,
-                                        boost::format("Failed to release ptr %p of size %u. errno: %i")
+                                        dformat("Failed to release ptr %p of size %u. errno: %i")
                                         % ptr % size % errno);
             }
         }

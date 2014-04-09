@@ -35,7 +35,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXTERNAL_LIBRARY_INSTALL_PATH ${CMAKE_SOURCE_DIR}/external/build)
 
 find_package(SDL2 REQUIRED)
-find_package(Boost 1.54.0 COMPONENTS unit_test_framework thread date_time chrono system REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS unit_test_framework date_time REQUIRED)
 find_package(TinyXML REQUIRED)
 
 add_subdirectory(modules/fstest)

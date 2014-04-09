@@ -6,6 +6,13 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/utils/string.h"
+#include "fscore/memory/memory_arena.h"
+#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/bounds_checking_policy.h"
+#include "fscore/memory/memory_tagging_policy.h"
+#include "fscore/memory/memory_tracking_policy.h"
+#include "fscore/memory/thread_policy.h"
+#include "fscore/memory/heap_allocator.h"
 
 namespace fs
 {
@@ -35,7 +42,6 @@ namespace fs
         fs::Logger::log((tag), (format).str(), __FUNCTION__, __FILE__, __LINE__); \
     } \
     while(0)
-
 
 #define FS_FATALF(format) \
     do \

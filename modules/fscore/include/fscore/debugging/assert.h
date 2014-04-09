@@ -56,7 +56,7 @@ namespace fs
     { \
         if(!(condition)) \
         { \
-            /*FS_WARNF(boost::format("ASSERT:\n%1%") % ((formatObj).str()));*/ \
+            FS_WARNF(dformat("ASSERT:\n%1%") % ((formatObj).str().c_str())); \
         } \
         SDL_assert((condition) && (formatObj).str().c_str()); \
     } \

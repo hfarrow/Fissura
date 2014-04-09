@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <tinyxml.h>
@@ -46,7 +46,7 @@ public:
     void setDisplayFlags(const DebugString& tag, u32 flags);
 
 private:
-    boost::mutex _tagMutex;
+    std::mutex _tagMutex;
 
     void outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags);
     void writeToLogFile(const DebugString& data);
@@ -118,25 +118,19 @@ void LogManager::init(const char* configFilename)
 void LogManager::log(const DebugString& tag, const DebugString& message, const char* funcName,
                 const char* sourceFile, u32 lineNum)
 {
-    _tagMutex.lock();
+    std::lock_guard<std::mutex> lock(_tagMutex);
     auto findIt = tags.find(tag);
     if(findIt != tags.end())
     {
-        _tagMutex.unlock();
-        
         DebugString buffer;
         getOutputBuffer(buffer, tag, findIt->second, message, funcName, sourceFile, lineNum);
         outputFinalBufferToLogs(buffer, findIt->second);
-    }
-    else
-    {
-        _tagMutex.unlock();
     }
 }
 
 void LogManager::setDisplayFlags(const DebugString& tag, u32 flags)
 {
-    boost::lock_guard<boost::mutex> lock(_tagMutex);
+    std::lock_guard<std::mutex> lock(_tagMutex);
     if(flags != 0)
     {
         auto findIt = tags.find(tag);

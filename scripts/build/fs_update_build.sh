@@ -2,7 +2,7 @@ export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-pushd $DIR/..
+pushd $DIR/../..
 
 mkdir build
 mkdir build/Debug

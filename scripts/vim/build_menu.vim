@@ -218,11 +218,11 @@
 
         call add(g:unite_source_menu_menus.build.command_candidates,
                     \ ['Setup/Clean Build Directory ',
-                    \ 'exe "!' . g:fs_scripts_path . 'setup_build.sh" | exe GenerateMenus()'])
+                    \ 'exe "!' . g:fs_scripts_build_path . 'fs_setup_build.sh" | exe GenerateMenus()'])
 
         call add(g:unite_source_menu_menus.build.command_candidates,
                     \ ['Update Build Directory ',
-                    \ 'exe "!' . g:fs_scripts_path . 'update_build.sh" | exe GenerateMenus()'])
+                    \ 'exe "!' . g:fs_scripts_build_path . 'fs_update_build.sh" | exe GenerateMenus()'])
     " }}}
 
     " Debug Menu {{{

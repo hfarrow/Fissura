@@ -44,5 +44,5 @@ add_subdirectory(modules/fscore)
 add_subdirectory(spikes)
 
 enable_testing()
-add_test(NAME FissuraCoreTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fscore-test --log_level=all)
-# add_test(NAME FissuraGameTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/fsgame-test --log_level=all)
+add_test(NAME FissuraCoreTest COMMAND $<TARGET_FILE:fscore-test> --log_level=all)
+# add_test(NAME FissuraGameTest COMMAND $<TARGET_FILE:fsgame-test> --log_level=all)

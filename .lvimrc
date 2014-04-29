@@ -3,12 +3,12 @@ if exists('g:fs_build_initialized')
 endif
 let g:fs_build_initialized = 1
 
-let g:fs_root_path = expand("<sfile>:p:h")
-let g:fs_scripts_path = g:fs_root_path . "/scripts/"
-let g:fs_scripts_vim_path = g:fs_scripts_path . "/vim/"
-let g:fs_scripts_build_path = g:fs_scripts_path . "/build/"
-let g:fs_build_path = g:fs_root_path . "/build/"
-let g:fs_module_path = g:fs_root_path . "/modules/"
-let g:fs_spike_path = g:fs_root_path . "/spikes/"
+let g:fs_root_path = expand("<sfile>:p:h") . "/"
+let g:fs_scripts_path = g:fs_root_path . "scripts/"
+let g:fs_scripts_vim_path = g:fs_scripts_path . "vim/"
+let g:fs_scripts_build_path = g:fs_scripts_path . "build/"
+let g:fs_build_path = g:fs_root_path . "build/"
+let g:fs_module_path = g:fs_root_path . "modules/"
+let g:fs_spike_path = g:fs_root_path . "spikes/"
 
 exe 'source ' . g:fs_scripts_vim_path . 'build_menu.vim'

@@ -7,17 +7,14 @@
 #   TINYXML_LIBRARIES   - List of libraries when using TinyXML.
 #
 
+SET(TINYXML_INCLUDE_DIR ${EXTERNAL_LIBRARY_INSTALL_PATH}/include/tinyxml)
+
 IF( TINYXML_INCLUDE_DIR )
     # Already in cache, be silent
     SET( TinyXML_FIND_QUIETLY TRUE )
 ENDIF( TINYXML_INCLUDE_DIR )
 
-FIND_PATH( TINYXML_INCLUDE_DIR "tinyxml.h"
-           PATH_SUFFIXES "tinyxml" )
-
-FIND_LIBRARY( TINYXML_LIBRARIES
-              NAMES "tinyxml"
-              PATH_SUFFIXES "tinyxml" )
+SET(TINYXML_LIBRARIES ${EXTERNAL_LIBRARY_INSTALL_PATH}/lib/libtinyxml.a)
 
 # handle the QUIETLY and REQUIRED arguments and set TINYXML_FOUND to TRUE if
 # all listed variables are TRUE

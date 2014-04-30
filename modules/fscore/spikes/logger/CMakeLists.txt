@@ -22,7 +22,6 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-content)
 include_directories(${fscore_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
                       fscore
-                      ${Boost_LIBRARIES}
                       ${SDL2_LIBRARIES}
                       ${TINYXML_LIBRARIES})
 

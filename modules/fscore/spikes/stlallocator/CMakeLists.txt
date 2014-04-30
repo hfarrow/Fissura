@@ -16,7 +16,6 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 include_directories(${core_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
                       fscore
-                      ${Boost_LIBRARIES}
                       ${SDL2_LIBRARIES}
                       ${TINYXML_LIBRARIES})
 

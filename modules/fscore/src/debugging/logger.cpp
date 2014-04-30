@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-
 #include <thread>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
+#include <ctime>
+
 #include <tinyxml.h>
 #include <SDL.h>
 
@@ -15,8 +15,6 @@
 #include "fscore/debugging/memory.h"
 
 using namespace fs;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
 
 // Constants
 static const char* LOG_FILENAME = "fissura.log";
@@ -46,7 +44,11 @@ public:
     void setDisplayFlags(const DebugString& tag, u32 flags);
 
 private:
+    using clock = std::chrono::high_resolution_clock;
+    using time_point = std::chrono::high_resolution_clock::time_point;
+
     std::mutex _tagMutex;
+    clock::time_point _startTime;
 
     void outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags);
     void writeToLogFile(const DebugString& data);
@@ -55,7 +57,8 @@ private:
 };
 
 LogManager::LogManager() :
-    tags(TagAllocator(*memory::getDebugArena()))
+    tags(TagAllocator(*memory::getDebugArena())),
+    _startTime(clock::now())
 {
     // set up the default log tags
     setDisplayFlags("FATAL", DEFAULT_FLAG_FATAL);
@@ -193,15 +196,30 @@ void LogManager::getOutputBuffer(DebugString& outOutputBuffer, const DebugString
             outOutputBuffer += sourceFile;
         }
         
-        outOutputBuffer += " (";
-        ptime pt = microsec_clock::local_time();
-        time_duration td = pt.time_of_day();
-        auto hours = td.hours();
-        auto minutes = td.minutes();
-        auto seconds = td.seconds();
-        auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
-        outOutputBuffer += (dformat("%1%:%2%:%3%:%4%") % hours % minutes % seconds % milliseconds).str();
-        outOutputBuffer += ")";
+        clock::time_point now = clock::now();
+        clock::duration delta = now - _startTime;
+    
+        {
+            using namespace std::chrono;
+            hours h = duration_cast<hours>(delta);
+            delta -= h;
+            minutes m = duration_cast<minutes>(delta);
+            delta -= m;
+            seconds s = duration_cast<seconds>(delta);
+            delta -= s;
+            microseconds ms = duration_cast<microseconds>(delta);
+            delta -= ms;
+
+            outOutputBuffer += (dformat(" (%1%h:%2%m:%3%.%4%s)") % h.count() % m.count() % s.count() % ms.count()).str();
+        }
+
+        // ptime pt = microsec_clock::local_time();
+        // time_duration td = pt.time_of_day();
+        // auto hours = td.hours();
+        // auto minutes = td.minutes();
+        // auto seconds = td.seconds();
+        // auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
+        // outOutputBuffer += (dformat("%1%:%2%:%3%.%4%") % hours % minutes % seconds % milliseconds).str();
     }
 
     outOutputBuffer += "\n";

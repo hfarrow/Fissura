@@ -33,4 +33,7 @@
 #include "fscore/memory/stl_allocator.h"
 #include "fscore/memory/new.h"
 
+// SDL
+#include "fscore/sdl/malloc_hook.h"
+
 #endif

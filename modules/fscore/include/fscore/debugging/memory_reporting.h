@@ -6,7 +6,7 @@ namespace fs
     namespace memory
     {
         template<class Arena, class MemoryTrackingPolicy>
-        void logArenaReport(Arena& arena, MemoryTrackingPolicy& memoryTracker);
+        void generateArenaReport(Arena& arena, MemoryTrackingPolicy& memoryTracker);
     }
 }
 

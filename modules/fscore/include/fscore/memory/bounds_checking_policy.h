@@ -61,7 +61,8 @@ namespace fs
         template<class MemoryTrackingPolicy>
         inline void checkAll(MemoryTrackingPolicy& memoryTracker)
         {
-            // TODO: implement
+            // TODO: implement checking all allocations instead of just the allocation
+            // being made or freed.
             (void)memoryTracker;
         }
     };

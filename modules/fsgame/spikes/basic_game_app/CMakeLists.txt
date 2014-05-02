@@ -23,9 +23,7 @@ include_directories(${fscore_SOURCE_DIR}/include)
 include_directories(${fsgame_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
                       fsgame
-                      fscore
-                      ${SDL2_LIBRARIES}
-                      ${TINYXML_LIBRARIES})
+                      fscore)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

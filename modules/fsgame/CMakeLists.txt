@@ -38,8 +38,6 @@ add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})
 target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                      ${SDL2_LIBRARIES}
-                      ${TINYXML_LIBRARIES}
                       fscore
                       fstest
                       )

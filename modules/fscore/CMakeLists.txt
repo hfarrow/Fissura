@@ -20,7 +20,10 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
     #    "${PROJECT_SOURCE_DIR}/*_linux.c")
 #list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
 
-add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME}
+                      ${SDL2_LIBRARIES}
+                      ${TINYXML_LIBRARIES})
 
 # Unit testing
 include_directories(${Boost_INCLUDE_DIRS})
@@ -36,9 +39,7 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})
 target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
-                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                      ${SDL2_LIBRARIES}
-                      ${TINYXML_LIBRARIES})
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${PROJECT_NAME}-test 
     PROPERTIES 

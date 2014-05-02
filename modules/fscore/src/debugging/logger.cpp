@@ -212,14 +212,6 @@ void LogManager::getOutputBuffer(DebugString& outOutputBuffer, const DebugString
 
             outOutputBuffer += (dformat(" (%1%h:%2%m:%3%.%4%s)") % h.count() % m.count() % s.count() % ms.count()).str();
         }
-
-        // ptime pt = microsec_clock::local_time();
-        // time_duration td = pt.time_of_day();
-        // auto hours = td.hours();
-        // auto minutes = td.minutes();
-        // auto seconds = td.seconds();
-        // auto milliseconds = td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
-        // outOutputBuffer += (dformat("%1%:%2%:%3%.%4%") % hours % minutes % seconds % milliseconds).str();
     }
 
     outOutputBuffer += "\n";
@@ -253,6 +245,10 @@ namespace Logger
         if(s_pLogManager)
         {
             s_pLogManager->log(tag, message, funcName, sourceFile, lineNum);
+        }
+        else
+        {
+            FS_PRINT("[" << tag << "] " << message);
         }
     }
 

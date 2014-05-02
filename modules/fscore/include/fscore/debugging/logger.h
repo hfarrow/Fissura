@@ -30,7 +30,7 @@ namespace fs
         void log(const DebugString& tag, const DebugString& message, 
                  const char* funcName, const char* sourceFile, u32 lineNum);
         void setDisplayFlags(const DebugString& tag, u32 flags);
-        void printStringFormatted(dformat format);
+        void printStringFormatted(fs::dformat format);
         bool getSurpressStdOutput();
         void setSurpressStdOutput(bool surpress);
     }
@@ -59,9 +59,9 @@ namespace fs
     } \
     while(0)
 
-#define FS_LOG(tag, message) FS_LOGF(tag, dformat((message)))
-#define FS_FATAL(message) FS_FATALF(dformat((message)))
-#define FS_ERROR(message) FS_ERRORF(dformat((message)))
+#define FS_LOG(tag, message) FS_LOGF(tag, fs::dformat((message)))
+#define FS_FATAL(message) FS_FATALF(fs::dformat((message)))
+#define FS_ERROR(message) FS_ERRORF(fs::dformat((message)))
 #define FS_WARN(message) FS_LOG("WARN", message)
 #define FS_INFO(message) FS_LOG("INFO", message)
 #define FS_DEBUG(message) FS_LOG("DEBUG", message)

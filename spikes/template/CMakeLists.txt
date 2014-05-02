@@ -17,13 +17,7 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 include_directories(${fscore_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}
                       fsgame
-                      fscore
-                      ${SDL2_LIBRARIES}
-                      ${TINYXML_LIBRARIES}
-                      ${Boost_THREAD_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
-                      ${Boost_CHRONO_LIBRARY}
-                      ${Boost_DATE_TIME_LIBRARY})
+                      fscore)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

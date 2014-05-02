@@ -3,4 +3,5 @@ project(fscoreSpikes)
 
 add_subdirectory(stlallocator)
 add_subdirectory(logger)
+add_subdirectory(sdlhooks)
 #add_subdirectory(freelist)

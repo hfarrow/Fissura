@@ -248,7 +248,8 @@ namespace Logger
         }
         else
         {
-            FS_PRINT("[" << tag << "] " << message);
+            if(!surpressStdOutput)
+                FS_PRINT("[" << tag << "] " << message);
         }
     }
 

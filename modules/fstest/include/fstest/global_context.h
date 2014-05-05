@@ -35,15 +35,15 @@ namespace test
 
         bool requireAssert(std::function<void()> func)
         {
-            //bool surpressStdOutputOld = fs::Logger::getSurpressStdOutput();
-            //fs::Logger::setSurpressStdOutput(true);
+            bool surpressStdOutputOld = fs::Logger::getSurpressStdOutput();
+            fs::Logger::setSurpressStdOutput(true);
             fs::setAssertTriggered(false);
 
             fs::setIgnoreAsserts(true);
             func();
             fs::setIgnoreAsserts(false);
 
-            //fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
+            fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
             return fs::getAssertTriggered();
             
             // If the assert results in an abort(), the below code would work.

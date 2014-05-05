@@ -21,7 +21,6 @@ namespace fs
 
     namespace pointerUtil
     {
-
         // Calculate by what amount in bytes the pAddress must be moved
         // forward to be aligned by the specified amount.
         inline uptr alignTop(uptr ptr, size_t alignment);
@@ -51,12 +50,12 @@ namespace fs
         class VirtualMemory
         {
         public:
-            static inline size_t getPageSize();
-            static inline void* reserveAddressSpace(size_t size);
-            static inline void* allocatePhysicalMemory(void* ptr, size_t);
-            static inline void* allocatePhysicalMemory(size_t);
-            static inline void freePhysicalMemory(void* ptr, size_t size);
-            static inline void releaseAddressSpace(void* ptr, size_t size);
+            static size_t getPageSize();
+            static void* reserveAddressSpace(size_t size);
+            static void* allocatePhysicalMemory(void* ptr, size_t);
+            static void* allocatePhysicalMemory(size_t);
+            static void freePhysicalMemory(void* ptr, size_t size);
+            static void releaseAddressSpace(void* ptr, size_t size);
         };
     }
 

@@ -9,6 +9,15 @@
 
 namespace fs
 {
+    class IArenaAdapter
+    {
+    public:
+        virtual ~IArenaAdapter() {}
+
+        virtual void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo) = 0;
+        virtual void free(void* ptr) = 0;
+    };
+
     template<class AllocationPolicy, class ThreadPolicy, class BoundsCheckingPolicy, class MemoryTrackingPolicy, class MemoryTaggingPolicy>
     class MemoryArena
     {

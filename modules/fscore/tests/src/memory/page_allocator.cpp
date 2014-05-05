@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free)
 
     FS_REQUIRE_ASSERT([&](){allocator.allocate(VirtualMemory::getPageSize(), 1, 0);});
     FS_REQUIRE_ASSERT([&](){allocator.allocate(VirtualMemory::getPageSize(), 0, 1);});
-    FS_REQUIRE_ASSERT([&](){allocator.allocate(-1, 0, 0);});
+    FS_REQUIRE_ASSERT([&](){allocator.allocate(0, 0, 0);});
 }
 
 BOOST_AUTO_TEST_SUITE_END()

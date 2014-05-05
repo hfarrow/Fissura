@@ -17,17 +17,17 @@ using SdlArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
                              ExtendedMemoryTracking,
                              MemoryTagging>;
 
-class SdlArenaWrapper : public ISdlArena 
+class SdlArenaAdatper : public IArenaAdapter 
 {
 public:
-    SdlArenaWrapper(SdlArena* pArena) :
+    SdlArenaAdatper(SdlArena* pArena) :
         _pArena(pArena)
     {
     }
 
     virtual void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo) override
     {
-        FS_PRINT("SdlArenaWrapper allocate");
+        FS_PRINT("SdlArenaAdatper allocate");
         void* ptr = _pArena->allocate(size, alignment, sourceInfo);
         FS_PRINT("allocated ptr = " << ptr);
         return ptr;
@@ -35,7 +35,7 @@ public:
 
     virtual void free(void* ptr) override
     {
-        FS_PRINT("SdlArenaWrapper free " << ptr);
+        FS_PRINT("SdlArenaAdatper free " << ptr);
         _pArena->free(ptr);
     }
 
@@ -48,7 +48,7 @@ int main( int, char **)
     HeapArea sdlArea(FS_SIZE_OF_MB * 32);
     SdlArena arena(sdlArea, "SdlArena");
 
-    SdlArenaWrapper wrapper(&arena);
+    SdlArenaAdatper wrapper(&arena);
     fs::setSdlArena(&wrapper);
 
     void* ptr = SDL_malloc(32);

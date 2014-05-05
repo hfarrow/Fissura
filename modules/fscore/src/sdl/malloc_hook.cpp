@@ -1,10 +1,12 @@
 #include "fscore/sdl/malloc_hook.h"
 #include "fscore/memory/memory_arena.h"
 
+#include <cstdlib>
+
 using namespace fs;
 
 static IArenaAdapter* pSdlArena = nullptr;
-void setSdlArena(IArenaAdapter* pArena)
+void fs::setSdlArena(IArenaAdapter* pArena)
 {
     pSdlArena = pArena;
 }

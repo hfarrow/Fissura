@@ -15,13 +15,10 @@ namespace fs
                 static size_t getStackTrace(void** frames, size_t maxFrames);
                 static char* getCaller(void** frames, size_t numFrames, size_t framesToSkip);
                 static char* demangleStackSymbol(char* functionSymbol);
-
         };
     }
 
     using StackTraceUtil = internal::StackTraceUtil<PLATFORM_ID>;
 }
-
-#include "fscore/debugging/utils.inl"
 
 #endif

@@ -14,7 +14,7 @@ using namespace std;
 using SdlArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
                              MultiThread<MutexPrimitive>,
                              SimpleBoundsChecking,
-                             ExtendedMemoryTracking,
+                             FullMemoryTracking,
                              MemoryTagging>;
 
 class SdlArenaAdatper : public IArenaAdapter 

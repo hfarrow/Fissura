@@ -6,9 +6,11 @@ include(CMakeFindBinUtils)
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Mac OS X specific code
     set(IS_MAC "1")
+    set(IS_UNIX "1")
 ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # Linux specific code
     set(IS_LINUX "1")
+    set(IS_UNIX "1")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/modules/")

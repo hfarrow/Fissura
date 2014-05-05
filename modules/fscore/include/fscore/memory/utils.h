@@ -18,7 +18,6 @@
 
 namespace fs
 {
-
     namespace pointerUtil
     {
         // Calculate by what amount in bytes the pAddress must be moved

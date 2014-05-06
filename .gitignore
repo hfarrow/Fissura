@@ -52,4 +52,5 @@ pip-log.txt
 ## Fissura
 #############
 tags
+build-xcode/
 !/scripts/build/

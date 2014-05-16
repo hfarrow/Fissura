@@ -7,7 +7,7 @@
 
 #define FS_NEW(type, arena)    FS_NEW_ALIGNED(type, (arena), alignof(type))
 
-#define FS_NEW_ALIGNED(type, arena, alignment)    new ((arena).allocate(sizeof(type), alignment, fs::SourceInfo(__FILE__, __LINE__))) type
+#define FS_NEW_ALIGNED(type, arena, alignment)    new ((arena).allocate(sizeof(type), alignment, FS_SOURCE_INFO)) type
 
 #define FS_DELETE(object, arena)    fs::deleteSingle((object), (arena))
 

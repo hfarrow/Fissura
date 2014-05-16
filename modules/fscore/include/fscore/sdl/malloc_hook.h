@@ -9,7 +9,9 @@ namespace fs
 
     void setSdlArena(IArenaAdapter* pArena);
 }
-extern "C" {
+
+extern "C"
+{
     void *SDL_malloc(size_t size);
     void *SDL_calloc(size_t nmemb, size_t size);
     void *SDL_realloc(void *ptr, size_t size);

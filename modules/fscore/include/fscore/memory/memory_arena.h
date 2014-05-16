@@ -1,6 +1,8 @@
 #ifndef FS_MEMORY_ARENA_H
 #define FS_MEMORY_ARENA_H
 
+#include <stdio.h>
+
 #include "fscore/utils/types.h"
 #include "fscore/memory/memory_area.h"
 #include "fscore/memory/source_info.h"
@@ -15,6 +17,7 @@ namespace fs
         virtual ~IArenaAdapter() {}
 
         virtual void* allocate(size_t size, size_t alignment, const SourceInfo& sourceInfo) = 0;
+        virtual void* reallocate(void* ptr, size_t size, size_t alignment, const SourceInfo& sourceInfo) = 0;
         virtual void free(void* ptr) = 0;
     };
 
@@ -76,6 +79,32 @@ namespace fs
             _threadGuard.leave();
             // FS_PRINT("allocated " << (void*)(plainMemory + headerSize));
             return (plainMemory + headerSize);
+        }
+
+        void* reallocate(void* ptr, size_t size, size_t alignment, const SourceInfo& sourceInfo)
+        {
+            void* newPtr = nullptr;
+
+            if(AllocationPolicy::HEADER_SIZE > 0)
+            {
+                // Will be locked when allocate and free is called below
+                //_threadGuard.enter();
+
+                const size_t headerSize = AllocationPolicy::HEADER_SIZE + BoundsCheckingPolicy::SIZE_FRONT;
+                const size_t footerSize = BoundsCheckingPolicy::SIZE_BACK;
+                char* originalMemory = reinterpret_cast<char*>(ptr) - headerSize;
+                const size_t oldAllocationSize = _allocator.getAllocationSize(originalMemory) - headerSize - footerSize;
+                const size_t sizeToCopy = oldAllocationSize > size ? size : oldAllocationSize;
+                
+                // Allocate new memory, copy old memory to new memory, free old memory
+                newPtr = allocate(size, alignment, sourceInfo);
+                memcpy(newPtr, ptr, sizeToCopy);
+                free(ptr);
+
+                //_threadGuard.leave();
+            }
+
+            return newPtr;
         }
 
         void free(void* ptr)

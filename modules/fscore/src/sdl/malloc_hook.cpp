@@ -14,19 +14,22 @@ void fs::setSdlArena(IArenaAdapter* pArena)
 void *SDL_malloc(size_t size)
 {
     if(pSdlArena)
-        return pSdlArena->allocate(size, 8, fs::SourceInfo(__FILE__, __LINE__));
+        return pSdlArena->allocate(size, 8, FS_SOURCE_INFO);
     else
         return malloc(size);
 }
 
 void *SDL_calloc(size_t nmemb, size_t size)
 {
-    return calloc(nmemb, size);
+    return SDL_malloc(nmemb * size);
 }
 
 void *SDL_realloc(void *ptr, size_t size)
 {
-    return realloc(ptr, size);
+    if(pSdlArena)
+        return pSdlArena->reallocate(ptr, size, 8, FS_SOURCE_INFO);
+    else
+        return realloc(ptr, size);
 }
 
 void SDL_free(void *ptr)

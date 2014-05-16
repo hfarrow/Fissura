@@ -33,6 +33,14 @@ public:
         return ptr;
     }
 
+    virtual void* reallocate(void* ptr, size_t size, size_t alignment, const SourceInfo& sourceInfo) override
+    {
+        FS_PRINT("SdlArenaAdatper reallocate");
+        void* newPtr = _pArena->reallocate(ptr, size, alignment, sourceInfo);
+        FS_PRINT("allocated ptr = " << newPtr);
+        return newPtr;
+    }
+
     virtual void free(void* ptr) override
     {
         FS_PRINT("SdlArenaAdatper free " << ptr);
@@ -52,12 +60,14 @@ int main( int, char **)
     fs::setSdlArena(&wrapper);
 
     void* ptr = SDL_malloc(32);
-    
-    FS_PRINT("========== Log tracker report before allocation freed.");
+    FS_PRINT("========== Log tracker report after allocation made.");
     arena.logTrackerReport();
 
-    SDL_free(ptr);
+    ptr = SDL_realloc(ptr, 64);
+    FS_PRINT("========== Log tracker report after reallocation.");
+    arena.logTrackerReport();
 
+    //SDL_free(ptr);
     FS_PRINT("========== Log tracker report after allocation freed.");
     arena.logTrackerReport();
 

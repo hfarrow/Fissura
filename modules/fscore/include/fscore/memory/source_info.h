@@ -3,6 +3,8 @@
 
 #include "fscore/utils/types.h"
 
+#define FS_SOURCE_INFO      fs::SourceInfo(__FILE__, __LINE__)
+
 namespace fs
 {
     struct SourceInfo

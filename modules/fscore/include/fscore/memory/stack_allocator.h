@@ -45,18 +45,6 @@ namespace fs
         inline size_t getTotalUsedSize() const { return _layoutPolicy.getTotalUsedSize(this); };
         inline size_t getVirtualSize() const { return _layoutPolicy.getVirtualSize(this); }
         inline size_t getPhysicalSize() const { return _layoutPolicy.getPhysicalSize(this); }
-
-        // Temp... delete me later
-        void PRINT_STATE()
-        {
-            FS_PRINT("Current State:");
-            FS_PRINT("\t_virtualStart    = " << (void*)_virtualStart);
-            FS_PRINT("\t_virtualEnd      = " << (void*)_virtualEnd);
-            FS_PRINT("\t_physicalEnd     = " << (void*)_physicalEnd);
-            FS_PRINT("\t_phyiscalCurrent = " << (void*)_physicalCurrent);
-            FS_PRINT("\t_lastUserPtr     = " << (void*)_lastUserPtr);
-            FS_PRINT("\tallocatedSpace   = " << getTotalUsedSize());
-        }
     
     private:
         LayoutPolicy _layoutPolicy;

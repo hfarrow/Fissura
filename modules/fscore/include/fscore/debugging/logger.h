@@ -62,11 +62,11 @@ namespace fs
 #define FS_LOG(tag, message) FS_LOGF(tag, fs::dformat((message)))
 #define FS_FATAL(message) FS_FATALF(fs::dformat((message)))
 #define FS_ERROR(message) FS_ERRORF(fs::dformat((message)))
-#define FS_WARN(message) FS_LOG("WARN", message)
-#define FS_INFO(message) FS_LOG("INFO", message)
-#define FS_DEBUG(message) FS_LOG("DEBUG", message)
-#define FS_WARNF(format) FS_LOGF("WARN", format)
-#define FS_INFOF(format) FS_LOGF("INFO", format)
-#define FS_DEBUGF(format) FS_LOGF("DEBUG", format)
+#define FS_WARN(message) FS_LOG("WARN", (message))
+#define FS_INFO(message) FS_LOG("INFO", (message))
+#define FS_DEBUG(message) FS_LOG("DEBUG", (message))
+#define FS_WARNF(format) FS_LOGF("WARN", (format))
+#define FS_INFOF(format) FS_LOGF("INFO", (format))
+#define FS_DEBUGF(format) FS_LOGF("DEBUG", (format))
 
 #endif

@@ -32,6 +32,7 @@
 #include "fscore/memory/thread_policy.h"
 #include "fscore/memory/source_info.h"
 #include "fscore/memory/stl_allocator.h"
+#include "fscore/memory/malloc_allocator.h"
 #include "fscore/memory/new.h"
 
 // SDL

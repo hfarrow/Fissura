@@ -36,6 +36,8 @@ void HeapAllocator::createHeap()
 
 void* HeapAllocator::allocate(size_t size, size_t alignment, size_t offset)
 {
+    // TODO: do we need to store a header at all?
+    
     // store the allocation offset infront of the allocation
     size += SIZE_OF_ALLOCATION_OFFSET;
     offset += SIZE_OF_ALLOCATION_OFFSET;

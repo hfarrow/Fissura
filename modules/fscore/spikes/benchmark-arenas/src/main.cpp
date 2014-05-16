@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <chrono>
+#include <thread>
+#include <cstdlib>
 
 #include "fscore.h"
 
@@ -24,14 +26,14 @@ void allocator_ManySmallAllocations_InOrder_NoFree(const char* allocatorType)
 {
     FS_PRINT(allocatorType);
     
-    const size_t allocationSize = 64;
+    const size_t allocationSize = 32;
     const size_t allocationAlignment = 8;
     
-    HeapArea area(FS_SIZE_OF_MB * 8);
+    HeapArea area(FS_SIZE_OF_MB * 5);
     Allocator allocator(area.getStart(), area.getEnd());
 
     auto start = steady_clock::now();
-    for(i32 i = FS_SIZE_OF_MB * 7 / allocationSize; i > 0; --i)
+    for(i32 i = FS_SIZE_OF_MB * 3 / allocationSize; i > 0; --i)
     {
         allocator.allocate(allocationSize, allocationAlignment, 0);
     }
@@ -52,7 +54,7 @@ int main( int, char **)
     allocator_ManySmallAllocations_InOrder_NoFree<StackAllocatorBottom>("StackAllocatorBottom");
     allocator_ManySmallAllocations_InOrder_NoFree<StackAllocatorTop>("StackAllocatorTop");
     allocator_ManySmallAllocations_InOrder_NoFree<HeapAllocator>("HeapAllocator");
-    allocator_ManySmallAllocations_InOrder_NoFree<PoolAllocatorNonGrowable<64, 8>>("PoolAllocator");
+    allocator_ManySmallAllocations_InOrder_NoFree<PoolAllocatorNonGrowable<32, 8>>("PoolAllocator");
     allocator_ManySmallAllocations_InOrder_NoFree<MallocAllocator>("MallocAllocator");
 
     //Logger::destroy();

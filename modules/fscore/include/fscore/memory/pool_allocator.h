@@ -47,8 +47,8 @@ namespace fs
         void purge(){};
 
         inline size_t getTotalUsedSize() const { return (_usedCount * _freelist.getSlotSize()) + _wastedSpace; }
-        inline size_t getVirtualSize() const { return _virtualEnd - _virtualStart; }
-        inline size_t getPhysicalSize() const { return _physicalEnd - _virtualStart; }
+        inline size_t getVirtualSize() const { return (uptr)_virtualEnd - (uptr)_virtualStart; }
+        inline size_t getPhysicalSize() const { return (uptr)_physicalEnd - (uptr)_virtualStart; }
 
     private:
         void* _virtualStart;

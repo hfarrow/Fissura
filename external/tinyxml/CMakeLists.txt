@@ -3,7 +3,23 @@ cmake_minimum_required(VERSION 2.6)
 project(TinyXml)
 
 set(LIBRARY_OUTPUT_PATH ../build/lib/${CMAKE_BUILD_TYPE})
-set(CMAKE_CXX_FLAGS  "-Wall -std=c++11 -stdlib=libc++")
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Mac OS X specific code
+    set(IS_MAC "1")
+    set(IS_UNIX "1")
+ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # Linux specific code
+    set(IS_LINUX "1")
+    set(IS_UNIX "1")
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+
+IF(DEFINED IS_LINUX)
+    set(CMAKE_CXX_FLAGS                 "-Wall -fPIC -std=c++11")
+ELSEIF(DEFINED IS_MAC)
+    set(CMAKE_CXX_FLAGS                 "-Wall -fPIC -std=c++11 -stdlib=libc++")
+ENDIF(DEFINED IS_LINUX)
 
 include_directories(./)
 

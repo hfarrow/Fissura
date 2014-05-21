@@ -45,6 +45,7 @@ void* HeapAllocator::allocate(size_t size, size_t alignment, size_t offset)
     // We waste up to 'alignment' bytes in order to ensure we can align and 
     // offset the memory as requested.
     uptr ptr = (uptr)mspace_malloc(_mspace, size + alignment);
+    FS_ASSERT_MSG((void*)ptr >= _start && (void*)ptr < _end, "mspace_malloc exceeded budget.");
 
     if((void*)ptr == nullptr)
     {

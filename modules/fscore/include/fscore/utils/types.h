@@ -112,7 +112,13 @@ namespace fs
     typedef IntToType<false> NonPODType;
     typedef IntToType<true> PODType;
 
-
+    // ArgumentType allows macros that take a templated type
+    // ie: #define MY_MACRO(t) t
+    //     MY_MACRO((MyTemplatedType<int, float>));
+    //
+    //     Note: MyTemplatedType<int, float> must be wrapped in extra parenthesis.
+    template<typename T> struct ArgumentType;
+    template<typename T, typename U> struct ArgumentType<T(U)> { typedef U type; };
 }
 
 #endif

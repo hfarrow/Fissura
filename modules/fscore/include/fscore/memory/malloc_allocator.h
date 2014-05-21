@@ -23,7 +23,7 @@ namespace fs
 
         }
 
-        void* allocate(size_t  size, size_t alignment, size_t offset)
+        inline void* allocate(size_t  size, size_t alignment, size_t offset)
         {
             (void)alignment;
             (void)offset;
@@ -32,7 +32,7 @@ namespace fs
 
         inline void free(void* ptr)
         {
-            free(ptr);
+            ::free(ptr);
         }
 
         inline void reset() { FS_ASSERT_MSG(false, "MallocAllocator cannot be reset."); }

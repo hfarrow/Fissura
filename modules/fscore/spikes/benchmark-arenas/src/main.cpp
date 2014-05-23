@@ -67,16 +67,16 @@ int main( int, char **)
     //Logger::init("content/logger.xml");
 
 
-#define CURRENT_TEST(Allocator, arg) \
+#define CURRENT_TEST(Allocator, ...) \
     allocator_ManySmallAllocations_InOrder_FreeInReverse<ArgumentType<void(Allocator)>::type> \
-        (FS_PP_STRINGIZE(ArgumentType<void(Allocator)>::type), arg)
+        (FS_PP_STRINGIZE(Allocator), __VA_ARGS__)
     FS_PRINT("allocator_ManySmallAllocations_InOrder_FreeInReverse");
     CURRENT_TEST(LinearAllocator, false);
-    CURRENT_TEST(StackAllocatorBottom, false);
-    CURRENT_TEST(StackAllocatorTop, false);
-    CURRENT_TEST((PoolAllocatorNonGrowable<32, 8>), false);
-    CURRENT_TEST(HeapAllocator, false);
-    CURRENT_TEST(MallocAllocator, false);
+    CURRENT_TEST(StackAllocatorBottom, true);
+    CURRENT_TEST(StackAllocatorTop, true);
+    CURRENT_TEST((PoolAllocatorNonGrowable<32, 8>), true);
+    CURRENT_TEST(HeapAllocator, true);
+    CURRENT_TEST(MallocAllocator, true);
 #undef CURRENT_TEST
 
 

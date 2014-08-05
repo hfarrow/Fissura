@@ -21,7 +21,7 @@ struct LinearAllocatorFixture
 
     ~LinearAllocatorFixture()
     {
-    
+
     }
 
     const size_t allocatorSize;

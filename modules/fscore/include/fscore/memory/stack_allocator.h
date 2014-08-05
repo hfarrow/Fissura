@@ -36,7 +36,7 @@ namespace fs
         void* allocate(size_t size, size_t alignment, size_t offset);
         void free(void* ptr);
         inline void reset(size_t initialSize = 0);
-        
+
         // Free physical memory that is no longer in use.
         // The address space will still be reserved.
         // Does nothing for NonGrowbable Policy.
@@ -45,7 +45,7 @@ namespace fs
         inline size_t getTotalUsedSize() const { return _layoutPolicy.getTotalUsedSize(this); };
         inline size_t getVirtualSize() const { return _layoutPolicy.getVirtualSize(this); }
         inline size_t getPhysicalSize() const { return _layoutPolicy.getPhysicalSize(this); }
-    
+
     private:
         LayoutPolicy _layoutPolicy;
         GrowthPolicy _growthPolicy;
@@ -73,25 +73,25 @@ namespace fs
         template<typename StackAllocator>
         inline void reset(StackAllocator* pStack, size_t initialSize);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline bool grow(StackAllocator* pStack, size_t allocationSize);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline void free(StackAllocator* pStack, void* ptr);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline size_t getTotalUsedSize(StackAllocator* pStack) const;
 
         template<typename StackAllocator>
@@ -110,28 +110,28 @@ namespace fs
         template<typename StackAllocator>
         inline void init(StackAllocator* pStack, uptr memory, size_t initialSize, size_t maxSize);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline void reset(StackAllocator* pStack, size_t initialSize);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline uptr alignPtr(StackAllocator* pStack, size_t size, size_t alignment, size_t offset);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline u32 calcHeaderSize(StackAllocator* pStack, uptr prevCurrent, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline bool checkOutOfMemory(StackAllocator* pStack, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline bool grow(StackAllocator* pStack, size_t allocationSize);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline void* allocate(StackAllocator* pStack, u32 headerSize, size_t size);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline void free(StackAllocator* pStack, void* ptr);
 
-        template<typename StackAllocator> 
+        template<typename StackAllocator>
         inline size_t getTotalUsedSize(StackAllocator* pStack) const;;
 
         template<typename StackAllocator>

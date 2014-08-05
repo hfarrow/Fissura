@@ -37,12 +37,12 @@ void HeapAllocator::createHeap()
 void* HeapAllocator::allocate(size_t size, size_t alignment, size_t offset)
 {
     // TODO: do we need to store a header at all?
-    
+
     // store the allocation offset infront of the allocation
     size += SIZE_OF_ALLOCATION_OFFSET;
     offset += SIZE_OF_ALLOCATION_OFFSET;
 
-    // We waste up to 'alignment' bytes in order to ensure we can align and 
+    // We waste up to 'alignment' bytes in order to ensure we can align and
     // offset the memory as requested.
     uptr ptr = (uptr)mspace_malloc(_mspace, size + alignment);
     FS_ASSERT_MSG((void*)ptr >= _start && (void*)ptr < _end, "mspace_malloc exceeded budget.");
@@ -52,7 +52,7 @@ void* HeapAllocator::allocate(size_t size, size_t alignment, size_t offset)
         FS_ASSERT(!"Failed to allocate memory from dlmalloc heap.");
         return nullptr;
     }
-    
+
     void* header = (void*)(pointerUtil::alignTop(ptr + offset, alignment) - offset);
     const u32 headerSize = (uptr)header - ptr + SIZE_OF_ALLOCATION_OFFSET;
 
@@ -89,8 +89,8 @@ void HeapAllocator::free(void* ptr)
     as_char -= SIZE_OF_ALLOCATION_OFFSET;
     const u32 headerSize = *as_u32;
     FS_ASSERT(headerSize >= SIZE_OF_ALLOCATION_OFFSET);
-    
-    as_uptr = (uptr)ptr - headerSize; 
+
+    as_uptr = (uptr)ptr - headerSize;
     mspace_free(_mspace, as_void);
 }
 

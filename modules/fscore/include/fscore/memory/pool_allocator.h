@@ -28,7 +28,7 @@ namespace fs
 
         // Constructor for NonGrowable Pool only.
         PoolAllocator(void* start, void* end);
-        
+
         ~PoolAllocator();
 
         void* allocate(size_t size, size_t alignment, size_t userOffset);

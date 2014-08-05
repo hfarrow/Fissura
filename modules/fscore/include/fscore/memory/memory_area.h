@@ -1,5 +1,5 @@
 #ifndef FS_MEMORY_AREA_H
-#define FS_MEMORY_AREA_H 
+#define FS_MEMORY_AREA_H
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"

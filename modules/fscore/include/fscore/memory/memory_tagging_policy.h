@@ -44,7 +44,7 @@ namespace fs
                 as_char = current;
                 *as_u32 = pattern;
             }
-            
+
             u32 numBitsToSet = 8 * (size - (current - start));
             FS_ASSERT(numBitsToSet <= 32);
 

@@ -14,13 +14,13 @@ set(PROJECT_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME})
 
 include_directories(${PROJECT_INCLUDE_DIR})
 
-file(GLOB_RECURSE PROJECT_SOURCE_FILES 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
     "${PROJECT_SOURCE_DIR}/*.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS
         "${PROJECT_SOURCE_DIR}/*_windows.cpp"
         "${PROJECT_SOURCE_DIR}/*_windows.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_UNIX 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES_UNIX
         "${PROJECT_SOURCE_DIR}/*_unix.cpp"
         "${PROJECT_SOURCE_DIR}/*_unix.c")
 
@@ -51,8 +51,8 @@ target_link_libraries(${PROJECT_NAME}-test
                       ${PROJECT_NAME}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-set_target_properties(${PROJECT_NAME}-test 
-    PROPERTIES 
+set_target_properties(${PROJECT_NAME}-test
+    PROPERTIES
     COMPILE_FLAGS "-fexceptions"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_OUTPUT_DIR}-test")
 

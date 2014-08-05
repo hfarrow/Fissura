@@ -38,7 +38,7 @@ namespace fs
         };
 
         as_T = newArray<T>(arena, n, file, line, PODType());
-        
+
         const T* const onePastLast = as_T + n;
         while(as_T < onePastLast)
         {
@@ -91,7 +91,7 @@ namespace fs
 
         as_T = ptr;
         const size_t n = as_size_t[-1];
-        
+
         for(size_t i=n; i > 0; --i)
             as_T[i-1].~T();
 

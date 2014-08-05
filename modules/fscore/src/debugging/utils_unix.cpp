@@ -79,7 +79,7 @@ namespace internal
                 current++;
             }
         }
-        
+
         free(strings);
 
         return buffer;

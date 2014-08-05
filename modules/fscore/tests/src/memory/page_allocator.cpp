@@ -12,12 +12,12 @@ struct PageAllocatorFixture
 {
     PageAllocatorFixture()
     {
-    
+
     }
 
     ~PageAllocatorFixture()
     {
-    
+
     }
 };
 
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free)
     void* ptr = allocator.allocate(VirtualMemory::getPageSize(), 0, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr, VirtualMemory::getPageSize());
-    
+
     // By default will allocate up to page size.
     ptr = allocator.allocate(32, 0, 0);
     BOOST_REQUIRE(ptr);

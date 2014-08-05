@@ -48,7 +48,7 @@ namespace fs
 
     template<typename T>
     using DebugList = std::list<T, DebugStlAllocator<T>>;
-    
+
     // Pre C++11... Use above template alaises if possible.
 	// #define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>
 	// #define FS_DECL_MAP(K, V, Arena) std::map<K, V, std::less<K>, StlAllocator<std::pair<const K ,V>, Arena>>
@@ -90,7 +90,7 @@ namespace fs
     struct TypeAndCount
     {
     };
-     
+
     template <class T, size_t N>
     struct TypeAndCount<T[N]>
     {
@@ -108,7 +108,7 @@ namespace fs
     struct IntToType
     {
     };
-     
+
     typedef IntToType<false> NonPODType;
     typedef IntToType<true> PODType;
 

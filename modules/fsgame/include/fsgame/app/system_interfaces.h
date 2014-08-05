@@ -1,4 +1,4 @@
-#ifndef FS_SYSTEM_INTERFACES_H 
+#ifndef FS_SYSTEM_INTERFACES_H
 #define FS_SYSTEM_INTERFACES_H
 
 namespace fs

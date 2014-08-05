@@ -25,7 +25,7 @@ template<class Allocator>
 void allocator_ManySmallAllocations_InOrder_FreeInReverse(const char* allocatorType, bool doFree = true)
 {
     FS_PRINT(allocatorType);
-    
+
     const i32 numAllocations = 100000;
     const size_t allocationSize = 32;
     const size_t allocationAlignment = 8;
@@ -64,7 +64,7 @@ template<class Allocator>
 void allocator_ManyMixedAllocations_InOrder_FreeInReverse(const char* allocatorType, bool doFree = true)
 {
     FS_PRINT(allocatorType);
-    
+
     const i32 numAllocations = 100000;
     const size_t allocationSize = 32;
     const size_t allocationAlignment = 8;
@@ -142,7 +142,7 @@ int main( int, char **)
 #undef CURRENT_TEST
 
     //Logger::destroy();
-    
+
     return 0;
 }
 

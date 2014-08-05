@@ -45,7 +45,7 @@ namespace test
 
             fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
             return fs::getAssertTriggered();
-            
+
             // If the assert results in an abort(), the below code would work.
             // SDL_assert, however can not easily be made to abort with out corrupting its state so
             // a custom assert hanlder is used to ignore the assert and set fs:assertTriggered to true.

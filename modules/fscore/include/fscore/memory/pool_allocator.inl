@@ -120,7 +120,7 @@ namespace fs
                     FS_ASSERT(!"Growable PoolAllocator out of memory");
                     return nullptr;
                 }
-                
+
                 VirtualMemory::allocatePhysicalMemory(_physicalEnd, neededPhysicalSize);
                 void* newPhysicalEnd = (void*)(physicalEnd + neededPhysicalSize);
                 void* newStart = (void*)((uptr)_physicalEnd + _freelist.getWastedSizeAtFront());
@@ -143,19 +143,19 @@ namespace fs
                 return nullptr;
             }
         }
-    
+
         uptr newPtr = pointerUtil::alignTop((uptr)userPtr + userOffset, alignment) - userOffset + SIZE_OF_HEADER;
         const size_t offsetSize = newPtr - (uptr)userPtr;
         FS_ASSERT_MSG(offsetSize >> (sizeof(::AllocationHeader) * 8) == 0, "offsetSize must be less that sizeof(AllocationHeader)");
         FS_ASSERT(newPtr + size - SIZE_OF_HEADER < (uptr)userPtr + _maxElementSize);
-        
+
         union
         {
             void* as_void;
             ::AllocationHeader* as_header;
             uptr as_uptr;
         };
-        
+
         as_uptr = newPtr;
         *(as_header - 1) = static_cast<::AllocationHeader>(offsetSize);
 

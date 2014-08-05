@@ -195,10 +195,10 @@ void LogManager::getOutputBuffer(DebugString& outOutputBuffer, const DebugString
             outOutputBuffer += " in ";
             outOutputBuffer += sourceFile;
         }
-        
+
         clock::time_point now = clock::now();
         clock::duration delta = now - _startTime;
-    
+
         {
             using namespace std::chrono;
             hours h = duration_cast<hours>(delta);

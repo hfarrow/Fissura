@@ -34,7 +34,7 @@ namespace internal
     void* VirtualMemory<PLATFORM_ID>::allocatePhysicalMemory(void* ptr, size_t size)
     {
         void* userPtr = mmap(ptr, size, PROT_READ|PROT_WRITE, MAP_FIXED|MAP_SHARED|MAP_ANONYMOUS, -1, 0);
-        
+
         if(userPtr == MAP_FAILED)
         {
             FS_ASSERT_MSG_FORMATTED(false,

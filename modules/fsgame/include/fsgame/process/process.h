@@ -37,7 +37,7 @@ namespace fs
         inline void unpause();
 
         State getState() const { return _state; }
-        
+
         bool isAlive() const;
         bool isDead() const;
         bool isRemoved() const;

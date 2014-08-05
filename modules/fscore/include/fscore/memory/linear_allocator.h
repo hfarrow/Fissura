@@ -39,7 +39,7 @@ namespace fs
         uptr _current;
         std::function<void()> _deleter;
     };
-    
+
     // Templated constructor implementation
     template<typename BackingAllocator>
     LinearAllocator::LinearAllocator(size_t size)

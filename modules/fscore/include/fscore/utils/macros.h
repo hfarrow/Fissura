@@ -4,13 +4,13 @@
 // Thanks to http://molecularmusings.wordpress.com/2011/07/12/a-plethora-of-macros/ for some of these macros.
 
 #define FS_ABSTRACT    = 0
- 
+
 // tells the compiler that the return value (RV) of a function is an object that will not be aliased with any other pointers
 #define FS_RESTRICT_RV    __declspec(restrict)
- 
+
 // tells the compiler that a function call does not modify or reference visible global state and only modifies the memory pointed to directly by pointer parameters
 #define FS_NO_ALIAS    __declspec(noalias)
- 
+
 // tells the compiler to never inline a particular function
 #define FS_NO_INLINE    __declspec(noinline)
 
@@ -36,14 +36,14 @@
 #    define FS_PP_VA_NUM_ARGS(...)                        FS_PP_VA_NUM_ARGS_HELPER(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 #    define FS_PP_VA_NUM_ARGS_HELPER(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...)    N
 #endif
- 
+
 // FS_PP_PASS_VA passes __VA_ARGS__ as multiple parameters to another macro, working around the above-mentioned bug
 #if _MSC_VER >= 1400
 #    define FS_PP_PASS_VA(...)                            FS_PP_LEFT_PARENTHESIS __VA_ARGS__ FS_PP_RIGHT_PARENTHESIS
 #else
 #    define FS_PP_PASS_VA(...)                            (__VA_ARGS__)
 #endif
- 
+
 // WINDOWS ONLY ???
 // ---------------------------
 
@@ -58,7 +58,7 @@
 
 // passes optimization hints to the compiler
 //#define FS_HINT(hint)    __assume(hint)
- 
+
 // used in switch-statements whose default-case can never be reached, resulting in more optimal code
 //#define FS_NO_SWITCH_DEFAULT    FS_HINT(0)
 

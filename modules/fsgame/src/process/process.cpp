@@ -6,7 +6,7 @@ Process::Process() :
     _state(UNINITIALIZED),
     _pChild(nullptr)
 {
-    
+
 }
 
 Process::~Process()
@@ -31,7 +31,7 @@ StrongProcessPtr Process::removeChild()
     return StrongProcessPtr();
 }
 
-bool Process::isAlive() const 
+bool Process::isAlive() const
 { return _state == RUNNING || _state == PAUSED;}
 
 bool Process::isDead() const

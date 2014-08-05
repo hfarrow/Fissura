@@ -26,7 +26,7 @@ struct AllocationNewFixture
 
     ~AllocationNewFixture()
     {
-    
+
     }
 
     const size_t allocatorSize;
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(allocate_single_and_verify)
 {
     HeapArea area(pageSize * 32);
     StackArena arena(area, "allocate_single_and_verify");
-    
+
     // Allocate TestPOD
     TestPOD* obj = FS_NEW(TestPOD, arena)();
     BOOST_REQUIRE(obj);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(allocate_array_and_verify)
         BOOST_CHECK(array[i].c == 'a');
     }
     FS_DELETE_ARRAY(array, arena);
-    
+
     // Allocate 10 TestPOD
     TestPOD* array2 = FS_NEW_ARRAY(TestPOD[10], arena);
     BOOST_REQUIRE(array2);

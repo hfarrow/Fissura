@@ -9,7 +9,7 @@ namespace fs
     class DelayProcess : public Process
     {
     public:
-        
+
         DelayProcess(f32 timeToDelay);
         ~DelayProcess();
 

@@ -38,10 +38,10 @@ namespace fs
 		} \
 	} \
 	while(0)
-	
+
 	#define FS_ASSERT_MSG(condition, message) FS_ASSERT_MSG_FORMATTED(condition, "%s", message)
 	#define FS_ASSERT(condition) FS_ASSERT_MSG(condition, "<NO MESSAGE>")
-#else  
+#else
 	#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) FS_UNUSED(condition)
 	#define FS_ASSERT_MSG(condition, message) FS_UNUSED(condition)
 	#define FS_ASSERT(condition) FS_UNUSED(condition)

@@ -23,7 +23,7 @@ void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_
 
     //PRINT("freelist start = " << freelist.getStart());
     FS_ASSERT(freelist.getStart());
-    
+
     as_uptr = freelist.peekNext();
     uptr start = as_uptr;
     //PRINT("start = " << start);
@@ -52,7 +52,7 @@ void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_
         //PRINT("ptrNext = " << ptrNext);
 
         FS_ASSERT(ptrPrev < ptrNext);
-        
+
         // Verify each slot is aligned correctly.
         FS_ASSERT(pointerUtil::alignTopAmount(ptrPrev + offset, alignment) == 0);
 
@@ -61,7 +61,7 @@ void verifyEmptyFreelistStructure(Freelist<indexSize>& freelist, uptr end, size_
 
         //PRINT("");
     }
-    
+
     size_t numElements = (end - start) / slotSize;
     FS_ASSERT(numElements == freelist.getNumElements());
     FS_ASSERT(runner->offset == 0);
@@ -127,10 +127,10 @@ int main( int, char **)
     size_t elementSize = 4;
     size_t alignment = 2;
     size_t offset = 0;
-    
+
     const size_t memorySize = VirtualMemory::getPageSize() * 2;
     u8 pMemory[memorySize];
-    
+
     // Test many different combinations of elementSize, alignment, and offset.
     while(elementSize <= elementSizeMax)
     {
@@ -141,7 +141,7 @@ int main( int, char **)
                 createAndVerifyFreelist<IndexSize::twoBytes>(pMemory, memorySize, elementSize, alignment, offset);
                 createAndVerifyFreelist<IndexSize::fourBytes>(pMemory, memorySize, elementSize, alignment, offset);
                 createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, memorySize, elementSize, alignment, offset);
-                
+
                 offset += offsetSizeIncrement;
             }
 
@@ -152,7 +152,7 @@ int main( int, char **)
         elementSize += elementSizeIncrement;
         alignment = 8;
     }
-    
+
     allocateOutOfMemory();
 
     return 0;

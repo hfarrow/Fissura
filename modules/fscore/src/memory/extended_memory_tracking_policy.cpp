@@ -15,7 +15,7 @@ ExtendedMemoryTracking::ExtendedMemoryTracking() :
 void ExtendedMemoryTracking::onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)
 {
     (void)alignment;
-    
+
     AllocationMapPair pair((uptr)ptr, AllocationInfo(info.fileName, info.lineNumber, size, _nextId++));
     if(!_profile.pAllocationMap->insert(pair).second)
     {
@@ -52,7 +52,7 @@ void ExtendedMemoryTracking::reset()
 void FullMemoryTracking::onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info)
 {
     (void)alignment;
-    
+
     AllocationInfo ainfo(info.fileName, info.lineNumber, size, _nextId++);
     ainfo.numFrames = StackTraceUtil::getStackTrace(ainfo.frames, ainfo.maxStackFrames);
 

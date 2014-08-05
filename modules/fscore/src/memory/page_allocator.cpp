@@ -21,6 +21,6 @@ void PageAllocator::free(void* ptr, size_t size)
 {
     FS_ASSERT(ptr);
     FS_ASSERT(size > 0);
-    
+
     VirtualMemory::releaseAddressSpace(ptr, size);
 }

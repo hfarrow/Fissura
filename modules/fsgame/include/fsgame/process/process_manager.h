@@ -9,7 +9,7 @@ namespace fs
    class ProcessManager
    {
        typedef List<StrongProcessPtr> ProcessList;
-       
+
     public:
        ProcessManager();
        ~ProcessManager();

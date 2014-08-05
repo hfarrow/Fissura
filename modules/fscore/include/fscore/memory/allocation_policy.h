@@ -1,4 +1,4 @@
-#ifndef FS_ALLOCATION_POLICY_H 
+#ifndef FS_ALLOCATION_POLICY_H
 #define FS_ALLOCATION_POLICY_H
 
 #include "fscore/utils/types.h"
@@ -17,7 +17,7 @@ namespace fs
     public:
         static const bool canGrow = false;
     };
-    
+
 
     class NoAllocationHeader
     {
@@ -67,7 +67,7 @@ namespace fs
             _allocator(initialSize, maxSize)
         {
         }
-        
+
         Allocator(void* start, void* end) :
             _allocator(start, end)
         {

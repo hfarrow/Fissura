@@ -9,13 +9,13 @@ set(PROJECT_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME})
 
 include_directories(${PROJECT_INCLUDE_DIR})
 
-file(GLOB_RECURSE PROJECT_SOURCE_FILES 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
     "${PROJECT_SOURCE_DIR}/*.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES_WINDOWS
     "${PROJECT_SOURCE_DIR}/*_windows.cpp"
     "${PROJECT_SOURCE_DIR}/*_windows.c")
-file(GLOB_RECURSE PROJECT_SOURCE_FILES_LINUX 
+file(GLOB_RECURSE PROJECT_SOURCE_FILES_LINUX
     "${PROJECT_SOURCE_DIR}/*_linux.cpp"
     "${PROJECT_SOURCE_DIR}/*_linux.c")
 
@@ -42,8 +42,8 @@ target_link_libraries(${PROJECT_NAME}-test
                       fstest
                       )
 
-set_target_properties(${PROJECT_NAME}-test 
-                      PROPERTIES 
+set_target_properties(${PROJECT_NAME}-test
+                      PROPERTIES
                       COMPILE_FLAGS "-fexceptions -DFS_CUSTOM_GLOBAL_NEW_DELETE"
                       RUNTIME_OUTPUT_DIRECTORY "${PROJECT_OUTPUT_DIR}-test")
 

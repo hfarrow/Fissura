@@ -1,4 +1,4 @@
-#ifndef FS_THREAD_POLICY_H 
+#ifndef FS_THREAD_POLICY_H
 #define FS_THREAD_POLICY_H
 
 #include <mutex>

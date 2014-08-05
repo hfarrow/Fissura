@@ -113,7 +113,7 @@ bool GameApp::initPaths()
         FS_FATALF(boost::format("Failed to get base path. Error: %1%") % SDL_GetError());
         return false;
     }
-    
+
     FS_INFOF(boost::format("Base path is %1%") % pBasePath);
     _pBasePath = pBasePath;
     return true;
@@ -163,7 +163,7 @@ void GameApp::run()
 	_isRunning = true;
 
 	SDL_Event event;
-    
+
     const f32 dt = 1.0f / 60.0f;
     f32 accumulator = 0;
     u64 currentTime = _clock.getTimeCycles();
@@ -179,7 +179,7 @@ void GameApp::run()
         }
 
         currentTime = newTime;
-        accumulator += frameTime;        
+        accumulator += frameTime;
 
 		while(SDL_PollEvent(&event))
 		{
@@ -196,7 +196,7 @@ void GameApp::run()
 
         //f32 percentage = accumulator / dt;
         // render(percentage);
-        
+
 #ifdef _DEBUG
         if(Memory::getTracker())
         {
@@ -249,7 +249,7 @@ void GameApp::shutdown()
         for(auto it = report.allocators->begin(); it != report.allocators->end(); ++it)
         {
             FS_INFO(boost::format("    Allocator[%1%] total=%2% peak=%3%")
-                    % it->pAllocator->getName() 
+                    % it->pAllocator->getName()
                     % it->usedMemory
                     % it->peakUsedMemory);
         }

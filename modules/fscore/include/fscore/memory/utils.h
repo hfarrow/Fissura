@@ -40,7 +40,7 @@ namespace fs
     }
 
     namespace internal
-    {   
+    {
 
         // Platform specific utils for reserving and committing virtual address space.
         // The default implementation in utils.inl should work for all unix platforms

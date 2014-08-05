@@ -8,7 +8,7 @@ namespace fs
 {
     const fs::u32 BOUNDS_FRONT_PATTERN = 0xDFDFDFDF;
     const fs::u32 BOUNDS_BACK_PATTERN = 0xFDFDFDFD;
-    
+
     class NoBoundsChecking
     {
     public:
@@ -35,7 +35,7 @@ namespace fs
         {
             *static_cast<u32*>(ptr) = BOUNDS_FRONT_PATTERN;
         }
-        
+
         inline void guardBack(void* ptr) const
         {
             *static_cast<u32*>(ptr) = BOUNDS_BACK_PATTERN;

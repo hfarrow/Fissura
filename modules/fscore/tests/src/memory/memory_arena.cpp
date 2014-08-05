@@ -48,7 +48,7 @@ template<class Alloc>
 
     ~MemoryArenaFixture()
     {
-    
+
     }
 
     template<class Area, class Arena>
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(arena_basic_init_and_allocate_and_free)
     INIT_FROM_AREA(HeapArea, heapArea, BasicArena<HeapAllocator>);
     // Do not create heaps on the stack.
     //INIT_FROM_AREA(StackArea, stackArea, BasicArena<HeapAllocator>);
-    
+
     arenaInitFromArea<HeapArea, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment>>>(heapArea);
     arenaInitFromArea<StackArea<allocatorSize>, BasicArena<PoolAllocatorNonGrowable<largeAllocationSize, defaultAlignment>>>(stackArea);
     arenaInitFromArea<GrowableHeapArea, BasicArena<PoolAllocator<Growable, largeAllocationSize, defaultAlignment, 1>>>(growableHeap);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(arena_with_header)
     SourceInfo info(__FILE__, __LINE__);
 
     HeapArea heapArea(allocatorSize);
-    
+
     {
         ArenaWithHeader<AllocationHeaderU8> arena_u8(heapArea);
         as_void = arena_u8.allocate(smallAllocationSize, defaultAlignment, info);
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(arena_with_memory_tagging)
     BOOST_REQUIRE(ptr2);
     BOOST_CHECK(*(static_cast<u32*>(ptr2)) == ALLLOCATED_TAG_PATTERN);
     BOOST_CHECK(*(static_cast<u32*>(ptr2) + 1) == ALLLOCATED_TAG_PATTERN);
-    
+
     void* ptr3 = arena.allocate(6, defaultAlignment, info);
     BOOST_REQUIRE(ptr3);
     value = *(static_cast<u32*>(ptr3));
@@ -289,12 +289,12 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 // BOOST_AUTO_TEST_CASE(temp_test_arena_leak_report)
 // {
 //     SourceInfo info(__FILE__, __LINE__);
-//     
+//
 //     GrowableHeapArea area(pageSize * 32, pageSize * 64);
 //     ArenaWithFullTracking arena(area, "trackingTest");
-// 
+//
 //     arena.logTrackerReport();
-// 
+//
 //     arena.allocate(smallAllocationSize, defaultAlignment, info);
 //     arena.allocate(smallAllocationSize, defaultAlignment, info);
 //     arena.allocate(smallAllocationSize, defaultAlignment, info);
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 //     arena.allocate(smallAllocationSize, defaultAlignment, info);
 //     arena.allocate(pageSize, defaultAlignment, info);
 //     arena.logTrackerReport();
-// 
+//
 //     arena.reset();
 // }
 

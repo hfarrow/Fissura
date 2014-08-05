@@ -14,8 +14,8 @@ RandomGenerator::RandomGenerator(void)
 	rseed_sp = 0;
 	mti=CMATH_N+1;
 	// safe0 end
-}	
-	
+}
+
 // Returns a number from 0 to n (excluding n)
 u32 RandomGenerator::random(u32 n)
 {
@@ -46,7 +46,7 @@ u32 RandomGenerator::random(u32 n)
 
         mti = 0;
     }
-  
+
     y = mt[mti++];
     y ^= CMATH_TEMPERING_SHIFT_U(y);
     y ^= CMATH_TEMPERING_SHIFT_S(y) & CMATH_TEMPERING_MASK_B;
@@ -55,7 +55,7 @@ u32 RandomGenerator::random(u32 n)
 
 	// ET - old engine added one to the result.
 	// We almost NEVER wanted to use this function
-	// like this.  So, removed the +1 to return a 
+	// like this.  So, removed the +1 to return a
 	// range from 0 to n (not including n).
     return (y%n);
 }

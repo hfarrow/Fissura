@@ -11,15 +11,15 @@ namespace fs
         virtual void init() = 0;
         virtual void destroy() = 0;
     };
-    
+
     /*
-     * This policy provides a main HeapAllocator and a debug HeapAllocator that are thread 
+     * This policy provides a main HeapAllocator and a debug HeapAllocator that are thread
      * safe and backed by a single PageAllocator
      */
     class StandardLayoutPolicy : public ILayoutPolicy, Uncopyable
     {
     public:
-        
+
         StandardLayoutPolicy() :
             gpGeneralPage(nullptr),
             gpGeneralPageTS(nullptr),
@@ -29,9 +29,9 @@ namespace fs
             ,gpFsDebugHeap(nullptr),
             gpFsDebugHeapTS(nullptr)
 #endif
-            
+
         {
-        
+
         }
 
         virtual void init() override
@@ -47,16 +47,16 @@ namespace fs
             // perform memory check for each alloc/dealloc
             //tmpDbgFlag |= _CRTDBG_CHECK_ALWAYS_DF;		   // remember this is VERY VERY SLOW!
 
-            //_CRTDBG_LEAK_CHECK_DF is used at program initialization to force a 
+            //_CRTDBG_LEAK_CHECK_DF is used at program initialization to force a
             //   leak check just before program exit. This is important because
             //   some classes may dynamically allocate memory in globally constructed
             //   objects.
-            tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;					
+            tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
 
             _CrtSetDbgFlag(tmpDbgFlag);
 //#endif
 #endif
-            
+
             static u8 pAllocatorMemory[sizeof(PageAllocator) + sizeof(ThreadSafeAllocator) + (2 * sizeof(HeapAllocator))];
 
 

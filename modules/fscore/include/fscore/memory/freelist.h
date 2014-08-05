@@ -1,5 +1,5 @@
 #ifndef FS_FREE_LIST
-#define FS_FREE_LIST 
+#define FS_FREE_LIST
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
@@ -50,7 +50,7 @@ namespace fs
                 elementSize = indexTypeSize;
             }
 
-            
+
             // Ensure that the first free slot is starting off aligned.
             const uptr alignedStart = pointerUtil::alignTop((uptr)start + offset, alignment) - offset;
             _start = (uptr)start;
@@ -59,7 +59,7 @@ namespace fs
             // Add padding to elementSize to ensure all following slots are also aligned.
             _slotSize = bitUtil::roundUpToMultiple(elementSize, alignment);
             FS_ASSERT(_slotSize >= elementSize);
-            
+
             // Calculate total available memory after alignment is factored in.
             const size_t size = (uptr)end - alignedStart;
             const u32 numElements = size / _slotSize;
@@ -91,11 +91,11 @@ namespace fs
                 runner = as_self;
                 as_uptr += _slotSize;
             }
-            
+
             runner->offset = 0;
             _physicalEnd = as_uptr;
         }
-        
+
         inline void* obtain()
         {
             if(_next == nullptr)
@@ -113,7 +113,7 @@ namespace fs
             {
                 _next = reinterpret_cast<FreelistNode<indexSize>*>(_start + head->offset);
             }
-    
+
             return head;
         }
 
@@ -121,10 +121,10 @@ namespace fs
         {
             FS_ASSERT(ptr);
             FS_ASSERT((uptr)ptr >= _start);
-            FS_ASSERT((uptr)ptr < _end); 
-            
+            FS_ASSERT((uptr)ptr < _end);
 
-            FS_ASSERT_MSG(((uptr)ptr - _alignedStart) % _slotSize == 0, 
+
+            FS_ASSERT_MSG(((uptr)ptr - _alignedStart) % _slotSize == 0,
                           "ptr was not the beginning of a slot");
 
             FreelistNode<indexSize>* head = static_cast<FreelistNode<indexSize>*>(ptr);
@@ -138,7 +138,7 @@ namespace fs
             }
             _next = head;
         }
-        
+
         // peekNext and getStart were added to assist with verifing Freelist in unit tests
         // The unit tests need to verify the internal state of this class.
         inline uptr peekNext() const

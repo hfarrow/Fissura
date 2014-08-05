@@ -27,7 +27,7 @@ namespace fs
 
         void init(const char* configFilename);
         void destroy();
-        void log(const DebugString& tag, const DebugString& message, 
+        void log(const DebugString& tag, const DebugString& message,
                  const char* funcName, const char* sourceFile, u32 lineNum);
         void setDisplayFlags(const DebugString& tag, u32 flags);
         void printStringFormatted(fs::dformat format);

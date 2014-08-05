@@ -16,7 +16,7 @@ Clock::Clock(f32 startTimeSeconds) :
     _timeScale(1.0f),
     _isPaused(false)
 {
-    
+
 }
 
 u64 Clock::getTimeCycles() const

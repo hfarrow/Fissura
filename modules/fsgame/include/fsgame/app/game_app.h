@@ -42,8 +42,8 @@ namespace fs
 
 		virtual void onEvent(SDL_Event* pEvent);
 		virtual void onUpdate(f32 elapsedTime) = 0;
-        
-        virtual IMemoryPolicy* createMemoryPolicy(); 
+
+        virtual IMemoryPolicy* createMemoryPolicy();
 
 	private:
 		bool init();

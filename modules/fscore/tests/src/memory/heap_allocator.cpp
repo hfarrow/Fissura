@@ -21,7 +21,7 @@ struct HeapAllocatorFixture
 
     ~HeapAllocatorFixture()
     {
-    
+
     }
 
     const size_t allocatorSize;
@@ -69,10 +69,10 @@ BOOST_AUTO_TEST_CASE(allocate_many_small_and_free)
 
     const u32 numAllocations = 200;
     uptr allocations[numAllocations] = {0};
-    
+
     // alternate between tiny and small
     bool nextIsTiny = false;
-    
+
     // Allocate many and free later.
     for(u32 i = 0; i < numAllocations; ++i)
     {

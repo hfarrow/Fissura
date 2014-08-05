@@ -41,7 +41,7 @@ namespace fs
             _allocator(area.getStart(), area.getEnd()),
             _name(name),
             _arenaSize((uptr)area.getEnd() - (uptr)area.getStart())
-        {            
+        {
         }
 
         MemoryArena(const GrowableHeapArea& area, const char* name = "UnkownArena") :
@@ -64,7 +64,7 @@ namespace fs
             const size_t headerSize = AllocationPolicy::HEADER_SIZE + BoundsCheckingPolicy::SIZE_FRONT;
             const size_t originalSize = size;
             const size_t newSize = size + headerSize + BoundsCheckingPolicy::SIZE_BACK;
-            
+
             char* plainMemory = reinterpret_cast<char*>(_allocator.allocate(newSize, alignment, headerSize));
 
             _allocator.storeAllocationSize(plainMemory, newSize);
@@ -95,7 +95,7 @@ namespace fs
                 char* originalMemory = reinterpret_cast<char*>(ptr) - headerSize;
                 const size_t oldAllocationSize = _allocator.getAllocationSize(originalMemory) - headerSize - footerSize;
                 const size_t sizeToCopy = oldAllocationSize > size ? size : oldAllocationSize;
-                
+
                 // Allocate new memory, copy old memory to new memory, free old memory
                 newPtr = allocate(size, alignment, sourceInfo);
                 memcpy(newPtr, ptr, sizeToCopy);
@@ -118,7 +118,7 @@ namespace fs
             _boundsChecker.checkFront(originalMemory + AllocationPolicy::HEADER_SIZE);
             _boundsChecker.checkBack(originalMemory + allocationSize - BoundsCheckingPolicy::SIZE_BACK);
             _boundsChecker.checkAll(_memoryTracker);
-            
+
             _memoryTracker.onDeallocation(originalMemory, allocationSize);
             _memoryTagger.tagDeallocation(originalMemory, allocationSize);
 

@@ -23,7 +23,7 @@ struct PoolAllocatorFixture
 
     ~PoolAllocatorFixture()
     {
-    
+
     }
 
     template<IndexSize indexSize>
@@ -58,7 +58,7 @@ struct PoolAllocatorFixture
         };
 
         BOOST_REQUIRE(freelist.getStart());
-        
+
         as_uptr = freelist.peekNext();
         uptr start = as_uptr;
 
@@ -81,14 +81,14 @@ struct PoolAllocatorFixture
             uptr ptrNext = as_uptr;
 
             BOOST_REQUIRE(ptrPrev < ptrNext);
-            
+
             // Verify each slot is aligned correctly.
             BOOST_REQUIRE(pointerUtil::alignTopAmount(ptrPrev + offset, alignment) == 0);
 
             // Verify each free list pointer is slotSize apart.
             BOOST_REQUIRE(ptrNext - ptrPrev == slotSize);
         }
-        
+
         size_t numElements = (end - start) / slotSize;
         BOOST_REQUIRE(numElements == freelist.getNumElements());
         BOOST_REQUIRE(runner->offset == 0);
@@ -113,7 +113,7 @@ struct PoolAllocatorFixture
         BOOST_CHECK(slotSize >= elementSize);
         BOOST_CHECK(pointerUtil::alignTopAmount(ptrNext + offset, alignment) == 0);
         uptr originalPtr = ptrNext;
-        
+
         // Releasing and obtaining should return the same slot.
         freelist.release((void*)ptrNext);
         ptrNext = (uptr)freelist.obtain();
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(get_total_used_size)
 {
     PoolAllocatorNonGrowable<tinyAllocationSize, defaultAlignment> allocator(allocatorSize);
     BOOST_CHECK(allocator.getTotalUsedSize() == 0);
-    
+
     // Allocation of 4 bytes should be a slot size of 16. (8 + defaultAlignment rounded up to nearest alignment)
     // There should be no wasted space for 4 byte allocation with alignment of 8
     void* ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
     size_t offset = 0;
 
     u8 pMemory[allocatorSize];
-    
+
     // Test many different combinations of elementSize, alignment, and offset.
     while(elementSize <= elementSizeMax)
     {
@@ -167,15 +167,15 @@ BOOST_AUTO_TEST_CASE(freelist_verify_structure_and_allocations)
             {
                 Freelist<IndexSize::twoBytes> freelist2 = createAndVerifyFreelist<IndexSize::twoBytes>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist2, elementSize, alignment, offset);
-    
+
                 // Reduce run time by skipping this. If Freelist<2> works, it is likely larger IndexSizes
                 // will work as well.
                 //Freelist<4> freelist4 = createAndVerifyFreelist<4>(pMemory, allocatorSize, elementSize, alignment, offset);
                 //allocateAndFreeFromFreelist(freelist4, elementSize, alignment, offset);
-                
+
                 Freelist<IndexSize::eightBytes> freelist8 = createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, allocatorSize, elementSize, alignment, offset);
                 allocateAndFreeFromFreelist(freelist8, elementSize, alignment, offset);
-                
+
                 offset += offsetSizeIncrement;
             }
 
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE(freelist_out_of_memory)
     u8 pMemory[totalMemory];
 
     Freelist<IndexSize::eightBytes> freelist = createAndVerifyFreelist<IndexSize::eightBytes>(pMemory, totalMemory, elementSize, alignment, offset);
-    
+
     const u32 numElements = totalMemory / slotSize;
     BOOST_REQUIRE(numElements > 0);
     for(u32 i = 0; i < numElements; ++i)
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_page)
     //size_t oldSize = allocator.getTotalUsedSize();
     allocator.free(ptr);
     //BOOST_CHECK(oldSize > allocator.getTotalUsedSize());
-    
+
     ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr);
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_stack)
     //size_t oldSize = allocator.getTotalUsedSize();
     allocator.free(ptr);
     //BOOST_CHECK(oldSize > allocator.getTotalUsedSize());
-    
+
     ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr);
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_growable)
     //size_t oldSize = allocator.getTotalUsedSize();
     allocator.free(ptr);
     //BOOST_CHECK(oldSize > allocator.getTotalUsedSize());
-    
+
     ptr = allocator.allocate(tinyAllocationSize, defaultAlignment, 0);
     BOOST_REQUIRE(ptr);
     allocator.free(ptr);
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_free_from_growable)
 BOOST_AUTO_TEST_CASE(allocate_and_grow)
 {
     PoolAllocatorGrowable<pageSize, defaultAlignment, 1> allocator(pageSize*2, pageSize*4);
-    
+
     // const size_t slotSize = bitUtil::roundUpToMultiple(pageSize, defaultAlignment);
     // slot size will be greater thant he requested pageSize because of extra overhead
     // for alignment and offsets. Initialally, there is 1 free slot and some unused memory.
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(allocate_and_grow)
     BOOST_CHECK(ptr2);
     (void)ptr;
     (void)ptr2;
-    
+
     // API doesn't provide any way to know if the allocator grew but the above
     // should grow and not assert or crash.
 }
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(allocate_offset)
     void* ptr = allocator.allocate(smallAllocationSize, 8, 4);
     BOOST_REQUIRE(ptr);
     BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 8) == 0);
- 
+
     ptr = allocator.allocate(smallAllocationSize, 4, 4);
     BOOST_REQUIRE(pointerUtil::alignTopAmount((uptr)ptr + 4, 4) == 0);
 }

@@ -17,7 +17,7 @@ using SdlArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
                              FullMemoryTracking,
                              MemoryTagging>;
 
-class SdlArenaAdatper : public IArenaAdapter 
+class SdlArenaAdatper : public IArenaAdapter
 {
 public:
     SdlArenaAdatper(SdlArena* pArena) :

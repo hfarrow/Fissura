@@ -15,7 +15,7 @@ namespace fs
 
         void* allocate(size_t size, size_t alignment = 0, size_t offset = 0);
         void free(void* ptr, size_t size);
-        
+
         void free(void* ptr)
         {
             (void)ptr;

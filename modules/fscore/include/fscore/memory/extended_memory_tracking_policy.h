@@ -18,9 +18,9 @@ namespace fs
             size(size),
             id(id),
             numFrames(0)
-        {        
+        {
         }
-        
+
         const char* fileName;
         const u32 lineNumber;
         const size_t size;
@@ -69,16 +69,16 @@ namespace fs
         {
             uptr ptr = pair.first;
             AllocationInfo& info = pair.second;
-            FS_PRINT("    Allocation(" << info.id << "): " 
-                     << (void*)ptr << " | " 
-                     << info.size << " | " 
+            FS_PRINT("    Allocation(" << info.id << "): "
+                     << (void*)ptr << " | "
+                     << info.size << " | "
                      << info.fileName << ":" << info.lineNumber << " | ");
         }
     }
 
     class FullMemoryTracking : public ExtendedMemoryTracking
     {
-    public: 
+    public:
         void onAllocation(void* ptr, size_t size, size_t alignment, const SourceInfo& info);
 
         template<typename Arena>
@@ -94,11 +94,11 @@ namespace fs
         {
             uptr ptr = pair.first;
             AllocationInfo& info = pair.second;
-            FS_PRINT("    Allocation(" << info.id << "): " 
-                     << (void*)ptr << " | " 
-                     << info.size << " | " 
+            FS_PRINT("    Allocation(" << info.id << "): "
+                     << (void*)ptr << " | "
+                     << info.size << " | "
                      << info.fileName << ":" << info.lineNumber << " | ");
-            
+
             FS_PRINT("    Stack Trace:");
             FS_PRINT(StackTraceUtil::getCaller(info.frames, info.numFrames, 2));
         }

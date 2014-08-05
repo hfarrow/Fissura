@@ -11,12 +11,12 @@ namespace fs
     public:
         Game()
         {
-        
+
         }
 
         virtual ~Game()
         {
-        
+
         }
 
         virtual const char* getGameTitle() const override
@@ -45,7 +45,7 @@ namespace fs
 
         virtual void onUpdate(f32 elapsedTime) override
         {
-        
+
         }
 
     private:

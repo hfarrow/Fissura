@@ -36,7 +36,7 @@ namespace fs
         explicit HashedString(const char* const pString) :
             _hash(hashName(pString)),
             _string(pString)
-        {        
+        {
         }
 
         size_t getHashValue() const

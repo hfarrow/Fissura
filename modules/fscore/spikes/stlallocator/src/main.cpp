@@ -20,7 +20,7 @@ struct TestStuct
     {
         FS_PRINT("dtor TestStuct");
     }
-        
+
     int a;
 };
 
@@ -54,12 +54,12 @@ int main( int, char **)
     // myMap = std::allocate_shared<std::map<int, TestStuct, std::less<int>, StlAllocator<std::pair<const int, TestStuct>>>>(sharedAlloc, mapAlloc);
 
     // myMap->insert(std::pair<int, TestStuct>(1, TestStuct()));
-    
+
     // DebugString string("hello!");
     // memory::getDebugArena()->logTrackerReport();
-    
+
     // DebugStlAllocator<char> alloc;
-    
+
     DebugString string("hello");
     dformat format = dformat("%s %s") % "hello" % "world";
     FS_PRINT(format);

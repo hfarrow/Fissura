@@ -54,7 +54,7 @@ namespace fs
             _profile.usedSize -= size;
         }
 
-        inline size_t getNumAllocations() const {return _profile.numAllocations;}        
+        inline size_t getNumAllocations() const {return _profile.numAllocations;}
         inline size_t getAllocatedSize() const {return _profile.usedSize;}
 
         inline void reset()

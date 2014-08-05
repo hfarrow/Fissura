@@ -42,10 +42,10 @@ namespace fs
 		{
 			*this = other;
 		}
- 
+
 		~StlAllocator()
 		{
-		
+
 		}
 
 		StlAllocator& operator=(const StlAllocator& b)
@@ -71,7 +71,7 @@ namespace fs
 		{
 			return &x;
 		}
- 
+
 		/// Allocate memory
 		pointer allocate(size_type n, const void* hint = 0)
 		{
@@ -80,26 +80,26 @@ namespace fs
             FS_ASSERT(_pArena);
 
             SourceInfo info(__FILE__, __LINE__);
-         
+
 			void* pAllocation = _pArena->allocate(size, __alignof(value_type), info);
 
 			FS_ASSERT_MSG(pAllocation != nullptr, "StlAllocator failed to allocate memory.");
- 
+
 			return (pointer)pAllocation;
 		}
- 
+
 		/// Deallocate memory
 		void deallocate(void* p, size_type n)
 		{
 			(void)n;
- 
+
 			// if(_pArena->canDeallocate())
 			// {
 			// 	_pArena->deallocate(p);
 			// }
             _pArena->free(p);
 		}
- 
+
 		/// Call constructor
 		void construct(pointer p, const T& val)
 		{
@@ -114,7 +114,7 @@ namespace fs
 			// Placement new
 			//::new((void *)p) U(std::forward<Args>(args)...);
 		//}
- 
+
 		/// Call destructor
 		void destroy(pointer p)
 		{
@@ -127,7 +127,7 @@ namespace fs
 		{
 			p->~U();
 		}
- 
+
 		/// Get the max allocation size
 		size_type max_size() const
 		{
@@ -136,20 +136,20 @@ namespace fs
 
 			return std::numeric_limits<size_type>::max();
 		}
- 
+
 		/// A struct to rebind the allocator to another allocator of type U
 		template<typename U>
 		struct rebind
 		{
 			typedef StlAllocator<U, Arena> other;
 		};
- 
+
 		/// Reinit the allocator. All existing allocated memory will be lost
 		void reset()
 		{
 			_pArena->reset();
 		}
- 
+
 		const Arena& getAllocator() const
 		{
 			return *_pArena;
@@ -175,21 +175,21 @@ namespace fs
 	{
 		return &a.getAllocator() == &b.getAllocator();
 	}
- 
+
 	/// Another allocator of the another type cannot deallocate from this one
 	template<typename T1, typename AnotherAllocator, typename Arena>
 	inline bool operator==(	const StlAllocator<T1, Arena>&, const AnotherAllocator&)
 	{
 		return false;
 	}
- 
+
 	/// Another allocator of the same type can deallocate from this one
 	template<typename T1, typename T2, typename Arena1, typename Arena2>
 	inline bool operator!=(const StlAllocator<T1, Arena1>& a, const StlAllocator<T2, Arena2>& b)
 	{
 		return &a.getAllocator() != &b.getAllocator();
 	}
- 
+
 	/// Another allocator of the another type cannot deallocate from this one
 	template<typename T1, typename AnotherAllocator, typename Arena>
 	inline bool operator!=(const StlAllocator<T1, Arena>&, const AnotherAllocator&)
@@ -214,21 +214,21 @@ namespace fs
 	{
 		return &a.getAllocator() == &b.getAllocator();
 	}
- 
+
 	/// Another allocator of the another type cannot deallocate from this one
 	template<typename T1, typename AnotherAllocator, typename Arena>
 	inline bool operator==(	const DebugStlAllocator<T1>&, const AnotherAllocator&)
 	{
 		return false;
 	}
- 
+
 	/// Another allocator of the same type can deallocate from this one
 	template<typename T1, typename T2>
 	inline bool operator!=(const DebugStlAllocator<T1>& a, const DebugStlAllocator<T2>& b)
 	{
 		return &a.getAllocator() != &b.getAllocator();
 	}
- 
+
 	/// Another allocator of the another type cannot deallocate from this one
 	template<typename T1, typename AnotherAllocator>
 	inline bool operator!=(const DebugStlAllocator<T1>&, const AnotherAllocator&)

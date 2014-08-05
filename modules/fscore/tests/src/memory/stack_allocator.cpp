@@ -181,7 +181,7 @@ struct StackAllocatorFixture
 
     ~StackAllocatorFixture()
     {
-    
+
     }
 
     const size_t allocatorSize;

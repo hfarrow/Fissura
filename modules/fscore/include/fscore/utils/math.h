@@ -3,14 +3,14 @@
 
 #include "fscore/utils/types.h"
 
-/* Period parameters */  
+/* Period parameters */
 #define CMATH_N 624
 #define CMATH_M 397
 #define CMATH_MATRIX_A 0x9908b0df   /* constant vector a */
 #define CMATH_UPPER_MASK 0x80000000 /* most significant w-r bits */
 #define CMATH_LOWER_MASK 0x7fffffff /* least significant r bits */
 
-/* Tempering parameters */   
+/* Tempering parameters */
 #define CMATH_TEMPERING_MASK_B 0x9d2c5680
 #define CMATH_TEMPERING_MASK_C 0xefc60000
 #define CMATH_TEMPERING_SHIFT_U(y)  (y >> 11)
@@ -30,7 +30,7 @@ namespace fs
         i32 mti; /* mti==N+1 means mt[N] is not initialized */
 
     public:
-        RandomGenerator();	
+        RandomGenerator();
 
         // Random u32 from 0 to n (not including n).
         unsigned int	random(u32 n);

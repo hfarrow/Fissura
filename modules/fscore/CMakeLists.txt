@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW) # CMake 3.0
+endif()
+
 project(fscore)
 
 set(PROJECT_TEST_SOURCE_DIR ${PROJECT_SOURCE_DIR}/tests/src)

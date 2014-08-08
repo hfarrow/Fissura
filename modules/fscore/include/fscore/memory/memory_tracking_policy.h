@@ -7,8 +7,8 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/debugging/memory.h"
-#include "fscore/debugging/memory_reporting.h"
 #include "fscore/memory/source_info.h"
+#include "fscore/debugging/arena_report.h"
 
 namespace fs
 {
@@ -32,9 +32,13 @@ namespace fs
         inline void reset() {}
 
         template<typename Arena>
-        inline void logMemoryReport(Arena& arena)
+        inline SharedPtr<ArenaReport> generateArenaReport(Arena& arena)
         {
-            FS_PRINT(arena.getName() << " does not use memory tracking.");
+            // This class cannot reference or include DebugArena so we are forced to create the report directly
+            // via new instead of within an arena. yuck!
+            auto report = SharedPtr<ArenaReport>(new ArenaReport());
+            report->arenaName = arena.getName();
+            report->noTracking = true;
         }
     };
 
@@ -64,9 +68,20 @@ namespace fs
         }
 
         template<typename Arena>
-        void logMemoryReport(Arena& arena)
+        SharedPtr<ArenaReport> generateArenaReport(Arena& arena)
         {
-            memory::logArenaReport(arena, *this);
+            // This class cannot reference or include DebugArena so we are forced to create the report directly
+            // via new instead of within an arena. yuck!
+            auto report = SharedPtr<ArenaReport>(new ArenaReport());
+            report->arenaName = arena.getName();
+            report->numOfAllocations = getNumAllocations();
+            report->virtualSize = arena.getVirtualSize();
+            report->physicalSize = arena.getPhysicalSize();
+            report->used = arena.getTotalUsedSize();
+            report->allocated = arena.getAllocatedSize();
+            report->wasted = arena.getTotalUsedSize() - getAllocatedSize();
+            report->hasStackTrace = false;
+            report->noTracking = false;
         }
 
     protected:

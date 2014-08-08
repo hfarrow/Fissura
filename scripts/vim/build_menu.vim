@@ -34,7 +34,7 @@
         call ConvertPathToName(split(globpath(g:fs_build_path, '*'), '\n'), g:fs_config_names)
         call ConvertPathToName(split(globpath(g:fs_module_path, '*'), '\n'), g:fs_module_names)
         call ConvertPathToName(split(globpath(g:fs_spike_path, '*'), '\n'), g:fs_spike_names)
-        
+
         " Convert paths for module specific spikes
         for module_name in g:fs_module_names
             let g:fs_module_spike_names[module_name] = []
@@ -60,7 +60,7 @@
     nmap <Leader>mi :Unite -silent menu:config_ignore<CR>
 " }}}
 
-" Functions {{{ 
+" Functions {{{
     function! BuildAll(config_name)
         call SaveLastConfig(a:config_name)
         call SaveLastProject('all')
@@ -260,7 +260,7 @@
         call add(g:unite_source_menu_menus.debug.command_candidates,
                     \ ['Toggle Debug Terminal Active', 'exe ToggleDebugTerminalActive()'])
     " }}}
-    
+
     " Test Menu {{{
         let g:unite_source_menu_menus.test = { 'description' : 'Test Project Menu' }
         let g:unite_source_menu_menus.test.command_candidates = []
@@ -277,7 +277,7 @@
     " Select Project Menu {{{
         let g:unite_source_menu_menus.select_project = { 'description' : 'Select Project Menu' }
         let g:unite_source_menu_menus.select_project.command_candidates = []
-        
+
         call add(g:unite_source_menu_menus.select_project.command_candidates,
                     \ ['Select all', 'exe SaveLastProject("all")'])
         call add(g:unite_source_menu_menus.select_project.command_candidates,
@@ -288,7 +288,7 @@
         for module_name in g:fs_module_names
             call add(g:unite_source_menu_menus.select_project.command_candidates,
                         \ ['Select ' . module_name, 'exe SaveLastProject("' . module_name . '")'])
-            
+
             " tests are optional. Only add test target if it exists.
             if isdirectory(expand(g:fs_module_path . module_name . '/tests'))
                 call add(g:unite_source_menu_menus.select_project.command_candidates,
@@ -308,11 +308,11 @@
                         \ 'exe SaveLastProject("spike-' . spike_name . '")'])
         endfor
     " }}}
-    
+
     " Select Config Menu {{{
         let g:unite_source_menu_menus.select_config = { 'description' : 'Select Config Menu' }
         let g:unite_source_menu_menus.select_config.command_candidates = []
-        
+
         for config_name in g:fs_config_names
             call add(g:unite_source_menu_menus.select_config.command_candidates,
                         \ ['Select ' . config_name,

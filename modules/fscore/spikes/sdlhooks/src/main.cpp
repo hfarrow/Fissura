@@ -56,20 +56,22 @@ int main( int, char **)
     HeapArea sdlArea(FS_SIZE_OF_MB * 32);
     SdlArena arena(sdlArea, "SdlArena");
 
+    FS_PRINT("address of name = " << (void*)(arena.getName()));
+
     SdlArenaAdatper wrapper(&arena);
     fs::setSdlArena(&wrapper);
 
     void* ptr = SDL_malloc(32);
     FS_PRINT("========== Log tracker report after allocation made.");
-    arena.logTrackerReport();
+    fs::memory::logArenaReport(arena.generateArenaReport());
 
     ptr = SDL_realloc(ptr, 64);
     FS_PRINT("========== Log tracker report after reallocation.");
-    arena.logTrackerReport();
+    fs::memory::logArenaReport(arena.generateArenaReport());
 
-    //SDL_free(ptr);
+    SDL_free(ptr);
     FS_PRINT("========== Log tracker report after allocation freed.");
-    arena.logTrackerReport();
+    fs::memory::logArenaReport(arena.generateArenaReport());
 
     return 0;
 }

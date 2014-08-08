@@ -6,6 +6,7 @@
 #include "fscore/utils/types.h"
 #include "fscore/memory/memory_area.h"
 #include "fscore/memory/source_info.h"
+#include "fscore/debugging/arena_report.h"
 
 #define FS_SIZE_OF_MB 33554432
 
@@ -142,16 +143,15 @@ namespace fs
             _threadGuard.leave();
         }
 
-        inline void logTrackerReport()
+        inline SharedPtr<ArenaReport> generateArenaReport()
         {
-            _memoryTracker.logMemoryReport(*this);
+            return _memoryTracker.generateArenaReport(*this);
         }
 
         void checkForLeaksAndAssert()
         {
             if(_memoryTracker.getNumAllocations() != 0)
             {
-                logTrackerReport();
                 FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
                               "Arena has memory leaks.");
             }

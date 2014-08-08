@@ -14,14 +14,14 @@ BOOST_AUTO_TEST_SUITE(memory)
 const size_t allocatorSize = 1024;
 const size_t largeAllocationSize = 128;
 const size_t smallAllocationSize = 32;
-const size_t tinyAllocationSize = 4;
+// const size_t tinyAllocationSize = 4;
 const size_t defaultAlignment = 8;
 const size_t pageSize = 4096;
 
 
 struct MemoryArenaFixture
 {
-template<class Alloc>
+    template<class Alloc>
     using BasicArena = MemoryArena<Allocator<Alloc, NoAllocationHeader>,
                                    SingleThread, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>;
 

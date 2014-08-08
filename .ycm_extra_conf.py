@@ -47,8 +47,7 @@ flags = [
 '-std=c++11',
 #'-stdlib=libc++',
 #'-m64',
-'-x',
-'c++',
+'-x', 'c++',
 '-I', 'modules/fscore/include',
 '-I', 'modules/fscore/tests/include',
 '-I', 'modules/fsgame/include',
@@ -56,10 +55,14 @@ flags = [
 '-I', 'modules/fstest/include',
 '-I', 'external/build/include/SDL2',
 '-I', 'external/build/include/tinyxml',
-'-isystem', '/usr/local/include/boost',
-'-isystem', '/usr/local/boost_1_54_0',
-'-isystem', '/usr/include/',
-'-isystem', '/usr/lib/c++/v1'
+'-isystem', '/usr/lib/c++/v1',
+'-isystem', '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/c++/v1',
+'-isystem', '/usr/local/include',
+'-isystem', '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.1/include',
+'-isystem', '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include',
+'-isystem', '/usr/include',
+'-isystem', '/System/Library/Frameworks',
+'-isystem', '/Library/Frameworks'
 ]
 
 # Set this to the absolute path to the folder (NOT the file!) containing the

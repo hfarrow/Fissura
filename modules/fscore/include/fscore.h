@@ -13,6 +13,8 @@
 #include "fscore/debugging/assert.h"
 #include "fscore/debugging/logger.h"
 #include "fscore/debugging/memory.h"
+#include "fscore/debugging/memory_logging.h"
+#include "fscore/debugging/memory_reporting.h"
 #include "fscore/debugging/utils.h"
 
 // Memory
@@ -34,6 +36,7 @@
 #include "fscore/memory/stl_allocator.h"
 #include "fscore/memory/malloc_allocator.h"
 #include "fscore/memory/new.h"
+#include "fscore/memory/allocation_info.h"
 
 // SDL
 #include "fscore/sdl/malloc_hook.h"

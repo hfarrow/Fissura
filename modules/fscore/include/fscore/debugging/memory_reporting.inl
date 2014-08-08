@@ -4,7 +4,7 @@
 #include "fscore/debugging/memory_reporting.h"
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
-#include "fscore/memory/stl_allocator.h"
+#include "fscore/memory/allocators/stl_allocator.h"
 #include "fscore/debugging/memory.h"
 
 namespace fs

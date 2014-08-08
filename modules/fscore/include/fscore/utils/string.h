@@ -7,7 +7,7 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/memory.h"
-#include "fscore/memory/stl_allocator.h"
+#include "fscore/memory/allocators/stl_allocator.h"
 
 #define MAX_DIGITS_IN_INT 12  // max number of digits in an int (-2147483647 = 11 digits, +1 for the '\0')
 

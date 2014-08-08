@@ -3,7 +3,7 @@
 
 #include "fscore/debugging/memory.h"
 #include "fscore/utils/types.h"
-#include "fscore/memory/stl_allocator.h"
+#include "fscore/memory/allocators/stl_allocator.h"
 #include "fscore/debugging/memory_reporting.h"
 #include "fscore/debugging/memory_logging.h"
 #include "fscore/debugging/utils.h"

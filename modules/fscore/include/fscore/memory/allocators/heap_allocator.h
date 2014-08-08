@@ -6,7 +6,7 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/malloc.h"
-#include "fscore/memory/page_allocator.h"
+#include "fscore/memory/allocators/page_allocator.h"
 
 namespace fs
 {

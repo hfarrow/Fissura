@@ -4,12 +4,12 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/memory_arena.h"
-#include "fscore/memory/heap_allocator.h"
-#include "fscore/memory/allocation_policy.h"
-#include "fscore/memory/bounds_checking_policy.h"
-#include "fscore/memory/memory_tagging_policy.h"
-#include "fscore/memory/memory_tracking_policy.h"
-#include "fscore/memory/thread_policy.h"
+#include "fscore/memory/allocators/heap_allocator.h"
+#include "fscore/memory/policies/allocation_policy.h"
+#include "fscore/memory/policies/bounds_checking_policy.h"
+#include "fscore/memory/policies/memory_tagging_policy.h"
+#include "fscore/memory/policies/memory_tracking_policy.h"
+#include "fscore/memory/policies/thread_policy.h"
 
 #define FS_SIZE_OF_MB 33554432
 

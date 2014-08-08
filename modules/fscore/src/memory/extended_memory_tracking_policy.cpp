@@ -1,5 +1,5 @@
-#include "fscore/memory/extended_memory_tracking_policy.h"
-#include "fscore/memory/stl_allocator.h"
+#include "fscore/memory/policies/extended_memory_tracking_policy.h"
+#include "fscore/memory/allocators/stl_allocator.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/debugging/utils.h"
 

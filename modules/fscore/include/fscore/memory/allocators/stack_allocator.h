@@ -5,7 +5,7 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
-#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/policies/allocation_policy.h"
 
 namespace fs
 {
@@ -145,7 +145,7 @@ namespace fs
     };
 }
 
-#include "fscore/memory/stack_allocator.inl"
+#include "fscore/memory/allocators/stack_allocator.inl"
 
 #endif
 

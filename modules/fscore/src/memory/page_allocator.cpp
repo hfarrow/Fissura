@@ -1,4 +1,4 @@
-#include "fscore/memory/page_allocator.h"
+#include "fscore/memory/allocators/page_allocator.h"
 
 #include <sys/mman.h>
 #include <boost/format.hpp>

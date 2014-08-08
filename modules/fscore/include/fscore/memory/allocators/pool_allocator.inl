@@ -1,7 +1,7 @@
 #ifndef FS_POOL_ALLOCATOR_INL
 #define FS_POOL_ALLOCATOR_INL
 
-#include "fscore/memory/pool_allocator.h"
+#include "fscore/memory/allocators/pool_allocator.h"
 #include "fscore/memory/utils.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/utils/types.h"

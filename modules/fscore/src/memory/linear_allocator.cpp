@@ -1,7 +1,7 @@
-#include "fscore/memory/linear_allocator.h"
+#include "fscore/memory/allocators/linear_allocator.h"
 
 #include "fscore/memory/utils.h"
-#include "fscore/memory/page_allocator.h"
+#include "fscore/memory/allocators/page_allocator.h"
 
 using namespace fs;
 

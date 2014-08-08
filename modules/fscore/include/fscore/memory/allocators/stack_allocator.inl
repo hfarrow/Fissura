@@ -1,7 +1,7 @@
 #ifndef FS_STACK_ALLOCATOR_INL
 #define FS_STACK_ALLOCATOR_INL
 
-#include "fscore/memory/stack_allocator.h"
+#include "fscore/memory/allocators/stack_allocator.h"
 #include "fscore/memory/utils.h"
 #include "fscore/debugging/assert.h"
 #include "fscore/utils/types.h"

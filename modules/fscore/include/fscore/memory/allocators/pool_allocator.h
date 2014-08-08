@@ -5,7 +5,7 @@
 #include "fscore/debugging/assert.h"
 #include "fscore/memory/utils.h"
 #include "fscore/memory/freelist.h"
-#include "fscore/memory/allocation_policy.h"
+#include "fscore/memory/policies/allocation_policy.h"
 
 namespace fs
 {
@@ -70,6 +70,6 @@ namespace fs
     using PoolAllocatorGrowable = PoolAllocator<Growable, maxElementSize, maxAlignment, growSize>;
 }
 
-#include "fscore/memory/pool_allocator.inl"
+#include "fscore/memory/allocators/pool_allocator.inl"
 
 #endif

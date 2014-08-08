@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <stdio.h>
+#include <signal.h>
 #include <fstream>
 #include <thread>
 #include <chrono>
@@ -15,6 +17,15 @@
 #include "fscore/debugging/memory.h"
 
 using namespace fs;
+
+namespace fs
+{
+    namespace Logger
+    {
+        void abortHandler(i32 signum);
+    }
+}
+
 
 // Constants
 static const char* LOG_FILENAME = "fissura.log";
@@ -33,7 +44,6 @@ class LogManager
 public:
     using Tags = Map<DebugString, u8, DebugArena>;
     using TagAllocator = StlAllocator<std::pair<DebugString, u8>, DebugArena>;
-    Tags tags;
 
     LogManager();
     ~LogManager();
@@ -43,22 +53,29 @@ public:
              const char* sourceFile, u32 lineNum);
     void setDisplayFlags(const DebugString& tag, u32 flags);
 
+
+    Tags tags;
+
 private:
     using clock = std::chrono::high_resolution_clock;
     using time_point = std::chrono::high_resolution_clock::time_point;
 
-    std::mutex _tagMutex;
-    clock::time_point _startTime;
-
     void outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags);
+    void flushOutputBuffer();
     void writeToLogFile(const DebugString& data);
     void getOutputBuffer(DebugString& outOutputBuffer, const DebugString& tag, u32 flags, const DebugString& message,
                          const char* funcName, const char* sourceFile, u32 lineNum);
+
+    std::mutex _tagMutex;
+    clock::time_point _startTime;
+    DebugString _outputBuffer;
+    clock::time_point _lastFlushTime;
 };
 
 LogManager::LogManager() :
     tags(TagAllocator(*memory::getDebugArena())),
-    _startTime(clock::now())
+    _startTime(clock::now()),
+    _lastFlushTime(clock::now())
 {
     // set up the default log tags
     setDisplayFlags("FATAL", DEFAULT_FLAG_FATAL);
@@ -70,7 +87,8 @@ LogManager::LogManager() :
 
 LogManager::~LogManager()
 {
-
+    FS_INFO("Logger destroyed\n\n\n");
+    flushOutputBuffer();
 }
 
 void LogManager::init(const char* configFilename)
@@ -109,6 +127,7 @@ void LogManager::init(const char* configFilename)
                 }
 
                 setDisplayFlags(tag, flags);
+
             }
         }
         else
@@ -116,6 +135,11 @@ void LogManager::init(const char* configFilename)
             FS_WARNF(dformat("LogManager::init failed to load config xml: %1%") % configFile.ErrorDesc());
         }
     }
+
+    signal(SIGABRT, Logger::abortHandler);
+    signal(SIGSEGV, Logger::abortHandler);
+    signal(SIGILL, Logger::abortHandler);
+    signal(SIGFPE, Logger::abortHandler);
 }
 
 void LogManager::log(const DebugString& tag, const DebugString& message, const char* funcName,
@@ -155,9 +179,31 @@ void LogManager::setDisplayFlags(const DebugString& tag, u32 flags)
 void LogManager::outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags)
 {
     if((flags & Logger::DisplayFlagWriteToFile) > 0)
-        writeToLogFile(finalBuffer);
+    {
+        _outputBuffer += finalBuffer;
+        clock::time_point now = clock::now();
+        clock::duration delta = now - _lastFlushTime;
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(delta);
+        // Wait at least 30 seconds before flushing to log file.
+        if(seconds.count() >  30)
+        {
+            flushOutputBuffer();
+        }
+    }
     if((flags & Logger::DisplayFlagWriteToStdOut) > 0)
+    {
         Logger::printStringFormatted(dformat(finalBuffer.c_str()));
+    }
+}
+
+void LogManager::flushOutputBuffer()
+{
+    if(_outputBuffer.length() > 0)
+    {
+        writeToLogFile(_outputBuffer);
+        _outputBuffer.clear();
+        _lastFlushTime = clock::now();
+    }
 }
 
 void LogManager::writeToLogFile(const DebugString& data)
@@ -278,6 +324,28 @@ namespace Logger
     void setSurpressStdOutput(bool surpress)
     {
         surpressStdOutput = surpress;
+    }
+
+    void abortHandler(i32 signum)
+    {
+        // associate each signal with a signal name string.
+        const char* name = NULL;
+        switch( signum )
+        {
+            case SIGABRT: name = "SIGABRT";  break;
+            case SIGSEGV: name = "SIGSEGV";  break;
+            case SIGILL:  name = "SIGILL";   break;
+            case SIGFPE:  name = "SIGFPE";   break;
+        }
+
+        if ( name )
+            log("FATAL", (dformat("Caught signal %1% (%2%)") % signum % name).str(), __FUNCTION__, __FILE__, __LINE__);
+        else
+            log("FATAL", (dformat("Caught signal %1%") % signum).str(), __FUNCTION__, __FILE__, __LINE__);
+
+        destroy();
+
+        exit( signum );
     }
 }
 }

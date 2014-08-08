@@ -25,6 +25,8 @@ int main( int, char **)
     FS_ERRORF(dformat("TESTING FS_ERRORF %2% %1%") % "testArg1" % "testArg2");
     FS_FATALF(dformat("TESTING FS_FATALF %2% %1%") % "testArg1" % "testArg2");
 
+    abort();
+
     Logger::destroy();
 
     return 0;

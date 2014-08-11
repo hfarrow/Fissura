@@ -66,7 +66,7 @@ private:
     void getOutputBuffer(DebugString& outOutputBuffer, const DebugString& tag, u32 flags, const DebugString& message,
                          const char* funcName, const char* sourceFile, u32 lineNum);
 
-    std::mutex _tagMutex;
+    std::mutex _mutex;
     clock::time_point _startTime;
     DebugString _outputBuffer;
     clock::time_point _lastFlushTime;
@@ -145,7 +145,7 @@ void LogManager::init(const char* configFilename)
 void LogManager::log(const DebugString& tag, const DebugString& message, const char* funcName,
                 const char* sourceFile, u32 lineNum)
 {
-    std::lock_guard<std::mutex> lock(_tagMutex);
+    std::lock_guard<std::mutex> lock(_mutex);
     auto findIt = tags.find(tag);
     if(findIt != tags.end())
     {
@@ -157,7 +157,7 @@ void LogManager::log(const DebugString& tag, const DebugString& message, const c
 
 void LogManager::setDisplayFlags(const DebugString& tag, u32 flags)
 {
-    std::lock_guard<std::mutex> lock(_tagMutex);
+    std::lock_guard<std::mutex> lock(_mutex);
     if(flags != 0)
     {
         auto findIt = tags.find(tag);
@@ -198,6 +198,7 @@ void LogManager::outputFinalBufferToLogs(const DebugString& finalBuffer, u32 fla
 
 void LogManager::flushOutputBuffer()
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     if(_outputBuffer.length() > 0)
     {
         writeToLogFile(_outputBuffer);
@@ -344,7 +345,6 @@ namespace Logger
             log("FATAL", (dformat("Caught signal %1%") % signum).str(), __FUNCTION__, __FILE__, __LINE__);
 
         destroy();
-
         exit( signum );
     }
 }

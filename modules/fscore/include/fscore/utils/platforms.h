@@ -27,4 +27,10 @@
 	#endif
 #endif
 
+#ifdef WINDOWS
+#define FS_INLINE __forceinline
+#else
+#define FS_INLINE __attribute__((always_inline))
+#endif
+
 #endif

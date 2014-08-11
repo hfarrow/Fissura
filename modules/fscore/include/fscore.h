@@ -8,6 +8,7 @@
 #include "fscore/utils/clock.h"
 #include "fscore/utils/math.h"
 #include "fscore/utils/macros.h"
+#include "fscore/utils/delegate.h"
 
 // Debugging
 #include "fscore/debugging/assert.h"

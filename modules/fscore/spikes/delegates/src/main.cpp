@@ -131,8 +131,16 @@ void checkMake()
     auto delegateClass = MyDelegate::make<MyClass, &MyClass::myFunction>(&c);
     delegateClass.invoke(78);
 
-    auto delegateConstClass = MyDelegate::makeConst<MyClass, &MyClass::myConstFunction>(&c);
+    auto delegateConstClass = MyDelegate::make<MyClass, &MyClass::myConstFunction>(&c);
     delegateConstClass.invoke(79);
+}
+
+void checkEvent()
+{
+    using MyDelegate = Delegate<void(int)>;
+
+    auto channel = Event<void(int)>::EventChannel<DebugArena>(*memory::getDebugArena(), 10);
+    channel.addListener<&myFunction>();
 }
 
 int main( int, char **)
@@ -141,6 +149,7 @@ int main( int, char **)
     checkComparisons();
     checkCompareConstToNonConst();
     checkMake();
+    checkEvent();
     return 0;
 }
 

@@ -24,10 +24,25 @@ namespace fs
             void* as_void;
             const void* as_const_void;
         };
+        using DelegateType = Delegate<R (Params...)>;
         using InternalFunction = void (*)(InstancePtr, Params...);
         using Stub = std::pair<InstancePtr, InternalFunction>;
+        using Function = R (*)(Params...);
 
-        template <class C, R (C::*Function)(Params...)>
+        template<typename C>
+        using MemberFunction = R (C::*)(Params...);
+
+        template<typename C>
+        using ConstMemberFunction = R (C::*)(Params...) const;
+
+
+        Delegate(Stub stub) :
+            _stub(stub)
+        {
+
+        }
+
+        template <class C, MemberFunction<C> function>
         struct NonConstWrapper
         {
             NonConstWrapper(C* instance)
@@ -38,7 +53,7 @@ namespace fs
             C* _instance;
         };
 
-        template <class C, R (C::*Function)(Params...) const>
+        template <class C, ConstMemberFunction<C> function>
         struct ConstWrapper
         {
             ConstWrapper(const C* instance)
@@ -50,25 +65,25 @@ namespace fs
         };
 
         // turns a free function into our internal function stub
-        template <void (*Function)(Params...)>
-        static FS_INLINE void functionStub(InstancePtr, Params... params)
+        template <Function function>
+        static FS_INLINE R functionStub(InstancePtr, Params... params)
         {
             // we don't need the instance pointer because we're dealing with free functions
-            return (Function)(params...);
+            return (function)(params...);
         }
 
         // turns a member function into our internal function stub
-        template <class C, R (C::*Function)(Params...)>
+        template <class C, MemberFunction<C> function>
         static FS_INLINE R classMethodStub(InstancePtr instance, Params... params)
         {
             // cast the instance pointer back into the original class instance
-            return (static_cast<C*>(instance.as_void)->*Function)(params...);
+            return (static_cast<C*>(instance.as_void)->*function)(params...);
         }
 
-        template <class C, R (C::*Function)(Params...) const>
+        template <class C, ConstMemberFunction<C> function>
         static FS_INLINE R constClassMethodStub(InstancePtr instance, Params... params)
         {
-            return (static_cast<const C*>(instance.as_const_void)->*Function)(params...);
+            return (static_cast<const C*>(instance.as_const_void)->*function)(params...);
         }
 
     public:
@@ -78,54 +93,54 @@ namespace fs
         }
 
         // make a bound delegate to a free function
-        template <void (*Function)(Params...)>
-        static Delegate<R (Params...)> make()
+        template <Function function>
+        static DelegateType make()
         {
-            Delegate<R (Params...)> delegate;
-            delegate.bind<Function>();
+            DelegateType delegate;
+            delegate.bind<function>();
             return delegate;
         }
 
         // make a bound delegate to a class method
-        template <class C, void (C::*Function)(Params...)>
-        static Delegate<R (Params...)> make(C* instance)
+        template <class C, MemberFunction<C> function>
+        static DelegateType make(NonConstWrapper<C, function> wrapper)
         {
             Delegate<R (Params...)> delegate;
-            delegate.bind<C, Function>(instance);
+            delegate.bind<C, function>(wrapper._instance);
             return delegate;
         }
 
         // make a bound delegate toa const class method
-        template <class C, R (C::*Function)(Params...) const>
-        static Delegate<R (Params...)> makeConst(C* instance)
+        template <class C, ConstMemberFunction<C> function>
+        static DelegateType make(ConstWrapper<C, function> wrapper)
         {
             Delegate<R (Params...)> delegate;
-            delegate.bind<C, Function>(instance);
+            delegate.bind<C, function>(wrapper._instance);
             return delegate;
         }
 
         // binds a free function
-        template <void (*Function)(Params...)>
+        template <Function function>
         void bind(void)
         {
             _stub.first.as_void = nullptr;
-            _stub.second = &functionStub<Function>;
+            _stub.second = &functionStub<function>;
         }
 
         // binds a class method
-        template <class C, void (C::*Function)(Params...)>
-        void bind(NonConstWrapper<C, Function> wrapper)
+        template <class C, MemberFunction<C> function>
+        void bind(NonConstWrapper<C, function> wrapper)
         {
             _stub.first.as_void = wrapper._instance;
-            _stub.second = &classMethodStub<C, Function>;
+            _stub.second = &classMethodStub<C, function>;
         }
 
         // binds a const class method
-        template <class C, R (C::*Function)(Params...) const>
-        void bind(ConstWrapper<C, Function> wrapper)
+        template <class C, ConstMemberFunction<C> function>
+        void bind(ConstWrapper<C, function> wrapper)
         {
             _stub.first.as_const_void = wrapper._instance;
-            _stub.second = &constClassMethodStub<C, Function>;
+            _stub.second = &constClassMethodStub<C, function>;
         }
 
         void invoke(Params... params) const
@@ -139,13 +154,13 @@ namespace fs
             return invoke(params...);
         }
 
-        bool operator==(const Delegate<R (Params...)> &other) const
+        bool operator==(const DelegateType &other) const
         {
             return _stub.first.as_void == other._stub.first.as_void &&
                    _stub.second == other._stub.second;
         }
 
-        bool operator!=(const Delegate<R (Params...)> &other) const
+        bool operator!=(const DelegateType &other) const
         {
             return !(*this == other);
         }

@@ -9,6 +9,7 @@
 #include "fscore/utils/math.h"
 #include "fscore/utils/macros.h"
 #include "fscore/utils/delegate.h"
+#include "fscore/utils/event.h"
 
 // Debugging
 #include "fscore/debugging/assert.h"

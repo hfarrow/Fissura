@@ -138,9 +138,23 @@ void checkMake()
 void checkEvent()
 {
     using MyDelegate = Delegate<void(int)>;
+    using MyEvent = Event<DebugArena, void(int)>;
+    using MyChannel = MyEvent::Channel;
 
-    auto channel = Event<void(int)>::EventChannel<DebugArena>(*memory::getDebugArena(), 10);
-    channel.addListener<&myFunction>();
+    // MyClass c;
+    //
+    // MyChannel channel(*memory::getDebugArena(), 10);
+    // channel.addListener<&myFunction>();
+    // bool hasListener = channel.hasListener<&myFunction>();
+    // FS_PRINT("hasListener = " << hasListener);
+    // auto delegate = MyChannel::DelegateType::make<&myFunction>();
+    // hasListener = channel.hasListener(delegate);
+    // FS_PRINT("hasListener = " << hasListener);
+    // channel.removeListener<&myFunction>();
+    // hasListener = channel.hasListener<&myFunction>();
+    // FS_PRINT("hasListener = " << hasListener);
+    //
+    // channel.addListener<MyClass, &MyClass::myFunction>(&c);
 }
 
 int main( int, char **)

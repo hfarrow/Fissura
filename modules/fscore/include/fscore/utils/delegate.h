@@ -16,17 +16,7 @@ namespace fs
     template <typename R, typename...Params>
     class Delegate<R (Params...)>
     {
-    private:
-        union InstancePtr
-        {
-            InstancePtr(void) : as_void(nullptr) {}
-
-            void* as_void;
-            const void* as_const_void;
-        };
-        using DelegateType = Delegate<R (Params...)>;
-        using InternalFunction = void (*)(InstancePtr, Params...);
-        using Stub = std::pair<InstancePtr, InternalFunction>;
+    public:
         using Function = R (*)(Params...);
 
         template<typename C>
@@ -34,13 +24,6 @@ namespace fs
 
         template<typename C>
         using ConstMemberFunction = R (C::*)(Params...) const;
-
-
-        Delegate(Stub stub) :
-            _stub(stub)
-        {
-
-        }
 
         template <class C, MemberFunction<C> function>
         struct NonConstWrapper
@@ -63,6 +46,24 @@ namespace fs
 
             const C* _instance;
         };
+
+    private:
+        union InstancePtr
+        {
+            InstancePtr(void) : as_void(nullptr) {}
+
+            void* as_void;
+            const void* as_const_void;
+        };
+        using DelegateType = Delegate<R (Params...)>;
+        using InternalFunction = void (*)(InstancePtr, Params...);
+        using Stub = std::pair<InstancePtr, InternalFunction>;
+
+        Delegate(Stub stub) :
+            _stub(stub)
+        {
+
+        }
 
         // turns a free function into our internal function stub
         template <Function function>
@@ -168,6 +169,8 @@ namespace fs
     private:
             Stub _stub;
     };
+
+    static_assert(std::is_move_constructible<Delegate<void()>>::value, "Delegate should be movable.");
 }
 
 #endif

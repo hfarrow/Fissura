@@ -73,7 +73,7 @@ private:
 };
 
 LogManager::LogManager() :
-    tags(TagAllocator(*memory::getDebugArena())),
+    tags(TagAllocator(memory::getDebugArena())),
     _startTime(clock::now()),
     _lastFlushTime(clock::now())
 {

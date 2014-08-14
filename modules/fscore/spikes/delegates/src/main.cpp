@@ -32,6 +32,11 @@ void myFunction()
     FS_PRINT("HELLO --");
 }
 
+int myReturnFunction()
+{
+    return 10;
+}
+
 class MyClass
 {
     public:
@@ -43,6 +48,11 @@ class MyClass
         void myConstFunction(int arg) const
         {
             FS_PRINT("MyClass const " << arg);
+        }
+
+        int myReturnFunction()
+        {
+            return 777;
         }
 };
 
@@ -119,6 +129,11 @@ void checkInvoke()
     ClassDelegate constDelegate;
     constDelegate.bind<MyClass, &MyClass::myConstFunction>(&c);
     constDelegate(24);
+
+    Delegate<int(void)> delegateReturn;
+    delegateReturn.bind<MyClass, &MyClass::myReturnFunction>(&c);
+    int val = delegateReturn();
+    FS_PRINT("delegateReturn returned " << val);
 }
 
 void checkMake()
@@ -133,6 +148,10 @@ void checkMake()
 
     auto delegateConstClass = MyDelegate::make<MyClass, &MyClass::myConstFunction>(&c);
     delegateConstClass.invoke(79);
+
+    auto delegateReturn = Delegate<int(void)>::make<&myReturnFunction>();
+    int val = delegateReturn.invoke();
+    FS_PRINT("delegateReturn returned " << val);
 }
 
 void checkEvent()
@@ -155,6 +174,22 @@ void checkEvent()
     // FS_PRINT("hasListener = " << hasListener);
     //
     // channel.addListener<MyClass, &MyClass::myFunction>(&c);
+
+    MyClass c;
+    MyEvent event(memory::getDebugArena());
+
+    auto channel = event.makeChannel(10);
+    channel.addListener<&myFunction>();
+    channel.addListener<&myOtherFunction>();
+    channel.addListener<MyClass, &MyClass::myFunction>(&c);
+    channel.addListener(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
+
+    event.add(&channel);
+    event.add<&myFunction>();
+    event.add<MyClass, &MyClass::myConstFunction>(&c);
+    event.add<MyClass, &MyClass::myFunction>(&c);
+    event.add(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
+    event.signal(111);
 }
 
 int main( int, char **)
@@ -163,7 +198,7 @@ int main( int, char **)
     checkComparisons();
     checkCompareConstToNonConst();
     checkMake();
-    checkEvent();
+    // checkEvent();
     return 0;
 }
 

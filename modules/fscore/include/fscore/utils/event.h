@@ -55,7 +55,7 @@ namespace fs
             template <class C, MemberFunction<C> function>
             void addListener(NonConstWrapper<C, function> wrapper)
             {
-                addListener(DelegateType:: make(wrapper));
+                addListener(DelegateType::make(wrapper));
             }
 
             template <class C, ConstMemberFunction<C> function>
@@ -143,6 +143,14 @@ namespace fs
             {
                 FS_ASSERT(size > 0);
             }
+
+            void signal(Params...params)
+            {
+                for(DelegateType delegate : _listeners)
+                {
+                    delegate.invoke(params...);
+                }
+            }
         };
 
         Event(Arena* pArena) :
@@ -152,9 +160,6 @@ namespace fs
         {
             _channels.push_back(&_defualtChannel);
         }
-
-        // add(channel|delegate), remove(channel|delegate), signal, removeAll, hasChannel,
-        // hasListener(delegate|R (*function)(Params...))
 
         Channel makeChannel(size_t size) const
         {
@@ -176,24 +181,28 @@ namespace fs
         template <Function function>
         void add()
         {
+            FS_ASSERT_MSG(!has<function>(), "Attempting to add a duplicate listener to event.");
             _defualtChannel.template addListener<function>();
         }
 
         template <class C, MemberFunction<C> function>
-        bool add(NonConstWrapper<C, function> wrapper)
+        void add(NonConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.template addListener<function>(wrapper);
+            FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
+            _defualtChannel.addListener(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
-        bool add(ConstWrapper<C, function> wrapper)
+        void add(ConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.template addListener<function>(wrapper);
+            FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
+            _defualtChannel.addListener(wrapper);
         }
 
         template <typename D>
         void add(D delegate)
         {
+            FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to event.");
             _defualtChannel.addListener(delegate);
         }
 
@@ -207,15 +216,15 @@ namespace fs
         }
 
         template <class C, MemberFunction<C> function>
-        bool remove(NonConstWrapper<C, function> wrapper)
+        void remove(NonConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.template removeListener<function>(wrapper);
+            _defualtChannel.removeListener(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
-        bool remove(ConstWrapper<C, function> wrapper)
+        void remove(ConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.template removeListener<function>(wrapper);
+            _defualtChannel.removeListener(wrapper);
         }
 
         template <typename D>
@@ -252,24 +261,26 @@ namespace fs
         template <class C, MemberFunction<C> function>
         bool has(NonConstWrapper<C, function> wrapper)
         {
-            return has(DelegateType::template make<function>(wrapper));
+            return has(DelegateType::make(wrapper));
         }
 
         template<class C, ConstMemberFunction<C> function>
         bool has(ConstWrapper<C, function> wrapper)
         {
-            return has(DelegateType::template make<function>(wrapper));
+            return has(DelegateType::make(wrapper));
         }
 
         template <typename D>
         bool has(D delegate)
         {
-            // Note: currently a linear search
+            // Note: Uses a linear search. :( Avoid using this on an event with many listeners.
             for(Channel* pChannel : _channels)
             {
                 if(pChannel->hasListener(delegate))
                     return true;
             }
+
+            return false;
         }
 
         template <typename C>
@@ -278,6 +289,13 @@ namespace fs
             return std::find(_channels.begin(), _channels.end(), pChannel) != _channels.end();
         }
 
+        void signal(Params...params)
+        {
+            for(Channel* pChannel : _channels)
+            {
+                pChannel->signal(params...);
+            }
+        }
 
     private:
          Arena* _pArena;

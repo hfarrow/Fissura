@@ -56,14 +56,14 @@ namespace fs
             const void* as_const_void;
         };
         using DelegateType = Delegate<R (Params...)>;
-        using InternalFunction = void (*)(InstancePtr, Params...);
+        using InternalFunction = R (*)(InstancePtr, Params...);
         using Stub = std::pair<InstancePtr, InternalFunction>;
 
-        Delegate(Stub stub) :
-            _stub(stub)
-        {
-
-        }
+        // Delegate(Stub stub) :
+        //     _stub(stub)
+        // {
+        //
+        // }
 
         // turns a free function into our internal function stub
         template <Function function>
@@ -144,13 +144,13 @@ namespace fs
             _stub.second = &constClassMethodStub<C, function>;
         }
 
-        void invoke(Params... params) const
+        R invoke(Params... params) const
         {
             FS_ASSERT_MSG(_stub.second != nullptr, "Cannot invoke unbound delegate. Call bind() first.");
             return _stub.second(_stub.first, params...);
         }
 
-        void operator()(Params... params) const
+        R operator()(Params... params) const
         {
             return invoke(params...);
         }

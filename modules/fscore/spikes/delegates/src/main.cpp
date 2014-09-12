@@ -185,11 +185,21 @@ void checkEvent()
     channel.addListener(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
 
     event.add(&channel);
-    event.add<&myFunction>();
-    event.add<MyClass, &MyClass::myConstFunction>(&c);
-    event.add<MyClass, &MyClass::myFunction>(&c);
-    event.add(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
+    // event.add<&myFunction>();
+    // event.add<MyClass, &MyClass::myConstFunction>(&c);
+    // event.add<MyClass, &MyClass::myFunction>(&c);
+    // event.add(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
     event.signal(111);
+}
+
+void checkLambda()
+{
+    using MyDelegate = Delegate<void(int)>;
+    MyDelegate delegate([](int i) {FS_PRINT("lambda"); i++;});
+    delegate.invoke(1);
+
+    MyDelegate d2 = [](int i) {FS_PRINT("lamda assignment"); ++i;};
+    d2.invoke(2);
 }
 
 int main( int, char **)
@@ -198,7 +208,8 @@ int main( int, char **)
     checkComparisons();
     checkCompareConstToNonConst();
     checkMake();
-    // checkEvent();
+    checkEvent();
+    checkLambda();
     return 0;
 }
 

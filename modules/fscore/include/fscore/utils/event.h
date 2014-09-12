@@ -144,12 +144,17 @@ namespace fs
                 FS_ASSERT(size > 0);
             }
 
-            void signal(Params...params)
+            void signal(Params&&... params)
             {
                 for(DelegateType delegate : _listeners)
                 {
-                    delegate.invoke(params...);
+                    delegate.invoke(std::forward<Params>(params)...);
                 }
+            }
+
+            void operator() (Params&&... params)
+            {
+                signal(std::forward<Params>(params)...);
             }
         };
 
@@ -289,12 +294,17 @@ namespace fs
             return std::find(_channels.begin(), _channels.end(), pChannel) != _channels.end();
         }
 
-        void signal(Params...params)
+        void signal(Params&&... params)
         {
             for(Channel* pChannel : _channels)
             {
-                pChannel->signal(params...);
+                pChannel->signal(std::forward<Params>(params)...);
             }
+        }
+
+        void operator() (Params&&... params)
+        {
+            signal(std::forward<Params>(params)...);
         }
 
     private:

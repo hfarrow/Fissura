@@ -65,7 +65,7 @@ namespace fs
         }
 
         template <class T>
-        static void deleteStub(void* const p)
+        static void deleteFunctorStub(void* const p)
         {
             static_cast<T*>(p)->~T();
         }
@@ -140,7 +140,8 @@ namespace fs
 
     public:
         Delegate(void) :
-            _stub(InstancePtr(), nullptr)
+            _stub(InstancePtr(), nullptr),
+            _storeSize(0)
         {
         }
 
@@ -160,12 +161,17 @@ namespace fs
             new (_store.get()) FunctorType(std::forward<T>(func));
             _stub.first.as_void = _store.get();
             _stub.second = functorStub<FunctorType>;
-            _deleter = deleteStub<FunctorType>;
+            _deleter = deleteFunctorStub<FunctorType>;
         }
 
-        // Delegate& operator=(Delegate const&) = default;
-        //
-        // Delegate& operator=(Delegate&&) = default;
+        ~Delegate()
+        {
+        }
+
+        Delegate& operator=(Delegate const&) = default;
+        Delegate& operator=(Delegate&&) = default;
+        Delegate(Delegate const&) = default;
+        Delegate(Delegate&&) = default;
 
         template <
             typename T,
@@ -180,7 +186,7 @@ namespace fs
             if(sizeof(FunctorType) > _storeSize || !_store.unique())
             {
                 _store.reset(operator new(sizeof(FunctorType)),
-                        deleteStub<FunctorType>);
+                        deleteFunctorStub<FunctorType>);
                 _storeSize = sizeof(FunctorType);
             }
             else
@@ -191,7 +197,7 @@ namespace fs
             new (_store.get()) FunctorType(std::forward<T>(func));
             _stub.first.as_void = _store.get();
             _stub.second = functorStub<FunctorType>;
-            _deleter = deleteStub<FunctorType>;
+            _deleter = deleteFunctorStub<FunctorType>;
 
             return *this;
         }
@@ -247,13 +253,13 @@ namespace fs
             _stub.second = &constClassMethodStub<C, function>;
         }
 
-        R invoke(Params&&... params) const
+        R invoke(Params... params) const
         {
             FS_ASSERT_MSG(_stub.second != nullptr, "Cannot invoke unbound delegate. Call bind() first.");
             return _stub.second(_stub.first, std::forward<Params>(params)...);
         }
 
-        R operator() (Params&&... params) const
+        R operator() (Params... params) const
         {
             return invoke(std::forward<Params>(params)...);
         }

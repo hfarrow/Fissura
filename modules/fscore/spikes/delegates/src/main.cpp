@@ -195,10 +195,16 @@ void checkEvent()
 void checkLambda()
 {
     using MyDelegate = Delegate<void(int)>;
-    MyDelegate delegate([](int i) {FS_PRINT("lambda"); i++;});
-    delegate.invoke(1);
+    // MyDelegate delegate([](int i) {FS_PRINT("lambda " << i); i++;});
+    // delegate.invoke(1);
 
-    MyDelegate d2 = [](int i) {FS_PRINT("lamda assignment"); ++i;};
+    auto F = [](){ return [](int ii){FS_PRINT("F " << ii); ++ii;};};
+
+    MyDelegate d2 = MyDelegate::make<&myFunction>();
+    d2(22);
+    d2 = F(); // Should reset
+    d2.invoke(2);
+    d2 = F(); // Should delete
     d2.invoke(2);
 }
 

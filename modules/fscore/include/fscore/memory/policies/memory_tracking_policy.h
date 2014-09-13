@@ -82,6 +82,7 @@ namespace fs
             report->wasted = arena.getTotalUsedSize() - getAllocatedSize();
             report->hasStackTrace = false;
             report->noTracking = false;
+            return report;
         }
 
     protected:

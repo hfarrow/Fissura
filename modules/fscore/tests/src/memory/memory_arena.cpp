@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 {
     // TODO: Determine how to properly test all aspects of an stl allocator.
     {
-        StlAllocator<u32, DebugArena> allocator_vector(*fs::memory::getDebugArena());
+        StlAllocator<u32, DebugArena> allocator_vector(fs::memory::getDebugArena());
         std::vector<u32, StlAllocator<u32, DebugArena>> vector(allocator_vector);
 
         vector.push_back(1);
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(stl_allocator)
 
         vector.clear();
 
-        StlAllocator<u32, DebugArena> allocator_map(*fs::memory::getDebugArena());
+        StlAllocator<u32, DebugArena> allocator_map(fs::memory::getDebugArena());
         std::map<u32, u32, std::less<u32>, StlAllocator<u32, DebugArena>> map(allocator_map);
 
         map.insert(std::pair<u32, u32>(1,1));

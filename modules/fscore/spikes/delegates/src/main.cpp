@@ -194,18 +194,27 @@ void checkEvent()
 
 void checkLambda()
 {
-    using MyDelegate = Delegate<void(int)>;
-    // MyDelegate delegate([](int i) {FS_PRINT("lambda " << i); i++;});
-    // delegate.invoke(1);
+    using MyArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
+                                MultiThread<MutexPrimitive>,
+                                SimpleBoundsChecking,
+                                FullMemoryTracking,
+                                MemoryTagging>;
+
+    using MyDelegate = Delegate<void(int), MyArena>;
 
     auto F = [](){ return [](int ii){FS_PRINT("F " << ii); ++ii;};};
 
-    MyDelegate d2 = MyDelegate::make<&myFunction>();
-    d2(22);
+    HeapArea area(FS_SIZE_OF_MB * 32);
+    MyArena arena(area, "DelegateArena");
+
+    MyDelegate d2(&arena);
     d2 = F(); // Should reset
     d2.invoke(2);
     d2 = F(); // Should delete
-    d2.invoke(2);
+    d2.invoke(3);
+
+    auto report = arena.generateArenaReport();
+    fs::memory::logArenaReport(report);
 }
 
 int main( int, char **)

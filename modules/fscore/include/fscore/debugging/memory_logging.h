@@ -51,7 +51,7 @@ namespace fs
 
                     if(report->hasStackTrace)
                     {
-                        FS_INFOF(dformat("    Stack Trace:\n%1%") % StackTraceUtil::getCaller(info.frames, info.numFrames, 2));
+                        FS_INFOF(dformat("    Stack Trace:\n%1%") % StackTraceUtil::getCaller(info.frames, info.numFrames, 0));
                     }
                     else
                     {

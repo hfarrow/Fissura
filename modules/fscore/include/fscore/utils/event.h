@@ -23,7 +23,7 @@ namespace fs
 
         // Create typedefs for dependant types so that we can simplify the syntax of the code.
 
-        using DelegateType = Delegate<R (Params...)>;
+        using DelegateType = Delegate<R (Params...), std::nullptr_t>;
         using Function = typename DelegateType::Function;
 
         template <class C>

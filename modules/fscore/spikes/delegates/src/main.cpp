@@ -139,17 +139,17 @@ void checkInvoke()
 void checkMake()
 {
     using MyDelegate = Delegate<void(int)>;
-    auto delegateFree = MyDelegate::make<&myFunction>();
+    auto delegateFree = MyDelegate::from<&myFunction>();
     delegateFree.invoke(77);
 
     MyClass c;
-    auto delegateClass = MyDelegate::make<MyClass, &MyClass::myFunction>(&c);
+    auto delegateClass = MyDelegate::from<MyClass, &MyClass::myFunction>(&c);
     delegateClass.invoke(78);
 
-    auto delegateConstClass = MyDelegate::make<MyClass, &MyClass::myConstFunction>(&c);
+    auto delegateConstClass = MyDelegate::from<MyClass, &MyClass::myConstFunction>(&c);
     delegateConstClass.invoke(79);
 
-    auto delegateReturn = Delegate<int(void)>::make<&myReturnFunction>();
+    auto delegateReturn = Delegate<int(void)>::from<&myReturnFunction>();
     int val = delegateReturn.invoke();
     FS_PRINT("delegateReturn returned " << val);
 }
@@ -163,32 +163,32 @@ void checkEvent()
     // MyClass c;
     //
     // MyChannel channel(*memory::getDebugArena(), 10);
-    // channel.addListener<&myFunction>();
+    // channel.add<&myFunction>();
     // bool hasListener = channel.hasListener<&myFunction>();
     // FS_PRINT("hasListener = " << hasListener);
-    // auto delegate = MyChannel::DelegateType::make<&myFunction>();
+    // auto delegate = MyChannel::DelegateType::from<&myFunction>();
     // hasListener = channel.hasListener(delegate);
     // FS_PRINT("hasListener = " << hasListener);
     // channel.removeListener<&myFunction>();
     // hasListener = channel.hasListener<&myFunction>();
     // FS_PRINT("hasListener = " << hasListener);
     //
-    // channel.addListener<MyClass, &MyClass::myFunction>(&c);
+    // channel.add<MyClass, &MyClass::myFunction>(&c);
 
     MyClass c;
     MyEvent event(memory::getDebugArena());
 
     auto channel = event.makeChannel(10);
-    channel.addListener<&myFunction>();
-    channel.addListener<&myOtherFunction>();
-    channel.addListener<MyClass, &MyClass::myFunction>(&c);
-    channel.addListener(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
+    channel.add<&myFunction>();
+    channel.add<&myOtherFunction>();
+    channel.add<MyClass, &MyClass::myFunction>(&c);
+    channel.add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
 
     event.add(&channel);
     // event.add<&myFunction>();
     // event.add<MyClass, &MyClass::myConstFunction>(&c);
     // event.add<MyClass, &MyClass::myFunction>(&c);
-    // event.add(MyEvent::DelegateType::make<MyClass, &MyClass::myConstFunction>(&c));
+    // event.add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
     event.signal(111);
 }
 
@@ -207,14 +207,75 @@ void checkLambda()
     HeapArea area(FS_SIZE_OF_MB * 32);
     MyArena arena(area, "DelegateArena");
 
-    MyDelegate d2(&arena);
-    d2 = F(); // Should reset
-    d2.invoke(2);
-    d2 = F(); // Should delete
-    d2.invoke(3);
+    MyDelegate d1(&arena);
+    d1 = F(); // Should reset
+    d1.invoke(2);
+    d1 = F(); // Should delete
+    d1.invoke(3);
+
+    MyDelegate d2(F(), &arena);
+    d2(19);
+
+    d2 = d1;
+    d2(4);
 
     auto report = arena.generateArenaReport();
     fs::memory::logArenaReport(report);
+}
+
+void checkLambdaEvent()
+{
+    using MyArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
+                                MultiThread<MutexPrimitive>,
+                                SimpleBoundsChecking,
+                                FullMemoryTracking,
+                                MemoryTagging>;
+
+    using MyEvent = Event<MyArena, void(int)>;
+    using MyDelegate = MyEvent::DelegateType;
+    using MyChannel = MyEvent::Channel;
+
+    HeapArea area(FS_SIZE_OF_MB * 32);
+    MyArena arena(area, "DelegateArena");
+
+    MyClass c;
+    MyEvent event(&arena);
+
+    auto channel = event.makeChannel(10);
+    channel.add<&myFunction>();
+    channel.add<&myOtherFunction>();
+    channel.add<MyClass, &MyClass::myFunction>(&c);
+    channel.add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
+    channel.add(MyDelegate([](int i){FS_PRINT("waka waka " << i);}, &arena));
+    channel.add([](int i){FS_PRINT("whoop " << i);});
+
+    auto lambda = [](int i){FS_PRINT("lambda " << i); ++i;};
+    auto lambda2 = [](int i){FS_PRINT("lambda " << i); ++i;};
+    // The above lambdas "look" identical but should be seperate functions
+
+    event.add(lambda);
+    if(!event.has(lambda))
+        FS_PRINT("ERROR: should have been the same object");
+    //
+    MyDelegate d1(lambda, &arena);
+    MyDelegate d11(lambda, &arena);
+    if(d1 != d11)
+        FS_PRINT("ERROR: d1 and d11 should have been the same");
+
+    MyDelegate d2(lambda, &arena);
+    MyDelegate d22(lambda2, &arena);
+
+    if(d2 == d22)
+        FS_PRINT("d2 and d22 should not be the same");
+
+    event.add(&channel);
+    event.add([](int i){FS_PRINT("Direct Add " << i); ++i;});
+    event.signal(111);
+
+    if(event.has([](int i){++i;}))
+        FS_PRINT("ERROR: should be a unique signature");
+
+    memory::logArenaReport(arena.generateArenaReport());
 }
 
 int main( int, char **)
@@ -225,6 +286,7 @@ int main( int, char **)
     checkMake();
     checkEvent();
     checkLambda();
+    checkLambdaEvent();
     return 0;
 }
 

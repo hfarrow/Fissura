@@ -23,7 +23,7 @@ namespace fs
 
         // Create typedefs for dependant types so that we can simplify the syntax of the code.
 
-        using DelegateType = Delegate<R (Params...), std::nullptr_t>;
+        using DelegateType = Delegate<R (Params...), Arena>;
         using Function = typename DelegateType::Function;
 
         template <class C>
@@ -44,30 +44,47 @@ namespace fs
             friend Event<Arena, R (Params...)>;
 
             //
-            // addListener
+            // add
             //
             template <Function function>
-            void addListener(void)
+            void add(void)
             {
-                addListener(DelegateType::template make<function>());
+                add(DelegateType::template from<function>());
             }
 
             template <class C, MemberFunction<C> function>
-            void addListener(NonConstWrapper<C, function> wrapper)
+            void add(NonConstWrapper<C, function> wrapper)
             {
-                addListener(DelegateType::make(wrapper));
+                add(DelegateType::from(wrapper));
             }
 
             template <class C, ConstMemberFunction<C> function>
-            void addListener(ConstWrapper<C, function> wrapper)
+            void add(ConstWrapper<C, function> wrapper)
             {
-                addListener(DelegateType::make(wrapper));
+                add(DelegateType::from(wrapper));
             }
 
-            template <typename D>
-            void addListener(D delegate)
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    !std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            void add(T&& func)
             {
-                FS_ASSERT_MSG(!hasListener(delegate), "Attempting to add a duplicate listener to channel.");
+                DelegateType delegate(std::forward<T>(func), _pArena);
+                add(delegate);
+            }
+
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            void add(T delegate)
+            {
+                FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to channel.");
 
                 _listeners.push_back(delegate);
                 FS_ASSERT_MSG_FORMATTED(_listeners.size() <= _maxSize,
@@ -75,28 +92,45 @@ namespace fs
             }
 
             //
-            // removeListener
+            // remove
             //
             template <class C, MemberFunction<C> function>
-            void removeListener(NonConstWrapper<C, function> wrapper)
+            void remove(NonConstWrapper<C, function> wrapper)
             {
-                removeListener(DelegateType::make(wrapper));
+                remove(DelegateType::from(wrapper));
             }
 
             template <class C, ConstMemberFunction<C> function>
-            void removeListener(ConstWrapper<C, function> wrapper)
+            void remove(ConstWrapper<C, function> wrapper)
             {
-                removeListener(DelegateType::make(wrapper));
+                remove(DelegateType::from(wrapper));
             }
 
             template <Function function>
-            void removeListener(void)
+            void remove(void)
             {
-                removeListener(DelegateType::template make<function>());
+                remove(DelegateType::template from<function>());
             }
 
-            template <typename D>
-            void removeListener(D delegate)
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    !std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            void remove(T&& func)
+            {
+                DelegateType delegate(std::forward<T>(func), _pArena);
+                remove(delegate);
+            }
+
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            void remove(T delegate)
             {
                 auto iter = std::find(_listeners.begin(), _listeners.end(), delegate);
                 if(iter != _listeners.end())
@@ -106,28 +140,40 @@ namespace fs
             }
 
             //
-            // hasListener
+            // has
             //
             template <Function function>
-            bool hasListener()
+            bool has()
             {
-                return hasListener(DelegateType::template make<function>());
+                return has(DelegateType::template from<function>());
             }
 
             template <class C, MemberFunction<C> function>
-            bool hasListener(NonConstWrapper<C, function> wrapper)
+            bool has(NonConstWrapper<C, function> wrapper)
             {
-                return hasListener(DelegateType::make<function>(wrapper));
+                return has(DelegateType::from<function>(wrapper));
             }
 
             template<class C, ConstMemberFunction<C> function>
-            bool hasListener(ConstWrapper<C, function> wrapper)
+            bool has(ConstWrapper<C, function> wrapper)
             {
-                return hasListener(DelegateType::make<function>(wrapper));
+                return has(DelegateType::from<function>(wrapper));
+            }
+
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    !std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            void has(T&& func)
+            {
+                DelegateType delegate(std::forward<T>(func), _pArena);
+                return has(delegate);
             }
 
             template<typename D>
-            bool hasListener(D delegate)
+            bool has(D delegate)
             {
                 return std::find(_listeners.begin(), _listeners.end(), delegate) != _listeners.end();
             }
@@ -136,10 +182,12 @@ namespace fs
             using ListenerVector = Vector<DelegateType, Arena>;
             ListenerVector _listeners;
             size_t _maxSize;
+            Arena* _pArena;
 
             Channel(Arena* pArena, size_t size) :
                  _listeners(StlAllocator<DelegateType, Arena>(pArena)),
-                 _maxSize(size)
+                 _maxSize(size),
+                 _pArena(pArena)
             {
                 FS_ASSERT(size > 0);
             }
@@ -187,28 +235,45 @@ namespace fs
         void add()
         {
             FS_ASSERT_MSG(!has<function>(), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.template addListener<function>();
+            _defualtChannel.template add<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void add(NonConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.addListener(wrapper);
+            _defualtChannel.add(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void add(ConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.addListener(wrapper);
+            _defualtChannel.add(wrapper);
         }
 
-        template <typename D>
-        void add(D delegate)
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                !std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        void add(T&& func)
+        {
+            DelegateType delegate(std::forward<T>(func), _pArena);
+            add(delegate);
+        }
+
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        void add(T delegate)
         {
             FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.addListener(delegate);
+            _defualtChannel.add(delegate);
         }
 
         //
@@ -217,25 +282,42 @@ namespace fs
         template <Function function>
         void remove()
         {
-            _defualtChannel.template removeListener<function>();
+            _defualtChannel.template remove<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void remove(NonConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.removeListener(wrapper);
+            _defualtChannel.remove(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void remove(ConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.removeListener(wrapper);
+            _defualtChannel.remove(wrapper);
         }
 
-        template <typename D>
-        void remove(D delegate)
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                !std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        void remove(T&& func)
         {
-            _defualtChannel.removeListener(delegate);
+            DelegateType delegate(std::forward<T>(func), _pArena);
+            remove(delegate);
+        }
+
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        void remove(T delegate)
+        {
+            _defualtChannel.remove(delegate);
         }
 
         template <typename C>
@@ -260,28 +342,45 @@ namespace fs
         template <Function function>
         bool has()
         {
-            return has(DelegateType::template make<function>());
+            return has(DelegateType::template from<function>());
         }
 
         template <class C, MemberFunction<C> function>
         bool has(NonConstWrapper<C, function> wrapper)
         {
-            return has(DelegateType::make(wrapper));
+            return has(DelegateType::from(wrapper));
         }
 
         template<class C, ConstMemberFunction<C> function>
         bool has(ConstWrapper<C, function> wrapper)
         {
-            return has(DelegateType::make(wrapper));
+            return has(DelegateType::from(wrapper));
         }
 
-        template <typename D>
-        bool has(D delegate)
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                !std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        bool has(T&& func)
+        {
+            DelegateType delegate(std::forward<T>(func), _pArena);
+            return has(delegate);
+        }
+
+        template <
+            typename T,
+            typename = typename std::enable_if<
+                std::is_same<DelegateType, typename std::decay<T>::type>{}
+            >::type
+        >
+        bool has(T delegate)
         {
             // Note: Uses a linear search. :( Avoid using this on an event with many listeners.
             for(Channel* pChannel : _channels)
             {
-                if(pChannel->hasListener(delegate))
+                if(pChannel->has(delegate))
                     return true;
             }
 

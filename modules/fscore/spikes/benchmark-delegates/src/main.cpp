@@ -44,8 +44,8 @@ int main( int, char **)
 
         startBenchmark();
         {
-            Delegate<int(int)> t2 = [&x](int i){ return i + x; };
-            Delegate<void(int)> t1 = [&x, &t2](int i){ x = t2(i); };
+            Delegate<int(int), DebugArena> t2([&x](int i){ return i + x; }, memory::getDebugArena());
+            Delegate<void(int), DebugArena> t1([&x, &t2](int i){ x = t2(i); }, memory::getDebugArena());
             for(int i = 0; i < 1000000000; ++i) t1(i);
         }
         FS_PRINT("delegate:  " << endBenchmark().count());

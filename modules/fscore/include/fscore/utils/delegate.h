@@ -20,6 +20,35 @@ namespace fs
     class Delegate<R (Params...), Arena>
     {
     public:
+        using Function = R (*)(Params...);
+
+        template<typename C>
+        using MemberFunction = R (C::*)(Params...);
+
+        template<typename C>
+        using ConstMemberFunction = R (C::*)(Params...) const;
+
+        template <class C, MemberFunction<C> function>
+        struct NonConstWrapper
+        {
+            NonConstWrapper(C* instance)
+                : _instance(instance)
+            {
+            }
+
+            C* _instance;
+        };
+
+        template <class C, ConstMemberFunction<C> function>
+        struct ConstWrapper
+        {
+            ConstWrapper(const C* instance)
+                : _instance(instance)
+            {
+            }
+
+            const C* _instance;
+        };
 
     private:
         union InstancePtr
@@ -83,8 +112,30 @@ namespace fs
                 static_cast<T*>(instance.as_const_void)->second)(std::forward<Params>(params)...);
         }
 
+        // turns a free function into our internal function stub
+        template <Function function>
+        static FS_INLINE R functionStub(InstancePtr, Params&&... params)
+        {
+            // we don't need the instance pointer because we're dealing with free functions
+            return (function)(std::forward<Params>(params)...);
+        }
+
+        // turns a member function into our internal function stub
+        template <class C, MemberFunction<C> function>
+        static FS_INLINE R classMethodStub(InstancePtr instance, Params&&... params)
+        {
+            // cast the instance pointer back into the original class instance
+            return (static_cast<C*>(instance.as_void)->*function)(std::forward<Params>(params)...);
+        }
+
+        template <class C, ConstMemberFunction<C> function>
+        static FS_INLINE R constClassMethodStub(InstancePtr instance, Params&&... params)
+        {
+            return (static_cast<const C*>(instance.as_const_void)->*function)(std::forward<Params>(params)...);
+        }
+
     public:
-        Delegate(Arena* pArena) :
+        Delegate(Arena* pArena=nullptr) :
             _pArena(pArena),
             _stub(InstancePtr(), nullptr),
             _storeSize(0)
@@ -128,13 +179,13 @@ namespace fs
         >
         Delegate& operator=(T&& func)
         {
+            FS_ASSERT_MSG(_pArena, "No arena has been set. Use setArena before using operator=");
             using FunctorType = typename std::decay<T>::type;
 
             if(sizeof(FunctorType) > _storeSize || !_store.unique())
             {
                 _store.reset(_pArena->allocate(sizeof(typename std::decay<T>::type), 8, FS_SOURCE_INFO),
                     [this](void* const p){deleteFunctor<typename std::decay<T>::type>(p, _pArena);});
-                        // deleteFunctorStub<FunctorType>);
                 _storeSize = sizeof(FunctorType);
             }
             else
@@ -150,124 +201,15 @@ namespace fs
             return *this;
         }
 
-        R invoke(Params... params) const
+        void setArena(Arena* pArena)
         {
-            FS_ASSERT_MSG(_stub.second != nullptr, "Cannot invoke unbound delegate.");
-            return _stub.second(_stub.first, std::forward<Params>(params)...);
+            FS_ASSERT_MSG(_pArena == nullptr, "pArena can only be set once.");
+            _pArena = pArena;
         }
-
-        R operator() (Params... params) const
-        {
-            return invoke(std::forward<Params>(params)...);
-        }
-
-        bool operator==(const DelegateType &other) const
-        {
-            return _stub.first.as_void == other._stub.first.as_void &&
-                   _stub.second == other._stub.second;
-        }
-
-        bool operator!=(const DelegateType &other) const
-        {
-            return !(*this == other);
-        }
-
-    private:
-        Arena* _pArena;
-        Stub _stub;
-        DeleterType _deleter;
-        SharedPtr<void> _store;
-        size_t _storeSize;
-    };
-
-    // Non Lambda version. No dynamic memory allocation
-    template <typename R, typename ...Params>
-    class Delegate<R (Params...), std::nullptr_t>
-    {
-    public:
-        using Function = R (*)(Params...);
-
-        template<typename C>
-        using MemberFunction = R (C::*)(Params...);
-
-        template<typename C>
-        using ConstMemberFunction = R (C::*)(Params...) const;
-
-        template <class C, MemberFunction<C> function>
-        struct NonConstWrapper
-        {
-            NonConstWrapper(C* instance)
-                : _instance(instance)
-            {
-            }
-
-            C* _instance;
-        };
-
-        template <class C, ConstMemberFunction<C> function>
-        struct ConstWrapper
-        {
-            ConstWrapper(const C* instance)
-                : _instance(instance)
-            {
-            }
-
-            const C* _instance;
-        };
-
-    private:
-        union InstancePtr
-        {
-            InstancePtr(void) : as_void(nullptr) {}
-
-            void* as_void;
-            const void* as_const_void;
-        };
-
-        using DelegateType = Delegate<R (Params...), std::nullptr_t>;
-        using InternalFunction = R (*)(InstancePtr, Params&&...);
-        using Stub = std::pair<InstancePtr, InternalFunction>;
-
-        // turns a free function into our internal function stub
-        template <Function function>
-        static FS_INLINE R functionStub(InstancePtr, Params&&... params)
-        {
-            // we don't need the instance pointer because we're dealing with free functions
-            return (function)(std::forward<Params>(params)...);
-        }
-
-        // turns a member function into our internal function stub
-        template <class C, MemberFunction<C> function>
-        static FS_INLINE R classMethodStub(InstancePtr instance, Params&&... params)
-        {
-            // cast the instance pointer back into the original class instance
-            return (static_cast<C*>(instance.as_void)->*function)(std::forward<Params>(params)...);
-        }
-
-        template <class C, ConstMemberFunction<C> function>
-        static FS_INLINE R constClassMethodStub(InstancePtr instance, Params&&... params)
-        {
-            return (static_cast<const C*>(instance.as_const_void)->*function)(std::forward<Params>(params)...);
-        }
-
-    public:
-        Delegate(void) :
-            _stub(InstancePtr(), nullptr)
-        {
-        }
-
-        ~Delegate()
-        {
-        }
-
-        Delegate& operator=(Delegate const&) = default;
-        Delegate& operator=(Delegate&&) = default;
-        Delegate(Delegate const&) = default;
-        Delegate(Delegate&&) = default;
 
         // make a bound delegate to a free function
         template <Function function>
-        static DelegateType make()
+        static DelegateType from()
         {
             DelegateType delegate;
             delegate.bind<function>();
@@ -276,7 +218,7 @@ namespace fs
 
         // make a bound delegate to a class method
         template <class C, MemberFunction<C> function>
-        static DelegateType make(NonConstWrapper<C, function> wrapper)
+        static DelegateType from(NonConstWrapper<C, function> wrapper)
         {
             DelegateType delegate;
             delegate.bind<C, function>(wrapper._instance);
@@ -285,7 +227,7 @@ namespace fs
 
         // make a bound delegate toa const class method
         template <class C, ConstMemberFunction<C> function>
-        static DelegateType make(ConstWrapper<C, function> wrapper)
+        static DelegateType from(ConstWrapper<C, function> wrapper)
         {
             DelegateType delegate;
             delegate.bind<C, function>(wrapper._instance);
@@ -316,9 +258,10 @@ namespace fs
             _stub.second = &constClassMethodStub<C, function>;
         }
 
+
         R invoke(Params... params) const
         {
-            FS_ASSERT_MSG(_stub.second != nullptr, "Cannot invoke unbound delegate. Call bind() first.");
+            FS_ASSERT_MSG(_stub.second != nullptr, "Cannot invoke unbound delegate.");
             return _stub.second(_stub.first, std::forward<Params>(params)...);
         }
 
@@ -329,8 +272,14 @@ namespace fs
 
         bool operator==(const DelegateType &other) const
         {
-            return _stub.first.as_void == other._stub.first.as_void &&
-                   _stub.second == other._stub.second;
+            // First check if both have a _store (lambdas) and their function pointers are the same
+            // else if both are not lambdas then check if their instances and function pointers are the same
+
+            return (_store && other._store && _stub.second == other._stub.second) ||
+                // Lambda check above --- non lambda check below
+                (!_store && !other._store &&
+                    _stub.first.as_void == other._stub.first.as_void &&
+                _stub.second == other._stub.second);
         }
 
         bool operator!=(const DelegateType &other) const
@@ -339,7 +288,12 @@ namespace fs
         }
 
     private:
+        Arena* _pArena;
         Stub _stub;
+        DeleterType _deleter;
+        SharedPtr<void> _store;
+        size_t _storeSize;
+
     };
 
     static_assert(std::is_move_constructible<Delegate<void(), std::nullptr_t>>::value, "Delegate should be movable.");

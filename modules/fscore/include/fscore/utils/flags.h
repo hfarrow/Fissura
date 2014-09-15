@@ -1,6 +1,8 @@
 #ifndef FS_FLAGS_H
 #define FS_FLAGS_H
 
+#include <cmath>
+
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 
@@ -114,12 +116,7 @@ namespace fs
 
         inline bool areAllSet() const
         {
-            u32 max = 0;
-            for(u32 i = 0; i < T::Count; ++i)
-            {
-                max += 1u << i;
-            }
-            return max == _flags;
+            return _flags == (std::pow(2, T::Count)-1);
         }
 
         inline Flags operator|(Flags other) const
@@ -151,8 +148,6 @@ namespace fs
         }
 
     private:
-        friend inline Flags operator|(const Enum lhs, const Enum rhs);
-
         inline explicit Flags(u32 flags)
         : _flags(flags)
         {

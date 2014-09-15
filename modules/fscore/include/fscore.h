@@ -10,6 +10,7 @@
 #include "fscore/utils/macros.h"
 #include "fscore/utils/delegate.h"
 #include "fscore/utils/event.h"
+#include "fscore/utils/flags.h"
 
 // Debugging
 #include "fscore/debugging/assert.h"

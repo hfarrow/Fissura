@@ -192,8 +192,6 @@ void checkEvent()
     event.signal(111);
 }
 
-void checkLambda()
-{
     using MyArena = MemoryArena<Allocator<HeapAllocator, AllocationHeaderU32>,
                                 MultiThread<MutexPrimitive>,
                                 SimpleBoundsChecking,
@@ -201,6 +199,9 @@ void checkLambda()
                                 MemoryTagging>;
 
     using MyDelegate = Delegate<void(int), MyArena>;
+    using MyDelegate2 = Delegate<void(void), MyArena>;
+void checkLambda()
+{
 
     auto F = [](){ return [](int ii){FS_PRINT("F " << ii); ++ii;};};
 
@@ -219,8 +220,15 @@ void checkLambda()
     d2 = d1;
     d2(4);
 
-    auto report = arena.generateArenaReport();
-    fs::memory::logArenaReport(report);
+    MyDelegate2 d3;
+    {
+    auto lambda = [](){FS_PRINT("lamda... "); FS_ASSERT(!"Intentional Assert");};
+    d3 = MyDelegate2(lambda, &arena);
+    FS_PRINT("<<<<<<<<<<<<<");
+    }
+
+    // auto report = arena.generateArenaReport();
+    // fs::memory::logArenaReport(report);
 }
 
 void checkLambdaEvent()
@@ -275,18 +283,18 @@ void checkLambdaEvent()
     if(event.has([](int i){++i;}))
         FS_PRINT("ERROR: should be a unique signature");
 
-    memory::logArenaReport(arena.generateArenaReport());
+    // memory::logArenaReport(arena.generateArenaReport());
 }
 
 int main( int, char **)
 {
-    checkInvoke();
-    checkComparisons();
-    checkCompareConstToNonConst();
-    checkMake();
-    checkEvent();
+    // checkInvoke();
+    // checkComparisons();
+    // checkCompareConstToNonConst();
+    // checkMake();
+    // checkEvent();
     checkLambda();
-    checkLambdaEvent();
+    // checkLambdaEvent();
     return 0;
 }
 

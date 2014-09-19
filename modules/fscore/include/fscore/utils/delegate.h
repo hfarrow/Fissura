@@ -63,6 +63,7 @@ namespace fs
         static void deleteFunctor(void* const p, Arena* pArena)
         {
             static_cast<T*>(p)->~T();
+            FS_ASSERT(pArena);
             pArena->free(p);
         }
 
@@ -145,31 +146,36 @@ namespace fs
         template <
             typename T,
             typename = typename std::enable_if<
-                !std::is_same<Delegate, typename std::decay<T>::type>{}
+                !std::is_same<Delegate, typename std::decay<T>::type>{} &&
+                !std::is_same<Arena, std::nullptr_t>{}
             >::type
         >
         Delegate(T&& func, Arena* pArena) :
             _pArena(pArena),
-            _store(_pArena->allocate(sizeof(typename std::decay<T>::type), 8, FS_SOURCE_INFO),
-                    [pArena](void* const p){deleteFunctor<typename std::decay<T>::type>(p, pArena);}),
             _storeSize(sizeof(typename std::decay<T>::type))
         {
-            using FunctorType = typename std::decay<T>::type;
+            FS_ASSERT(_pArena);
 
-            new (_store.get()) FunctorType(std::forward<T>(func));
-            _stub.first.as_void = _store.get();
-            _stub.second = functorStub<FunctorType>;
-            _deleter = deleteFunctorStub<FunctorType>;
+            if(_pArena)
+            {
+                using FunctorType = typename std::decay<T>::type;
+
+                _store = SharedPtr<void>(_pArena ? _pArena->allocate(sizeof(FunctorType), 8, FS_SOURCE_INFO) : nullptr,
+                        [pArena](void* const p){deleteFunctor<FunctorType>(p, pArena);});
+
+                new (_store.get()) FunctorType(std::forward<T>(func));
+                _stub.first.as_void = _store.get();
+                _stub.second = functorStub<FunctorType>;
+                _deleter = deleteFunctorStub<FunctorType>;
+            }
         }
+
+        Delegate(Delegate const&) = default;
+        Delegate(Delegate&&) = default;
 
         ~Delegate()
         {
         }
-
-        Delegate& operator=(Delegate const&) = default;
-        Delegate& operator=(Delegate&&) = default;
-        Delegate(Delegate const&) = default;
-        Delegate(Delegate&&) = default;
 
         template <
             typename T,
@@ -182,24 +188,38 @@ namespace fs
             FS_ASSERT_MSG(_pArena, "No arena has been set. Use setArena before using operator=");
             using FunctorType = typename std::decay<T>::type;
 
-            if(sizeof(FunctorType) > _storeSize || !_store.unique())
+            if(_pArena)
             {
-                _store.reset(_pArena->allocate(sizeof(typename std::decay<T>::type), 8, FS_SOURCE_INFO),
-                    [this](void* const p){deleteFunctor<typename std::decay<T>::type>(p, _pArena);});
-                _storeSize = sizeof(FunctorType);
+                if(sizeof(FunctorType) > _storeSize || !_store.unique())
+                {
+                    _store.reset(_pArena->allocate(sizeof(FunctorType), 8, FS_SOURCE_INFO),
+                        [this](void* const p){deleteFunctor<FunctorType>(p, _pArena);});
+                    _storeSize = sizeof(FunctorType);
+                }
+                else
+                {
+                    _deleter(_store.get());
+                }
+
+                new (_store.get()) FunctorType(std::forward<T>(func));
+                _stub.first.as_void = _store.get();
+                _stub.second = functorStub<FunctorType>;
+                _deleter = deleteFunctorStub<FunctorType>;
             }
             else
             {
-                _deleter(_store.get());
+                // leave in unbound state
+                _stub.first = InstancePtr();
+                _stub.second = nullptr;
+                _store.reset();
+                _storeSize = 0;
             }
-
-            new (_store.get()) FunctorType(std::forward<T>(func));
-            _stub.first.as_void = _store.get();
-            _stub.second = functorStub<FunctorType>;
-            _deleter = deleteFunctorStub<FunctorType>;
 
             return *this;
         }
+
+        Delegate& operator=(Delegate const&) = default;
+        Delegate& operator=(Delegate&&) = default;
 
         void setArena(Arena* pArena)
         {
@@ -285,6 +305,11 @@ namespace fs
         bool operator!=(const DelegateType &other) const
         {
             return !(*this == other);
+        }
+
+        bool bound() const
+        {
+            return _stub.second != nullptr;
         }
 
     private:

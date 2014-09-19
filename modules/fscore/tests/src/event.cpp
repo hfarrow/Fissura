@@ -162,19 +162,56 @@ BOOST_AUTO_TEST_CASE(add_to_channel_max_assert)
     FS_REQUIRE_ASSERT(lambda);
 }
 
-BOOST_AUTO_TEST_CASE(add_to_event)
+BOOST_AUTO_TEST_CASE(add_channel_to_event_and_signal_and_remove)
 {
+    auto channel1 = event.makeChannel(10);
+    BOOST_CHECK(!event.has<&func_VoidVoid>());
+    BOOST_CHECK(event.has(channel1));
 
+    channel1->add<&func_VoidVoid>();
+    BOOST_CHECK(event.has<&func_VoidVoid>());
+
+    auto lambda1 = [&](){event.remove<&func_VoidVoid>();};
+    FS_REQUIRE_ASSERT(lambda1); // cannot remove from event, must remove from channel.
+
+    auto lambda2 = [&](){event();};
+    FS_REQUIRE_ASSERT(lambda2);
+
+    channel1->remove<&func_VoidVoid>();
+    BOOST_CHECK(event.has(channel1));
+    BOOST_CHECK(!event.has<&func_VoidVoid>());
+
+    event.remove(channel1);
+    BOOST_CHECK(!event.has(channel1));
 }
 
-BOOST_AUTO_TEST_CASE(remove_from_event)
+BOOST_AUTO_TEST_CASE(add_to_event_and_signal_and_remove)
 {
+    BOOST_CHECK(!event.has<&func_VoidVoid>());
+    event.add<&func_VoidVoid>();
+    BOOST_CHECK(event.has<&func_VoidVoid>());
 
+    auto lambda2 = [&](){event();};
+    FS_REQUIRE_ASSERT(lambda2);
+    BOOST_CHECK(event.has<&func_VoidVoid>());
+
+    event.remove<&func_VoidVoid>();
+    BOOST_CHECK(!event.has<&func_VoidVoid>());
 }
 
-BOOST_AUTO_TEST_CASE(has_in_event)
+// Also tests event.size() and channel.size()
+BOOST_AUTO_TEST_CASE(add_to_event_and_remove_all)
 {
+    event.add<&func_VoidVoid>();
+    event.add<DelegateClass, &DelegateClass::func_VoidVoid>(&instance);
 
+    auto defaultSize = event.getDefaultChannel()->size();
+    auto eventSize = event.size();
+    BOOST_CHECK_MESSAGE(defaultSize == 2, "size is " << defaultSize);
+    BOOST_CHECK_MESSAGE(eventSize == 2, "size is " << eventSize);
+    event.removeAll();
+    eventSize = event.size();
+    BOOST_CHECK_MESSAGE(eventSize == 0, "size is " << eventSize);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -229,13 +229,14 @@ namespace fs
             if(pArena)
             {
                 _pDefaultChannel = makeChannel(100);
-                _channels.push_back(_pDefaultChannel);
             }
         }
 
-        ChannelPtr makeChannel(size_t size) const
+        ChannelPtr makeChannel(size_t size)
         {
-            return std::allocate_shared<Channel>(StlAllocator<Channel, Arena>(_pArena), _pArena, size);
+            auto pChannel = std::allocate_shared<Channel>(StlAllocator<Channel, Arena>(_pArena), _pArena, size);
+            add(pChannel);
+            return pChannel;
         }
 
         //
@@ -253,21 +254,21 @@ namespace fs
         void add()
         {
             FS_ASSERT_MSG(!has<function>(), "Attempting to add a duplicate listener to event.");
-            _pDefaultChannel.template add<function>();
+            _pDefaultChannel->template add<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void add(NonConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _pDefaultChannel.add(wrapper);
+            _pDefaultChannel->add(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void add(ConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _pDefaultChannel.add(wrapper);
+            _pDefaultChannel->add(wrapper);
         }
 
         template <
@@ -291,7 +292,7 @@ namespace fs
         void add(T delegate)
         {
             FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to event.");
-            _pDefaultChannel.add(delegate);
+            _pDefaultChannel->add(delegate);
         }
 
         //
@@ -300,19 +301,19 @@ namespace fs
         template <Function function>
         void remove()
         {
-            _pDefaultChannel.template remove<function>();
+            _pDefaultChannel->template remove<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void remove(NonConstWrapper<C, function> wrapper)
         {
-            _pDefaultChannel.remove(wrapper);
+            _pDefaultChannel->remove(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void remove(ConstWrapper<C, function> wrapper)
         {
-            _pDefaultChannel.remove(wrapper);
+            _pDefaultChannel->remove(wrapper);
         }
 
         template <
@@ -335,7 +336,7 @@ namespace fs
         >
         void remove(T delegate)
         {
-            _pDefaultChannel.remove(delegate);
+            _pDefaultChannel->remove(delegate);
         }
 
         void remove(ChannelPtr pChannel)
@@ -349,7 +350,7 @@ namespace fs
 
         void removeAll()
         {
-            _pDefaultChannel._listeners.clear();
+            _pDefaultChannel->_listeners.clear();
             _channels.clear();
         }
 
@@ -404,8 +405,7 @@ namespace fs
             return false;
         }
 
-        template <typename C>
-        bool has(C* pChannel)
+        bool has(ChannelPtr pChannel)
         {
             return std::find(_channels.begin(), _channels.end(), pChannel) != _channels.end();
         }
@@ -431,6 +431,11 @@ namespace fs
                 count += pChannel->size();
             }
             return count;
+        }
+
+        ChannelPtr getDefaultChannel() const
+        {
+            return _pDefaultChannel;
         }
 
     private:

@@ -179,10 +179,10 @@ void checkEvent()
     MyEvent event(memory::getDebugArena());
 
     auto channel = event.makeChannel(10);
-    channel.add<&myFunction>();
-    channel.add<&myOtherFunction>();
-    channel.add<MyClass, &MyClass::myFunction>(&c);
-    channel.add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
+    channel->add<&myFunction>();
+    channel->add<&myOtherFunction>();
+    channel->add<MyClass, &MyClass::myFunction>(&c);
+    channel->add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
 
     event.add(&channel);
     // event.add<&myFunction>();
@@ -250,12 +250,12 @@ void checkLambdaEvent()
     MyEvent event(&arena);
 
     auto channel = event.makeChannel(10);
-    channel.add<&myFunction>();
-    channel.add<&myOtherFunction>();
-    channel.add<MyClass, &MyClass::myFunction>(&c);
-    channel.add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
-    channel.add(MyDelegate([](int i){FS_PRINT("waka waka " << i);}, &arena));
-    channel.add([](int i){FS_PRINT("whoop " << i);});
+    channel->add<&myFunction>();
+    channel->add<&myOtherFunction>();
+    channel->add<MyClass, &MyClass::myFunction>(&c);
+    channel->add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
+    channel->add(MyDelegate([](int i){FS_PRINT("waka waka " << i);}, &arena));
+    channel->add([](int i){FS_PRINT("whoop " << i);});
 
     auto lambda = [](int i){FS_PRINT("lambda " << i); ++i;};
     auto lambda2 = [](int i){FS_PRINT("lambda " << i); ++i;};
@@ -288,13 +288,13 @@ void checkLambdaEvent()
 
 int main( int, char **)
 {
-    // checkInvoke();
-    // checkComparisons();
-    // checkCompareConstToNonConst();
-    // checkMake();
-    // checkEvent();
+    checkInvoke();
+    checkComparisons();
+    checkCompareConstToNonConst();
+    checkMake();
+    checkEvent();
     checkLambda();
-    // checkLambdaEvent();
+    checkLambdaEvent();
     return 0;
 }
 

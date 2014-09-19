@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "fscore/memory/memory_arena.h"
 #include "fscore/utils/delegate.h"
@@ -42,6 +43,14 @@ namespace fs
         {
         public:
             friend Event<Arena, R (Params...)>;
+
+            Channel(Arena* pArena, size_t size) :
+                 _listeners(StlAllocator<DelegateType, Arena>(pArena)),
+                 _maxSize(size),
+                 _pArena(pArena)
+            {
+                FS_ASSERT(size > 0);
+            }
 
             //
             // add
@@ -85,6 +94,7 @@ namespace fs
             void add(T delegate)
             {
                 FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to channel.");
+                FS_ASSERT_MSG(delegate.bound(), "Attempting to add an unbound delegate.");
 
                 _listeners.push_back(delegate);
                 FS_ASSERT_MSG_FORMATTED(_listeners.size() <= _maxSize,
@@ -132,6 +142,7 @@ namespace fs
             >
             void remove(T delegate)
             {
+                FS_ASSERT_MSG(delegate.bound(), "Attempting to remove an unbound delegate.");
                 auto iter = std::find(_listeners.begin(), _listeners.end(), delegate);
                 if(iter != _listeners.end())
                     _listeners.erase(iter);
@@ -151,13 +162,13 @@ namespace fs
             template <class C, MemberFunction<C> function>
             bool has(NonConstWrapper<C, function> wrapper)
             {
-                return has(DelegateType::from<function>(wrapper));
+                return has(DelegateType::from(wrapper));
             }
 
             template<class C, ConstMemberFunction<C> function>
             bool has(ConstWrapper<C, function> wrapper)
             {
-                return has(DelegateType::from<function>(wrapper));
+                return has(DelegateType::from(wrapper));
             }
 
             template <
@@ -166,16 +177,26 @@ namespace fs
                     !std::is_same<DelegateType, typename std::decay<T>::type>{}
                 >::type
             >
-            void has(T&& func)
+            bool has(T&& func)
             {
                 DelegateType delegate(std::forward<T>(func), _pArena);
                 return has(delegate);
             }
 
-            template<typename D>
-            bool has(D delegate)
+            template <
+                typename T,
+                typename = typename std::enable_if<
+                    std::is_same<DelegateType, typename std::decay<T>::type>{}
+                >::type
+            >
+            bool has(T delegate)
             {
                 return std::find(_listeners.begin(), _listeners.end(), delegate) != _listeners.end();
+            }
+
+            size_t size() const
+            {
+                return _listeners.size();
             }
 
         private:
@@ -183,14 +204,6 @@ namespace fs
             ListenerVector _listeners;
             size_t _maxSize;
             Arena* _pArena;
-
-            Channel(Arena* pArena, size_t size) :
-                 _listeners(StlAllocator<DelegateType, Arena>(pArena)),
-                 _maxSize(size),
-                 _pArena(pArena)
-            {
-                FS_ASSERT(size > 0);
-            }
 
             void signal(Params... params)
             {
@@ -206,24 +219,29 @@ namespace fs
             }
         };
 
+        using ChannelPtr = SharedPtr<Channel>;
+
         Event(Arena* pArena) :
             _pArena(pArena),
-            _channels(StlAllocator<Channel, Arena>(pArena)),
-            _defualtChannel(pArena, 100)
+            _channels(StlAllocator<ChannelPtr, Arena>(pArena))
         {
-            _channels.push_back(&_defualtChannel);
+            FS_ASSERT(pArena);
+            if(pArena)
+            {
+                _pDefaultChannel = makeChannel(100);
+                _channels.push_back(_pDefaultChannel);
+            }
         }
 
-        Channel makeChannel(size_t size) const
+        ChannelPtr makeChannel(size_t size) const
         {
-            return Channel(_pArena, size);
+            return std::allocate_shared<Channel>(StlAllocator<Channel, Arena>(_pArena), _pArena, size);
         }
 
         //
         // add
         //
-        template <typename C>
-        void add(C* pChannel)
+        void add(ChannelPtr pChannel)
         {
             FS_ASSERT_MSG(std::find(_channels.begin(), _channels.end(), pChannel) == _channels.end(),
                     "Channel has already been added to event.");
@@ -235,21 +253,21 @@ namespace fs
         void add()
         {
             FS_ASSERT_MSG(!has<function>(), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.template add<function>();
+            _pDefaultChannel.template add<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void add(NonConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.add(wrapper);
+            _pDefaultChannel.add(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void add(ConstWrapper<C, function> wrapper)
         {
             FS_ASSERT_MSG(!has(wrapper), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.add(wrapper);
+            _pDefaultChannel.add(wrapper);
         }
 
         template <
@@ -273,7 +291,7 @@ namespace fs
         void add(T delegate)
         {
             FS_ASSERT_MSG(!has(delegate), "Attempting to add a duplicate listener to event.");
-            _defualtChannel.add(delegate);
+            _pDefaultChannel.add(delegate);
         }
 
         //
@@ -282,19 +300,19 @@ namespace fs
         template <Function function>
         void remove()
         {
-            _defualtChannel.template remove<function>();
+            _pDefaultChannel.template remove<function>();
         }
 
         template <class C, MemberFunction<C> function>
         void remove(NonConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.remove(wrapper);
+            _pDefaultChannel.remove(wrapper);
         }
 
         template<class C, ConstMemberFunction<C> function>
         void remove(ConstWrapper<C, function> wrapper)
         {
-            _defualtChannel.remove(wrapper);
+            _pDefaultChannel.remove(wrapper);
         }
 
         template <
@@ -317,11 +335,10 @@ namespace fs
         >
         void remove(T delegate)
         {
-            _defualtChannel.remove(delegate);
+            _pDefaultChannel.remove(delegate);
         }
 
-        template <typename C>
-        void remove(C* pChannel)
+        void remove(ChannelPtr pChannel)
         {
                 auto iter = std::find(_channels.begin(), _channels.end(), pChannel);
                 if(iter != _channels.end())
@@ -332,7 +349,7 @@ namespace fs
 
         void removeAll()
         {
-            _defualtChannel._listeners.clear();
+            _pDefaultChannel._listeners.clear();
             _channels.clear();
         }
 
@@ -378,7 +395,7 @@ namespace fs
         bool has(T delegate)
         {
             // Note: Uses a linear search. :( Avoid using this on an event with many listeners.
-            for(Channel* pChannel : _channels)
+            for(ChannelPtr pChannel : _channels)
             {
                 if(pChannel->has(delegate))
                     return true;
@@ -395,7 +412,7 @@ namespace fs
 
         void signal(Params... params)
         {
-            for(Channel* pChannel : _channels)
+            for(ChannelPtr pChannel : _channels)
             {
                 pChannel->signal(std::forward<Params>(params)...);
             }
@@ -406,12 +423,22 @@ namespace fs
             signal(std::forward<Params>(params)...);
         }
 
+        size_t size() const
+        {
+            size_t count = 0;
+            for(ChannelPtr pChannel : _channels)
+            {
+                count += pChannel->size();
+            }
+            return count;
+        }
+
     private:
          Arena* _pArena;
 
-         using ChannelVector = Vector<Channel*, Arena>;
+         using ChannelVector = Vector<ChannelPtr, Arena>;
          ChannelVector _channels;
-         Channel _defualtChannel;
+         ChannelPtr _pDefaultChannel;
     };
 
     static_assert(std::is_move_constructible<Event<DebugArena, void()>::Channel>::value, "Channel should be movable.");

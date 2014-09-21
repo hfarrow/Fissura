@@ -37,6 +37,14 @@ struct name    \
 inline Flags<name> operator|(typename name::Enum lhs, typename name::Enum rhs) \
 { \
     return Flags<name>(lhs) | Flags<name>(rhs); \
+} \
+inline Flags<name> operator|(typename name::Enum lhs, Flags<name> rhs) \
+{ \
+    return Flags<name>(lhs) | rhs; \
+} \
+inline Flags<name> operator|(Flags<name> lhs, typename name::Enum rhs) \
+{ \
+    return lhs | Flags<name>(rhs); \
 }
 #else
 #define FS_DECLARE_FLAGS(name, ...)    \
@@ -65,6 +73,14 @@ struct name    \
 inline Flags<name> operator|(typename name::Enum lhs, typename name::Enum rhs) \
 { \
     return Flags<name>(lhs) | Flags<name>(rhs); \
+} \
+inline Flags<name> operator|(typename name::Enum lhs, Flags<name> rhs) \
+{ \
+    return Flags<name>(lhs) | rhs; \
+} \
+inline Flags<name> operator|(Flags<name> lhs, typename name::Enum rhs) \
+{ \
+    return lhs | Flags<name>(rhs); \
 }
 #endif
 
@@ -132,6 +148,7 @@ namespace fs
 
         const char* toString(Description& description) const
         {
+            description[0] = '\0';
             int offset = 0;
             for (size_t i=0; i < T::Count; ++i)
             {

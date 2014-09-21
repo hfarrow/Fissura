@@ -15,6 +15,7 @@
 struct name    \
 {    \
     static const size_t Count = FS_PP_NUM_ARGS(__VA_ARGS__);    \
+    // static assert will never trigger because FS_PP_NUM_ARGS only supports 32 args
     static_assert(Count <= 32, "Too many flags used in FS_DECLARE_FLAGS. A maximum number of 32 flags is allowed.");   \
     enum Enum    \
     {    \

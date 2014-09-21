@@ -29,14 +29,14 @@
 // unfortunately, VS 2010 still has this compiler bug which treats a __VA_ARGS__ argument as being one single parameter:
 // https://connect.microsoft.com/VisualStudio/feedback/details/521844/variadic-macro-treating-va-args-as-a-single-parameter-for-other-macros#details
 #if _MSC_VER >= 1400
-#    define FS_PP_NUM_ARGS_HELPER(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...)    N
-#    define FS_PP_NUM_ARGS_REVERSE_SEQUENCE            10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+#    define FS_PP_NUM_ARGS_HELPER(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, N, ...)    N
+#    define FS_PP_NUM_ARGS_REVERSE_SEQUENCE            32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
 #    define FS_PP_LEFT_PARENTHESIS (
 #    define FS_PP_RIGHT_PARENTHESIS )
 #    define FS_PP_NUM_ARGS(...)                        FS_PP_NUM_ARGS_HELPER FS_PP_LEFT_PARENTHESIS __VA_ARGS__, FS_PP_NUM_ARGS_REVERSE_SEQUENCE FS_PP_RIGHT_PARENTHESIS
 #else
-#    define FS_PP_NUM_ARGS(...)                        FS_PP_NUM_ARGS_HELPER(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
-#    define FS_PP_NUM_ARGS_HELPER(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...)    N
+#    define FS_PP_NUM_ARGS(...)                        FS_PP_NUM_ARGS_HELPER(__VA_ARGS__, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#    define FS_PP_NUM_ARGS_HELPER(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, N, ...)    N
 #endif
 
 // FS_PP_PASS_ARGS passes __VA_ARGS__ as multiple parameters to another macro, working around the above-mentioned bug

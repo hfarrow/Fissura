@@ -39,6 +39,7 @@ namespace fs
             auto report = SharedPtr<ArenaReport>(new ArenaReport());
             report->arenaName = arena.getName();
             report->noTracking = true;
+            return report;
         }
     };
 

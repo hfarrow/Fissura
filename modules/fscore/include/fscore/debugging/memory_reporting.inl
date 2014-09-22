@@ -46,7 +46,7 @@ namespace fs
         {
             (void)arena;
 
-            // TODO: copy the allocation map
+            // TODO: copy the allocation map so that the report can be stored for later
             report.pAllocationMap = tracker.getAllocationMap();
         }
 

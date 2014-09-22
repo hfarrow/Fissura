@@ -184,7 +184,7 @@ void checkEvent()
     channel->add<MyClass, &MyClass::myFunction>(&c);
     channel->add(MyEvent::DelegateType::from<MyClass, &MyClass::myConstFunction>(&c));
 
-    event.add(&channel);
+    event.add(channel);
     // event.add<&myFunction>();
     // event.add<MyClass, &MyClass::myConstFunction>(&c);
     // event.add<MyClass, &MyClass::myFunction>(&c);
@@ -276,7 +276,7 @@ void checkLambdaEvent()
     if(d2 == d22)
         FS_PRINT("d2 and d22 should not be the same");
 
-    event.add(&channel);
+    event.add(channel);
     event.add([](int i){FS_PRINT("Direct Add " << i); ++i;});
     event.signal(111);
 

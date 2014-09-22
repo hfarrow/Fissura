@@ -7,6 +7,7 @@
 #include "fscore/memory/memory_area.h"
 #include "fscore/memory/source_info.h"
 #include "fscore/debugging/arena_report.h"
+#include "fscore/debugging/memory_logging.h"
 
 #define FS_SIZE_OF_MB 33554432
 
@@ -152,8 +153,9 @@ namespace fs
         {
             if(_memoryTracker.getNumAllocations() != 0)
             {
+                memory::logArenaReport(generateArenaReport());
                 FS_ASSERT_MSG(_memoryTracker.getNumAllocations() == 0,
-                              "Arena has memory leaks.");
+                              "Arena has memory leaks. Arena report was logged.");
             }
         }
 

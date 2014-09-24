@@ -50,6 +50,8 @@ flags = [
 '-x', 'c++',
 '-I', 'modules/fscore/include',
 '-I', 'modules/fscore/tests/include',
+'-I', 'modules/fsio/include',
+'-I', 'modules/fsio/tests/include',
 '-I', 'modules/fsgame/include',
 '-I', 'modules/fsgame/tests/include',
 '-I', 'modules/fstest/include',

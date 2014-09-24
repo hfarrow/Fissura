@@ -42,6 +42,7 @@ find_package(Boost 1.54.0 COMPONENTS unit_test_framework REQUIRED)
 
 add_subdirectory(modules/fstest)
 add_subdirectory(modules/fscore)
+add_subdirectory(modules/fsio)
 # add_subdirectory(modules/fsgame)
 add_subdirectory(spikes)
 

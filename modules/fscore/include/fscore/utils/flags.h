@@ -5,6 +5,7 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
+#include "fscore/utils/macros.h"
 
 #define FS_DECLARE_FLAGS_ENUM(name, n)                    name = (1u << n),
 #define FS_DECLARE_FLAGS_BITS(name, n)                    u32 name : 1;
@@ -86,15 +87,16 @@ inline Flags<name> operator|(Flags<name> lhs, typename name::Enum rhs) \
 #endif
 
 
+
 namespace fs
 {
-    template <class T>
-    class Flags
+    template <typename TEnum>
+    class Flags : public TEnum
     {
     public:
-        typedef typename T::Enum Enum;
-        typedef typename T::Bits Bits;
-        typedef char Description[512];
+        using typename TEnum::Enum;
+        using typename TEnum::Bits;
+        using Description = char[512];
 
         inline Flags(void)
         : _flags(0)
@@ -133,7 +135,7 @@ namespace fs
 
         inline bool areAllSet() const
         {
-            return _flags == (std::pow(2, T::Count)-1);
+            return _flags == (std::pow(2, TEnum::Count)-1);
         }
 
         inline Flags operator|(Flags other) const
@@ -151,11 +153,11 @@ namespace fs
         {
             description[0] = '\0';
             int offset = 0;
-            for (size_t i=0; i < T::Count; ++i)
+            for (size_t i=0; i < TEnum::Count; ++i)
             {
                 if ((_flags & (1u << i)) != 0)
                 {
-                    offset += snprintf(description + offset, sizeof(description) - offset, "%s, ", T::toString(1u << i));
+                    offset += snprintf(description + offset, sizeof(description) - offset, "%s, ", TEnum::toString(1u << i));
                 }
             }
             // remove the trailing comma, if any

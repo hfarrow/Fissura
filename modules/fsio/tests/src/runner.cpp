@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "fscore.h"
+#include "fsio.h"
 
 using namespace fs;
 

@@ -43,8 +43,6 @@ namespace fs
     {
 
         // Platform specific utils for reserving and committing virtual address space.
-        // The default implementation in utils.inl should work for all unix platforms
-        // based on mmap and munmap.
         template<u32 PlatformID>
         class VirtualMemory
         {

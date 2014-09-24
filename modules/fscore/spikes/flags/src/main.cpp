@@ -9,12 +9,13 @@
 #include <cstdlib>
 
 #include "fscore.h"
+// #include "fscore/utils/types.h"
 
 using namespace fs;
 
-FS_DECLARE_FLAGS(PlayerState, Dazed, Stunned, Killed, Floating);
+FS_DECLARE_FLAGS(PlayerFlagsEnum, Dazed, Stunned, Dead, Floating);
 
-using PlayerFlags = Flags<PlayerState>;
+using PlayerFlags = Flags<PlayerFlagsEnum>;
 
 void Do(PlayerFlags flags)
 {
@@ -27,28 +28,28 @@ int main( int, char **)
 {
     PlayerFlags state;
 
-// set and remove some flags - type-safe!
-state.set(PlayerState::Dazed);
-state.set(PlayerState::Floating);
-state.remove(PlayerState::Dazed);
-state.set(PlayerState::Killed);
-FS_PRINT("is any set: " <<  state.isAnySet());
-FS_PRINT("are all set: " <<  state.areAllSet());
-FS_PRINT("is Dazed: " << state.isSet(PlayerState::Dazed));
-FS_PRINT("is Floating: " << state.isSet(PlayerState::Floating));
-FS_PRINT("is Killed: " << state.isSet(PlayerState::Killed));
+    // set and remove some flags - type-safe!
+    state.set(PlayerFlags::Dazed);
+    state.set(PlayerFlags::Floating);
+    state.remove(PlayerFlags::Dazed);
+    state.set(PlayerFlags::Dead);
+    FS_PRINT("is any set: " <<  state.isAnySet());
+    FS_PRINT("are all set: " <<  state.areAllSet());
+    FS_PRINT("is Dazed: " << state.isSet(PlayerFlags::Dazed));
+    FS_PRINT("is Floating: " << state.isSet(PlayerFlags::Floating));
+    FS_PRINT("is Killed: " << state.isSet(PlayerFlags::Dead));
 
-PlayerFlags::Description desc = {};
-FS_PRINT("flags have the following state: " << state.toString(desc));
+    PlayerFlags::Description desc = {};
+    FS_PRINT("flags have the following state: " << state.toString(desc));
 
-state.set(PlayerState::Dazed);
-state.set(PlayerState::Stunned);
+    state.set(PlayerFlags::Dazed);
+    state.set(PlayerFlags::Stunned);
 
-// explicit constructors
-Do(PlayerFlags(PlayerState::Dazed) | PlayerFlags(PlayerState::Killed));
+    // explicit constructors
+    Do(PlayerFlags(PlayerFlags::Dazed) | PlayerFlags(PlayerFlags::Dead));
 
-// same as enum, works because of operator|
-Do(PlayerState::Dazed | PlayerState::Killed);
+    // same as enum, works because of operator|
+    Do(PlayerFlags::Dazed | PlayerFlags::Dead);
 
     return 0;
 }

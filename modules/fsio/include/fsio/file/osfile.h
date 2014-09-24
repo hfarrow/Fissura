@@ -34,6 +34,8 @@ namespace fs
         FileSystem::Mode _mode;
         bool _async;
         SDL_RWops* _pStream;
+
+        const char* getModeForFlags(FileSystem::Mode mode);
     };
 }
 

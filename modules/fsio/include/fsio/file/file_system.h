@@ -7,15 +7,19 @@
 
 namespace fs
 {
+    namespace internal
+    {
+        FS_DECLARE_FLAGS(FileSystemModeFlags,
+                            READ,
+                            WRITE,
+                            RECREATE,
+                            APPEND);
+    }
+
     class FileSystem
     {
     public:
-        struct Mode
-        {
-            enum Enum { Read, Write, Recreate};
-            struct Bits{};
-        };
-
+        using Mode = Flags<internal::FileSystemModeFlags>;
     private:
     };
 }

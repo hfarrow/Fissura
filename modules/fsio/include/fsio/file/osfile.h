@@ -8,35 +8,43 @@ struct SDL_RWops;
 
 namespace fs
 {
-    class OsFile
+    namespace internal
     {
-    public:
-        OsFile(const char* path, FileSystem::Mode mode, bool async);
-        ~OsFile();
+        template <u32 PlatformID>
+        class OsFile
+        {
+        public:
+            OsFile(const char* path, FileSystem::Mode mode, bool async);
+            ~OsFile();
 
-        ////////////////////////////////////////////////////////////////////////
-        // Synchronous API
-        ////////////////////////////////////////////////////////////////////////
-        size_t read(void* buffer, size_t length);
-        size_t write(const void* buffer, size_t length);
-        void seek(size_t position);
-        void seekToEnd();
-        void skip(size_t bytes);
-        size_t tell() const;
+            bool opened();
 
-        ////////////////////////////////////////////////////////////////////////
-        // Asynchronous API
-        ////////////////////////////////////////////////////////////////////////
-        // TBD
+            ////////////////////////////////////////////////////////////////////////
+            // Synchronous API
+            ////////////////////////////////////////////////////////////////////////
+            size_t read(void* buffer, size_t length);
+            size_t write(const void* buffer, size_t length);
+            void seek(size_t position);
+            void seekToEnd();
+            void skip(size_t bytes);
+            size_t tell() const;
 
-    private:
-        const char* _path;
-        FileSystem::Mode _mode;
-        bool _async;
-        SDL_RWops* _pStream;
+            ////////////////////////////////////////////////////////////////////////
+            // Asynchronous API
+            ////////////////////////////////////////////////////////////////////////
+            // TBD
 
-        const char* getModeForFlags(FileSystem::Mode mode);
-    };
+        private:
+            const char* _path;
+            FileSystem::Mode _mode;
+            bool _async;
+            SDL_RWops* _pStream;
+
+            const char* getModeForFlags(FileSystem::Mode mode);
+        };
+    }
+
+    using OsFile = internal::OsFile<PLATFORM_ID>;
 }
 
 #endif

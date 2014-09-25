@@ -103,7 +103,7 @@ namespace fs
         {
         }
 
-        inline explicit Flags(Enum flag)
+        inline Flags(Enum flag)
         : _flags(flag)
         {
         }

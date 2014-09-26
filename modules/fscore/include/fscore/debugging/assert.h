@@ -52,14 +52,14 @@ namespace fs
 #define FS_ASSERT_MSG(condition, message) SDL_assert((condition) && (message))
 
 // Kept for backwards compatibility. SDL_assert does not support a formatted message.
-#define FS_ASSERT_MSG_FORMATTED(condition, formatObj) \
+#define FS_ASSERT_MSG_FORMATTED(condition, format, ...) \
     do \
     { \
         if(!(condition)) \
         { \
-            FS_WARNF(dformat("ASSERT:\n%1%") % ((formatObj).str().c_str())); \
+            FS_WARNF("ASSERT:\n%1%", FS_MAKE_FORMAT(format, __VA_ARGS__).str().c_str()); \
         } \
-        SDL_assert((condition) && (formatObj).str().c_str()); \
+        SDL_assert((condition) && (format)); \
     } \
     while(0)
 #endif

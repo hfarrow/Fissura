@@ -93,13 +93,13 @@ LogManager::~LogManager()
 
 void LogManager::init(const char* configFilename)
 {
-    FS_INFOF(dformat("LogManager::init('%1%')") % configFilename);
+    FS_INFOF("LogManager::init('%1%')", configFilename);
     if(configFilename)
     {
         TiXmlDocument configFile(configFilename);
         if(configFile.LoadFile())
         {
-            FS_INFOF(dformat("LogManager::init config xml loaded: %1%") % configFile);
+            FS_INFOF("LogManager::init config xml loaded: %1%", configFile);
             TiXmlElement* pRoot = configFile.RootElement();
             if(!pRoot)
                 return;
@@ -132,7 +132,7 @@ void LogManager::init(const char* configFilename)
         }
         else
         {
-            FS_WARNF(dformat("LogManager::init failed to load config xml: %1%") % configFile.ErrorDesc());
+            FS_WARNF("LogManager::init failed to load config xml: %1%", configFile.ErrorDesc());
         }
     }
 

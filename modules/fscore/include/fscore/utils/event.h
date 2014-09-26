@@ -98,7 +98,7 @@ namespace fs
 
                 _listeners.push_back(delegate);
                 FS_ASSERT_MSG_FORMATTED(_listeners.size() <= _maxSize,
-                        dformat("Channel exceeded maximum number of listeners. %1% out of %2%")% _listeners.size() % _maxSize);
+                        "Channel exceeded maximum number of listeners. %1% out of %2%",  _listeners.size(), _maxSize);
             }
 
             //

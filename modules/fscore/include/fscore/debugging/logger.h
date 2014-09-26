@@ -6,6 +6,7 @@
 
 #include "fscore/utils/types.h"
 #include "fscore/utils/string.h"
+#include "fscore/utils/macros.h"
 
 namespace fs
 {
@@ -29,37 +30,43 @@ namespace fs
     }
 }
 
-#define FS_LOGF(tag, format) \
+#define FS_FORMAT_STREAM_ARG(arg, n)    % (arg)
+#define FS_MAKE_FORMAT(format, ...) \
+    (dformat((format)) FS_PP_EXPAND_ARGS(FS_FORMAT_STREAM_ARG, __VA_ARGS__))
+
+#define FS_LOGF(tag, format, ...) \
     do \
     { \
-        fs::Logger::log((tag), (format).str(), __FUNCTION__, __FILE__, __LINE__); \
+        fs::Logger::log((tag), FS_MAKE_FORMAT(format, __VA_ARGS__).str(), __FUNCTION__, __FILE__, __LINE__); \
     } \
     while(0)
 
-#define FS_FATALF(format) \
+#define FS_FATALF(format, ...) \
     do \
     { \
-        FS_LOG("FATAL", format); \
-        SDL_assert(!"LOG FATAL" && (format).str().c_str()); \
+        auto message = FS_MAKE_FORMAT(format, __VA_ARGS__); \
+        fs::Logger::log("FATAL", message.str(), __FUNCTION__, __FILE__, __LINE__); \
+        SDL_assert(!"LOG FATAL" && message.str().c_str()); \
     } \
     while(0)
 
-#define FS_ERRORF(format) \
+#define FS_ERRORF(format, ...) \
     do \
     { \
-        FS_LOG("ERROR", format); \
-        SDL_assert(!"LOG ERROR" && (format).str().c_str()); \
+        auto message = FS_MAKE_FORMAT(format, __VA_ARGS__); \
+        fs::Logger::log("ERROR", message.str(), __FUNCTION__, __FILE__, __LINE__); \
+        SDL_assert(!"LOG ERROR" && message.str().c_str()); \
     } \
     while(0)
 
-#define FS_LOG(tag, message) FS_LOGF(tag, fs::dformat((message)))
-#define FS_FATAL(message) FS_FATALF(fs::dformat((message)))
-#define FS_ERROR(message) FS_ERRORF(fs::dformat((message)))
-#define FS_WARN(message) FS_LOG("WARN", (message))
-#define FS_INFO(message) FS_LOG("INFO", (message))
-#define FS_DEBUG(message) FS_LOG("DEBUG", (message))
-#define FS_WARNF(format) FS_LOGF("WARN", (format))
-#define FS_INFOF(format) FS_LOGF("INFO", (format))
-#define FS_DEBUGF(format) FS_LOGF("DEBUG", (format))
+#define FS_WARNF(format, ...) FS_LOGF("WARN", format, __VA_ARGS__)
+#define FS_INFOF(format, ...) FS_LOGF("INFO", format, __VA_ARGS__)
+#define FS_DEBUGF(format, ...) FS_LOGF("DEBUG", format, __VA_ARGS__)
 
+#define FS_LOG(tag, message) FS_LOGF(tag, "%1%", message)
+#define FS_FATAL(message) FS_FATALF("%1%", message)
+#define FS_ERROR(message) FS_ERRORF("%1%", message)
+#define FS_WARN(message) FS_LOG("WARN", message)
+#define FS_INFO(message) FS_LOG("INFO", message)
+#define FS_DEBUG(message) FS_LOG("DEBUG", message)
 #endif

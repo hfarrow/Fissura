@@ -17,16 +17,16 @@ void memory::logArenaReport(const SharedPtr<ArenaReport> report)
 
 
     FS_INFO("logging arena report:");
-    FS_INFOF(dformat("    Arena Name: %1%") % report->arenaName);
+    FS_INFOF("    Arena Name: %1%", report->arenaName);
 
     if(!report->noTracking)
     {
-        FS_INFOF(dformat("    Number of Allocations: %1%") % report->numOfAllocations);
-        FS_INFOF(dformat("    Virtual Size:  %1%") % report->virtualSize);
-        FS_INFOF(dformat("    Physical Size: %1%") % report->physicalSize);
-        FS_INFOF(dformat("    Used:      %1%") % report->used);
-        FS_INFOF(dformat("    Allocated: %1%") % report->allocated);
-        FS_INFOF(dformat("    Wasted:    %1%") % report->wasted);
+        FS_INFOF("    Number of Allocations: %1%", report->numOfAllocations);
+        FS_INFOF("    Virtual Size:  %1%", report->virtualSize);
+        FS_INFOF("    Physical Size: %1%", report->physicalSize);
+        FS_INFOF("    Used:      %1%", report->used);
+        FS_INFOF("    Allocated: %1%", report->allocated);
+        FS_INFOF("    Wasted:    %1%", report->wasted);
     }
     else
     {
@@ -39,16 +39,16 @@ void memory::logArenaReport(const SharedPtr<ArenaReport> report)
         {
             uptr ptr = pair.first;
             AllocationInfo& info = pair.second;
-            FS_INFOF(dformat("    Allocation(%1%): %2% | %3% | %4%:%5% | ")
-                    % info.id
-                    % (void*)ptr
-                    % info.size
-                    % info.fileName
-                    % info.lineNumber);
+            FS_INFOF("    Allocation(%1%): %2% | %3% | %4%:%5% | "
+                    , info.id
+                    , (void*)ptr
+                    , info.size
+                    , info.fileName
+                    , info.lineNumber);
 
             if(report->hasStackTrace)
             {
-                FS_INFOF(dformat("    Stack Trace:\n%1%") % StackTraceUtil::getCaller(info.frames, info.numFrames, 0));
+                FS_INFOF("    Stack Trace:\n%1%", StackTraceUtil::getCaller(info.frames, info.numFrames, 0));
             }
             else
             {

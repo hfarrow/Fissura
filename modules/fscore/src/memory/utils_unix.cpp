@@ -21,8 +21,8 @@ namespace internal
         if(userPtr == MAP_FAILED)
         {
             FS_ASSERT_MSG_FORMATTED(false,
-                                    dformat("Failed to reserve requested size %u. errno: %i")
-                                    % size % errno);
+                                    "Failed to reserve requested size %u. errno: %i"
+                                    , size , errno);
             return nullptr;
         }
 
@@ -38,8 +38,8 @@ namespace internal
         if(userPtr == MAP_FAILED)
         {
             FS_ASSERT_MSG_FORMATTED(false,
-                                    dformat("Failed to allocate requested ptr of size %u. errno: %i")
-                                    % size % errno);
+                                    "Failed to allocate requested ptr of size %u. errno: %i"
+                                    , size , errno);
             return nullptr;
         }
 
@@ -55,8 +55,8 @@ namespace internal
         if(userPtr == MAP_FAILED)
         {
             FS_ASSERT_MSG_FORMATTED(false,
-                                    dformat("Failed to allocate requested size %u. errno: %i")
-                                    % size % errno);
+                                    "Failed to allocate requested size %u. errno: %i"
+                                    , size , errno);
             return nullptr;
         }
 
@@ -72,8 +72,8 @@ namespace internal
         if(userPtr == MAP_FAILED)
         {
             FS_ASSERT_MSG_FORMATTED(false,
-                                    dformat("Failed to free requested ptr of size %u. errno: %i")
-                                    % size % errno);
+                                    "Failed to free requested ptr of size %u. errno: %i"
+                                    , size , errno);
 
             return;
         }
@@ -88,8 +88,8 @@ namespace internal
         if(munmap(ptr, size))
         {
             FS_ASSERT_MSG_FORMATTED(false,
-                                    dformat("Failed to release ptr %p of size %u. errno: %i")
-                                    % ptr % size % errno);
+                                    "Failed to release ptr %p of size %u. errno: %i"
+                                    , ptr , size , errno);
         }
     }
 }

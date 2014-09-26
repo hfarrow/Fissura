@@ -48,4 +48,5 @@ add_subdirectory(spikes)
 
 enable_testing()
 add_test(NAME FissuraCoreTest COMMAND $<TARGET_FILE:fscore-test> --log_level=all)
+add_test(NAME FissuraIoTest COMMAND $<TARGET_FILE:fsio-test> --log_level=all)
 # add_test(NAME FissuraGameTest COMMAND $<TARGET_FILE:fsgame-test> --log_level=all)

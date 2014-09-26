@@ -109,53 +109,6 @@ namespace internal
         return offset;
     }
 
-    template<>
-    const char* OsFile<PLATFORM_ID>::getModeForFlags(FileSystem::Mode mode)
-    {
-        bool isRead = mode.isSet(FileSystem::Mode::READ);
-        bool isWrite = mode.isSet(FileSystem::Mode::WRITE);
-        bool isAppend = mode.isSet(FileSystem::Mode::APPEND);
-        bool isRecreate = mode.isSet(FileSystem::Mode::RECREATE);
-
-        FS_ASSERT_MSG(!(isAppend && isRecreate), "Cannot open a file with RECREATE and APPEND both specified.");
-        FS_ASSERT_MSG(isRead || isWrite, "Opening a file requires READ or WRITE mode to be specified.");
-
-        const char* fileMode = "";
-        if(isWrite)
-        {
-            if(isRecreate)
-            {
-                if(isRead)
-                {
-                    fileMode = "w+b";
-                }
-                else
-                {
-                    fileMode = "wb";
-                }
-            }
-            else if(isAppend)
-            {
-                if(isRead)
-                {
-                    fileMode = "a+b";
-                }
-                else
-                {
-                    fileMode = "ab";
-                }
-            }
-            else
-            {
-                fileMode = "r+b";
-            }
-        }
-        else if(isRead)
-        {
-            fileMode = "rb";
-        }
-
-        return fileMode;
-    }
+    
 }
 }

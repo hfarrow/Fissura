@@ -12,7 +12,7 @@ namespace fs
         FS_DECLARE_FLAGS(FileSystemModeFlags,
                             READ,
                             WRITE,
-                            RECREATE,
+                            CREATE,
                             APPEND);
     }
 

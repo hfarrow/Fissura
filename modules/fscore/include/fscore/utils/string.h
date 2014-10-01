@@ -11,6 +11,10 @@
 
 #define MAX_DIGITS_IN_INT 12  // max number of digits in an int (-2147483647 = 11 digits, +1 for the '\0')
 
+#define FS_FORMAT_STREAM_ARG(arg, n)    % (arg)
+#define FS_MAKE_FORMAT(format, ...) \
+    (dformat((format)) FS_PP_EXPAND_ARGS(FS_FORMAT_STREAM_ARG, __VA_ARGS__))
+
 namespace fs
 {
     template<class Arena>
@@ -25,7 +29,7 @@ namespace fs
     template<class Arena>
     using wformat = boost::basic_format<wchar_t, std::char_traits<wchar_t>, StlAllocator<wchar_t, Arena>>;
 
-    using DebugString = std::basic_string<char, std::char_traits<char>, DebugStlAllocator<char >>;
+    using DebugString = std::basic_string<char, std::char_traits<char>, DebugStlAllocator<char>>;
     using DebugWString = std::basic_string<wchar_t, std::char_traits<wchar_t>, DebugStlAllocator<wchar_t >>;
     using dformat = boost::basic_format<char, std::char_traits<char>, DebugStlAllocator<char>>;
     using dwformat = boost::basic_format<wchar_t, std::char_traits<wchar_t>, DebugStlAllocator<wchar_t>>;

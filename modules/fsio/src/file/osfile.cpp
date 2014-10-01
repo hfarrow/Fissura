@@ -1,4 +1,7 @@
 #include "fsio/file/osfile.h"
+
+#include <cstring>
+
 #include "fscore/debugging/assert.h"
 
 namespace fs
@@ -6,12 +9,12 @@ namespace fs
 namespace internal
 {
     template<>
-    const char* OsFile<PLATFORM_ID>::getModeForFlags(FileSystem::Mode mode)
+    void OsFile<PLATFORM_ID>::getModeForFlags(IFileSystem::Mode mode, OsMode& osModeOut)
     {
-        bool isRead = mode.isSet(FileSystem::Mode::READ);
-        bool isWrite = mode.isSet(FileSystem::Mode::WRITE);
-        bool isAppend = mode.isSet(FileSystem::Mode::APPEND);
-        bool isCreate = mode.isSet(FileSystem::Mode::CREATE);
+        bool isRead = mode.isSet(IFileSystem::Mode::READ);
+        bool isWrite = mode.isSet(IFileSystem::Mode::WRITE);
+        bool isAppend = mode.isSet(IFileSystem::Mode::APPEND);
+        bool isCreate = mode.isSet(IFileSystem::Mode::CREATE);
 
         FS_ASSERT_MSG(!(isAppend && isCreate), "Cannot open a file with CREATE and APPEND both specified.");
         FS_ASSERT_MSG(isRead || isWrite, "Opening a file requires READ or WRITE mode to be specified.");
@@ -51,7 +54,15 @@ namespace internal
             fileMode = "rb";
         }
 
-        return fileMode;
+        auto len = strlen(fileMode);
+        FS_ASSERT(len < sizeof(OsMode));
+
+        strcpy(osModeOut, fileMode);
+        if(mode.isSet(IFileSystem::Mode::TEXT))
+        {
+            // Remove the 'b' from the end of fileMode
+            osModeOut[len-1] = '\0';
+        }
     }
 }
 }

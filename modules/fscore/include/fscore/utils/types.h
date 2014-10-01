@@ -28,8 +28,8 @@ namespace fs
     template<typename K, typename V, typename Arena>
     using MapAllocator = StlAllocator<std::pair<const K, V>, Arena>;
 
-    template<typename K, typename V, typename Arena>
-    using Map = std::map<K, V, std::less<K>, MapAllocator<K, V, Arena>>;
+    template<typename K, typename V, typename Arena, typename Compare=std::less<K>>
+    using Map = std::map<K, V, Compare, MapAllocator<K, V, Arena>>;
 
     template<typename T, typename Arena>
     using Vector = std::vector<T, StlAllocator<T, Arena>>;
@@ -48,6 +48,15 @@ namespace fs
 
     template<typename T>
     using DebugList = std::list<T, DebugStlAllocator<T>>;
+
+    struct CompareCString
+    {
+        bool operator()(const char *a, const char *b) const
+        {
+            return std::strcmp(a, b) < 0;
+        }
+    };
+
 
     // Pre C++11... Use above template alaises if possible.
 	// #define FS_DECL_UNIQUE_PTR(T) std::unique_ptr<T, std::function<void(T*)>>

@@ -3,5 +3,7 @@
 
 #include "fsio/file/file_system.h"
 #include "fsio/file/osfile.h"
+#include "fsio/file/disk_file.h"
+#include "fsio/file/disk_device.h"
 
 #endif

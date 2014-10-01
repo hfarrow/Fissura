@@ -7,7 +7,6 @@
 
 #include <SDL.h>
 
-//#include "fscore/debugging/logger.h"
 #include "fscore/utils/types.h"
 
 namespace fs

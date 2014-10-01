@@ -30,9 +30,6 @@ namespace fs
     }
 }
 
-#define FS_FORMAT_STREAM_ARG(arg, n)    % (arg)
-#define FS_MAKE_FORMAT(format, ...) \
-    (dformat((format)) FS_PP_EXPAND_ARGS(FS_FORMAT_STREAM_ARG, __VA_ARGS__))
 
 #define FS_LOGF(tag, format, ...) \
     do \

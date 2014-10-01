@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <boost/test/unit_test.hpp>
 
 #include "global_fixture.h"
@@ -33,53 +32,59 @@ BOOST_FIXTURE_TEST_SUITE(osfile, OsFileFixture)
 
 BOOST_AUTO_TEST_CASE(open_empty_file_for_read)
 {
-    OsFile file(path("content/empty.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
     BOOST_REQUIRE(file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(open_small_file_for_read)
 {
-    OsFile file(path("content/small.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
+    BOOST_REQUIRE(file.opened());
+}
+
+BOOST_AUTO_TEST_CASE(open_small_file_for_text_read)
+{
+    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ | IFileSystem::Mode::TEXT, false);
     BOOST_REQUIRE(file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(close_file)
 {
-    OsFile file(path("content/empty.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
     file.~OsFile();
     BOOST_REQUIRE(!file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(empty_file_size_is_zero)
 {
-    OsFile file(path("content/empty.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
     file.seekToEnd();
     BOOST_CHECK(file.tell() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(small_file_size_is_correct)
 {
-    OsFile file(path("content/small.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.seekToEnd();
     BOOST_CHECK(file.tell() == 1951);
 }
 
 BOOST_AUTO_TEST_CASE(open_missing_file_for_read)
 {
-    auto lambda = [&](){OsFile file(path("content/missing.bin"), FileSystem::Mode::READ, false);};
+    auto lambda = [&](){OsFile file(path("content/missing.bin"), IFileSystem::Mode::READ, false);};
     FS_REQUIRE_ASSERT(lambda);
 }
 
 BOOST_AUTO_TEST_CASE(seek_to_position)
 {
-    OsFile file(path("content/small.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.seek(100);
     BOOST_CHECK(file.tell() == 100);
 }
 
 BOOST_AUTO_TEST_CASE(skip_forward)
 {
-    OsFile file(path("content/small.bin"), FileSystem::Mode::READ, false);
+    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.skip(100);
     BOOST_CHECK(file.tell() == 100);
     file.skip(100);
@@ -91,7 +96,7 @@ BOOST_AUTO_TEST_CASE(open_new_file_for_write)
     const char* fileName = path("content/new.bin");
     std::remove(fileName);
     {
-        OsFile file(fileName, FileSystem::Mode::WRITE | FileSystem::Mode::CREATE, false);
+        OsFile file(fileName, IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE, false);
     }
 
     // If the file was created, we should be able to delete it.
@@ -104,7 +109,7 @@ BOOST_AUTO_TEST_CASE(write_and_read)
     std::remove(fileName);
 
     {
-        OsFile file(fileName, FileSystem::Mode::WRITE | FileSystem::Mode::CREATE, false);
+        OsFile file(fileName, IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE, false);
 
         char data[512] = {0};
         std::memset(data, 'a', sizeof(data));
@@ -112,7 +117,7 @@ BOOST_AUTO_TEST_CASE(write_and_read)
     }
 
     {
-        OsFile file(fileName, FileSystem::Mode::READ, false);
+        OsFile file(fileName, IFileSystem::Mode::READ, false);
 
         char data[512] = {0};
         file.read(data, sizeof(data));
@@ -129,14 +134,14 @@ BOOST_AUTO_TEST_CASE(write_then_append)
     std::remove(fileName);
 
     {
-        OsFile file(fileName, FileSystem::Mode::WRITE | FileSystem::Mode::CREATE, false);
+        OsFile file(fileName, IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE, false);
         char data[256] = {0};
         std::memset(data, 'a', sizeof(data));
         file.write(data, sizeof(data));
     }
 
     {
-        OsFile file(fileName, FileSystem::Mode::WRITE | FileSystem::Mode::APPEND | FileSystem::Mode::READ, false);
+        OsFile file(fileName, IFileSystem::Mode::WRITE | IFileSystem::Mode::APPEND | IFileSystem::Mode::READ, false);
         char data[256] = {0};
         std::memset(data, 'b', sizeof(data));
         file.write(data, sizeof(data));

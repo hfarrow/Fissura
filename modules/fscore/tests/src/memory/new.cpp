@@ -55,24 +55,24 @@ BOOST_AUTO_TEST_CASE(allocate_single_and_verify)
     StackArena arena(area, "allocate_single_and_verify");
 
     // Allocate TestPOD
-    TestPOD* obj = FS_NEW(TestPOD, arena)();
+    TestPOD* obj = FS_NEW(TestPOD, &arena)();
     BOOST_REQUIRE(obj);
     BOOST_CHECK(pointerUtil::alignTopAmount((uptr)obj, alignof(TestPOD)) == 0);
-    FS_DELETE(obj, arena);
+    FS_DELETE(obj, &arena);
     BOOST_CHECK(*reinterpret_cast<u32*>(obj) == DEALLLOCATED_TAG_PATTERN);
 
     // Allocate TestNonPOD
-    TestNonPOD* obj2 = FS_NEW(TestNonPOD, arena)();
+    TestNonPOD* obj2 = FS_NEW(TestNonPOD, &arena)();
     BOOST_REQUIRE(obj2);
     BOOST_CHECK(pointerUtil::alignTopAmount((uptr)obj2, alignof(TestNonPOD)) == 0);
-    FS_DELETE(obj2, arena);
+    FS_DELETE(obj2, &arena);
     BOOST_CHECK(*reinterpret_cast<u32*>(obj2) == DEALLLOCATED_TAG_PATTERN);
 
     // Allocate TestPOD aligned
-    TestPOD* obj3 = FS_NEW_ALIGNED(TestPOD, arena, 16)();
+    TestPOD* obj3 = FS_NEW_ALIGNED(TestPOD, &arena, 16)();
     BOOST_REQUIRE(obj3);
     BOOST_CHECK(pointerUtil::alignTopAmount((uptr)obj3, 16) == 0);
-    FS_DELETE(obj3, arena);
+    FS_DELETE(obj3, &arena);
     BOOST_CHECK(*reinterpret_cast<u32*>(obj3) == DEALLLOCATED_TAG_PATTERN);
 }
 
@@ -82,18 +82,18 @@ BOOST_AUTO_TEST_CASE(allocate_array_and_verify)
     StackArena arena(area, "allocate_array_and_verify");
 
     // Allocate 10 TestNonPOD and verify they were constructed
-    TestNonPOD* array = FS_NEW_ARRAY(TestNonPOD[10], arena);
+    TestNonPOD* array = FS_NEW_ARRAY(TestNonPOD[10], &arena);
     BOOST_REQUIRE(array);
     for(u32 i = 0; i < 10; ++i)
     {
         BOOST_CHECK(array[i].c == 'a');
     }
-    FS_DELETE_ARRAY(array, arena);
+    FS_DELETE_ARRAY(array, &arena);
 
     // Allocate 10 TestPOD
-    TestPOD* array2 = FS_NEW_ARRAY(TestPOD[10], arena);
+    TestPOD* array2 = FS_NEW_ARRAY(TestPOD[10], &arena);
     BOOST_REQUIRE(array2);
-    FS_DELETE_ARRAY(array2, arena);
+    FS_DELETE_ARRAY(array2, &arena);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

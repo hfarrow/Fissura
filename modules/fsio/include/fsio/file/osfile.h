@@ -14,10 +14,13 @@ namespace fs
         class OsFile
         {
         public:
-            OsFile(const char* path, FileSystem::Mode mode, bool async);
+            using OsMode = char[4];
+
+            OsFile(const char* path, IFileSystem::Mode mode, bool async);
             ~OsFile();
 
-            bool opened();
+            bool opened() const;
+            void close();
 
             ////////////////////////////////////////////////////////////////////////
             // Synchronous API
@@ -36,11 +39,11 @@ namespace fs
 
         private:
             const char* _path;
-            FileSystem::Mode _mode;
+            IFileSystem::Mode _mode;
             bool _async;
             SDL_RWops* _pStream;
 
-            const char* getModeForFlags(FileSystem::Mode mode);
+            void getModeForFlags(IFileSystem::Mode mode, OsMode& osModeOut);
         };
     }
 

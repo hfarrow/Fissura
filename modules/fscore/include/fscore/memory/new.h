@@ -5,29 +5,34 @@
 #include "fscore/utils/types.h"
 #include "fscore/debugging/assert.h"
 
-#define FS_NEW(type, arena)    FS_NEW_ALIGNED(type, (arena), alignof(type))
+#define FS_NEW(type, arena) \
+    FS_NEW_ALIGNED(type, (arena), alignof(type))
 
-#define FS_NEW_ALIGNED(type, arena, alignment)    new ((arena).allocate(sizeof(type), alignment, FS_SOURCE_INFO)) type
+#define FS_NEW_ALIGNED(type, arena, alignment) \
+    new ((arena)->allocate(sizeof(type), alignment, FS_SOURCE_INFO)) type
 
-#define FS_DELETE(object, arena)    fs::deleteSingle((object), (arena))
+#define FS_DELETE(object, arena) \
+    fs::deleteSingle((object), (arena))
 
-#define FS_NEW_ARRAY(type, arena)    fs::newArray<fs::TypeAndCount<type>::Type>((arena), fs::TypeAndCount<type>::Count, __FILE__, __LINE__, \
-                                                  fs::IntToType<fs::IsPOD<fs::TypeAndCount<type>::Type>::value>())
+#define FS_NEW_ARRAY(type, arena) \
+    fs::newArray<fs::TypeAndCount<type>::Type>((arena), fs::TypeAndCount<type>::Count, __FILE__, __LINE__, \
+                                                fs::IntToType<fs::IsPOD<fs::TypeAndCount<type>::Type>::value>())
 
-#define FS_DELETE_ARRAY(object, arena)    deleteArray((object), (arena))
+#define FS_DELETE_ARRAY(object, arena) \
+    deleteArray((object), (arena))
 
 namespace fs
 {
     template<typename T, class Arena>
-    void deleteSingle(T* object, Arena& arena)
+    void deleteSingle(T* object, Arena* arena)
     {
         // FS_PRINT("deleteSingle(" << (void*)object << ", " << (void*)&arena << ")");
         object->~T();
-        arena.free(object);
+        arena->free(object);
     }
 
     template<typename T, class Arena>
-    T* newArray(Arena& arena, size_t n, const char* file, u32 line, NonPODType)
+    T* newArray(Arena* arena, size_t n, const char* file, u32 line, NonPODType)
     {
         // FS_PRINT("newArray-NonPODType(" << (void*)&arena << ", " << n << ", " << file << ", " << line << ")");
         union
@@ -49,7 +54,7 @@ namespace fs
     }
 
     template<typename T, class Arena>
-    T* newArray(Arena& arena, size_t n, const char* file, u32 line, PODType)
+    T* newArray(Arena* arena, size_t n, const char* file, u32 line, PODType)
     {
         // FS_PRINT("newArray-PODType(" << (void*)&arena << ", " << n << ", " << file << ", " << line << ")");
         union
@@ -64,7 +69,7 @@ namespace fs
         // to store n ahead of the returned memory.
         size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
 
-        as_void = arena.allocate(sizeof(T) * (n+numHeaderElements), alignof(T), SourceInfo(file, line));
+        as_void = arena->allocate(sizeof(T) * (n+numHeaderElements), alignof(T), SourceInfo(file, line));
 
         // store number of elements at the back of the first element of the array.
         as_T += numHeaderElements;
@@ -74,13 +79,13 @@ namespace fs
     }
 
     template <typename T, class Arena>
-    void deleteArray(T* ptr, Arena& arena)
+    void deleteArray(T* ptr, Arena* arena)
     {
         deleteArray(ptr, arena, IntToType<IsPOD<T>::value>());
     }
 
     template<typename T, class Arena>
-    void deleteArray(T* ptr, Arena& arena, NonPODType)
+    void deleteArray(T* ptr, Arena* arena, NonPODType)
     {
         // FS_PRINT("deleteArray-NonPODType(" << (void*)ptr << ", " << (void*)(&arena) << ")");
         union
@@ -97,7 +102,7 @@ namespace fs
 
         size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
 
-        arena.free(as_T-numHeaderElements);
+        arena->free(as_T-numHeaderElements);
     }
 
     template<typename T, class Arena>
@@ -113,7 +118,7 @@ namespace fs
         as_T = ptr;
         size_t numHeaderElements = sizeof(size_t) / sizeof(T) + ((bool)(sizeof(size_t) % sizeof(T)) || 0);
 
-        arena.free(as_T-numHeaderElements);
+        arena->free(as_T-numHeaderElements);
     }
 }
 

@@ -274,7 +274,7 @@ namespace Logger
     {
         if(!s_pLogManager)
         {
-            s_pLogManager = FS_NEW(LogManager, *memory::getDebugArena())();
+            s_pLogManager = FS_NEW(LogManager, memory::getDebugArena())();
         }
 
         s_pLogManager->init(configFilename);
@@ -282,7 +282,7 @@ namespace Logger
 
     void destroy()
     {
-        FS_DELETE(s_pLogManager, *memory::getDebugArena());
+        FS_DELETE(s_pLogManager, memory::getDebugArena());
         s_pLogManager = nullptr;
     }
 

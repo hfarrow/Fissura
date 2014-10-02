@@ -15,8 +15,8 @@ int main( int, char **)
     Logger::init("content/logger.xml");
 
     FS_LOGF("INFO", "This is a test: %1%", "testing 123");
-    FS_FATALF("FATAL NEW %1%", 1);
-    FS_ERRORF("ERROR NEW %1%", 1);
+    FS_FATALF("FATAL %1%", 1);
+    FS_ERRORF("ERROR %1%", 1);
     FS_LOG("INFO", "LOG");
     FS_FATAL("FATAL!");
     FS_ERROR("ERROR!");

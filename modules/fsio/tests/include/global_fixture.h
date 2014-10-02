@@ -17,10 +17,14 @@ public:
     {
        instance() = this;
         basePath = SDL_GetBasePath();
+        std::remove(path("fissura.log").c_str());
+        // fs::Logger::setSurpressStdOutput(true);
+        fs::Logger::init(path("content/logger.xml").c_str());
     }
 
     ~GlobalFixture()
     {
+        fs::Logger::destroy();
         SDL_free(basePath);
     }
 

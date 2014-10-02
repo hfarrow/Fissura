@@ -232,15 +232,17 @@ void LogManager::getOutputBuffer(DebugString& outOutputBuffer, const DebugString
         {
             outOutputBuffer += funcName;
         }
-        if(lineNum != 0)
-        {
-            outOutputBuffer += ":";
-            outOutputBuffer += lineNum;
-        }
         if(sourceFile != nullptr)
         {
             outOutputBuffer += " in ";
             outOutputBuffer += sourceFile;
+        }
+        if(lineNum != 0)
+        {
+            outOutputBuffer += ":";
+            char lineBuffer[6];
+            snprintf(lineBuffer, sizeof(lineBuffer), "%d",lineNum);
+            outOutputBuffer += lineBuffer;
         }
 
         clock::time_point now = clock::now();

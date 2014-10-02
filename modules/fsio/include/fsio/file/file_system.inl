@@ -56,7 +56,7 @@ namespace fs
         using TempStringArena = MemoryArena<Allocator<StackAllocatorBottom, AllocationHeaderU32>,
                                    SingleThread, SimpleBoundsChecking, FullMemoryTracking, MemoryTagging>;
         StackArea<256> area;
-        TempStringArena arena(area, __FILE__);
+        TempStringArena arena(area, __FUNCTION__);
         // small buffer optimization may result in no memory being allocated from the arena.
 
         fs::string<TempStringArena> str(deviceList, &arena);
@@ -72,8 +72,6 @@ namespace fs
             deviceType = str;
             str.clear();
         }
-
-        memory::logArenaReport(arena.generateArenaReport());
 
         auto iter = _mountedDevices.find(deviceType.c_str());
         if(iter == _mountedDevices.end())

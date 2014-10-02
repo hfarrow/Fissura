@@ -63,6 +63,19 @@ BOOST_AUTO_TEST_CASE(open_file_and_close)
 
 }
 
+BOOST_AUTO_TEST_CASE(open_with_invalid_device_list)
+{
+    FileSystem<FileArena> filesys(&arena);
+    DiskDevice<FileArena> device(&filesys);
+
+    auto lambda = [&]()
+    {
+        auto file = device.open("some:other:devices", path("content/empty.bin"), IFileSystem::Mode::READ);
+    };
+
+    FS_REQUIRE_ASSERT(lambda);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 

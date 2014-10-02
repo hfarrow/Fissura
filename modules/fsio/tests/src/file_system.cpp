@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
+#include <SDL.h>
 #include "global_fixture.h"
 #include "fstest.h"
 #include "fscore.h"
@@ -65,6 +66,30 @@ BOOST_AUTO_TEST_CASE(mount_disk_device_and_open_file_and_unmount)
 
     filesys.unmount(&device);
     BOOST_CHECK(!filesys.isMounted(&device));
+}
+
+BOOST_AUTO_TEST_CASE(pref_device_piggyback)
+{
+    char *base_path = SDL_GetPrefPath("Fissura", "fsio-test");
+    BOOST_REQUIRE(base_path);
+
+    FileSystem<FileArena> filesys(&arena);
+    DiskDevice<FileArena> disk(&filesys);
+    PrefDevice pref(&filesys, base_path);
+
+    filesys.mount(&disk);
+    filesys.mount(&pref);
+
+    {
+        SharedPtr<IFile> file = filesys.open("pref:disk", "prefFile.bin", IFileSystem::Mode::READ | IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE);
+        BOOST_REQUIRE(file);
+        BOOST_REQUIRE(file->opened());
+    }
+
+    filesys.unmount(&pref);
+    filesys.unmount(&disk);
+
+    SDL_free(base_path);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

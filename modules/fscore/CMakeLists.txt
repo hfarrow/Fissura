@@ -13,6 +13,11 @@ set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(PROJECT_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME})
 
 include_directories(${PROJECT_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${fstest_SOURCE_DIR}/include)
+include_directories(${PROJECT_TEST_INCLUDE_DIR})
+include_directories(${TINYXML_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
@@ -25,9 +30,9 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES_UNIX
         "${PROJECT_SOURCE_DIR}/*_unix.c")
 
 IF(DEFINED IS_UNIX)
-    list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
+    # list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_WINDOWS})
 ELSE()
-    list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_UNIX})
+    # list(REMOVE_ITEM PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES_UNIX})
 ENDIF(DEFINED IS_UNIX)
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
@@ -36,14 +41,8 @@ target_link_libraries(${PROJECT_NAME}
                       ${TINYXML_LIBRARIES})
 
 # Unit testing
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${SDL2_INCLUDE_DIRS})
-include_directories(${fstest_SOURCE_DIR}/include)
-include_directories(${PROJECT_TEST_INCLUDE_DIR})
-include_directories(${TINYXML_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
-#list(REMOVE_ITEM PROJECT_TEST_FILES "${PROJECT_TEST_DIR}/core/allocators/traceallocator.cpp")
 
 add_definitions(-DBOOST_TEST_DYN_LINK)
 add_executable(${PROJECT_NAME}-test ${PROJECT_TEST_FILES})

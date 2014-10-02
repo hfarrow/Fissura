@@ -1,7 +1,7 @@
 #ifndef FS_DISK_FILE_H
 #define FS_DISK_FILE_H
 
-#include "fscore/utils/types.h"
+#include "fscore/types.h"
 
 #include "fsio/file/osfile.h"
 #include "fsio/file/file_system.h"

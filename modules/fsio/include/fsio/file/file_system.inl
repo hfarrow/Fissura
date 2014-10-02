@@ -1,10 +1,10 @@
 #ifndef FS_FILE_SYSTEM_INL
 #define FS_FILE_SYSTEM_INL
 
-#include "fscore/debugging/logger.h"
-#include "fscore/debugging/assert.h"
-#include "fscore/memory/allocators/stack_allocator.h"
-#include "fscore/memory/policies/extended_memory_tracking_policy.h"
+#include "fslog/logger.h"
+#include "fscore/assert.h"
+#include "fsmem/allocators/stack_allocator.h"
+#include "fsmem/policies/extended_memory_tracking_policy.h"
 #include "fsio/file/file_system.h"
 
 namespace fs

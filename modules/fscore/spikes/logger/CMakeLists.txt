@@ -14,10 +14,10 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
-add_custom_target(${PROJECT_NAME}-content
-                  COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_ROOT_DIR}/content/
-                  ${PROJECT_OUTPUT_DIR}/content/)
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-content)
+# add_custom_target(${PROJECT_NAME}-content
+#                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_ROOT_DIR}/content/
+#                   ${PROJECT_OUTPUT_DIR}/content/)
+# add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-content)
 
 include_directories(${fscore_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}

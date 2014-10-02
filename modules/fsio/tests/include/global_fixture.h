@@ -3,6 +3,9 @@
 
 #include <SDL.h>
 #include "fscore.h"
+#include "fslog.h"
+
+using namespace fs;
 
 class GlobalFixture
 {
@@ -13,18 +16,18 @@ public:
         return s_inst;
     }
 
-    GlobalFixture()
+    GlobalFixture() :
+        basePath(SDL_GetBasePath()),
+        logger(path("content/logger.xml").c_str(), "fissura")
     {
        instance() = this;
-        basePath = SDL_GetBasePath();
         std::remove(path("fissura.log").c_str());
-        // fs::Logger::setSurpressStdOutput(true);
-        fs::Logger::init(path("content/logger.xml").c_str());
+        logger.setConsoleSurpressed(true);
+        log::setRootLogger(&logger);
     }
 
     ~GlobalFixture()
     {
-        fs::Logger::destroy();
         SDL_free(basePath);
     }
 
@@ -34,6 +37,8 @@ public:
     }
 
     char* basePath;
+    Logger logger;
 };
 
 #endif
+

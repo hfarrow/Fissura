@@ -2,10 +2,10 @@
 
 #include <SDL.h>
 
-#include "fscore/utils/string.h"
-#include "fscore/debugging/assert.h"
-#include "fscore/debugging/logger.h"
-#include "fscore/utils/platforms.h"
+#include "fsmem/stl_types.h"
+#include "fscore/assert.h"
+#include "fslog/logger.h"
+#include "fscore/platforms.h"
 #include "fsio/file/file_system.h"
 
 using namespace fs;

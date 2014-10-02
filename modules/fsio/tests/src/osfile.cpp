@@ -3,6 +3,7 @@
 #include "global_fixture.h"
 #include "fstest.h"
 #include "fscore.h"
+#include "fsmem.h"
 #include "fsio.h"
 
 using namespace fs;

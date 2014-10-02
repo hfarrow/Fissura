@@ -1,6 +1,6 @@
 #include "fsio/file/pref_device.h"
 
-#include "fscore/utils/types.h"
+#include "fscore/types.h"
 
 #include "fsio/file/file_system.h"
 

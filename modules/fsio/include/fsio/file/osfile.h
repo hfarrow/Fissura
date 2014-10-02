@@ -1,7 +1,7 @@
 #ifndef FS_OS_FILE_H
 #define FS_OS_FILE_H
 
-#include "fscore/utils/types.h"
+#include "fscore/types.h"
 #include "fsio/file/file_system.h"
 
 struct SDL_RWops;

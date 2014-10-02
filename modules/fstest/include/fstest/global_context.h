@@ -3,6 +3,7 @@
 
 #include <functional>
 #include "fscore.h"
+// #include "fslog.h"
 
 #define FS_TEST_UNUSED(x)
 
@@ -14,49 +15,55 @@
 
 namespace fs
 {
-namespace test
-{
-    class GlobalContext
+    namespace test
     {
-    public:
-        GlobalContext()
+        class GlobalContext
         {
-        }
+        public:
+            GlobalContext()
+            {
+            }
 
-        ~GlobalContext()
-        {
-        }
+            ~GlobalContext()
+            {
+            }
 
-        static GlobalContext* instance()
-        {
-            static GlobalContext context;
-            return &context;
-        }
+            static GlobalContext* instance()
+            {
+                static GlobalContext context;
+                return &context;
+            }
 
-        bool requireAssert(std::function<void()> func)
-        {
-            bool surpressStdOutputOld = fs::Logger::getSurpressStdOutput();
-            fs::Logger::setSurpressStdOutput(true);
-            fs::setAssertTriggered(false);
+            bool requireAssert(std::function<void()> func)
+            {
+                auto oldLogger = core::getLogger();
+                core::setLogger(nullptr);
 
-            fs::setIgnoreAsserts(true);
-            func();
-            fs::setIgnoreAsserts(false);
+                // auto rootLogger = log::getRootLogger();
+                // bool oldSurpression;
+                // if(rootLogger)
+                // {
+                //     oldSurpression = rootLogger->isConsoleSurpressed();
+                //     rootLogger->setConsoleSurpressed(true);
+                // }
 
-            fs::Logger::setSurpressStdOutput(surpressStdOutputOld);
-            return fs::getAssertTriggered();
+                    fs::setAssertTriggered(false);
 
-            // If the assert results in an abort(), the below code would work.
-            // SDL_assert, however can not easily be made to abort with out corrupting its state so
-            // a custom assert hanlder is used to ignore the assert and set fs:assertTriggered to true.
-            //
-            // BOOST_TEST_MESSAGE("GlobalContext requireAssert - Assert expected below this point.");
-            // auto& monitor = boost::unit_test::unit_test_monitor_t::instance();
-            // BOOST_REQUIRE_THROW(monitor.execute([&func](){func(); return 0;}), boost::execution_exception);
-            // BOOST_TEST_MESSAGE("GlobalContext requireAssert - End of expected assert above this point.");
-        }
-    };
-}
+                    fs::setIgnoreAsserts(true);
+                    func();
+                    fs::setIgnoreAsserts(false);
+
+                core::setLogger(oldLogger);
+
+                // if(rootLogger)
+                // {
+                //     rootLogger->setConsoleSurpressed(oldSurpression);
+                // }
+
+                return fs::getAssertTriggered();
+            }
+        };
+    }
 }
 
 #endif

@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE FissuraCore
+#define BOOST_TEST_MODULE fscore
 
 #include <boost/test/unit_test.hpp>
 #include "fscore.h"

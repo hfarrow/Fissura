@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "fscore/debugging/assert.h"
+#include "fscore/assert.h"
 
 namespace fs
 {

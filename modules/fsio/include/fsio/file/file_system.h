@@ -1,9 +1,9 @@
 #ifndef FS_FILE_SYSTEM_H
 #define FS_FILE_SYSTEM_H
 
-#include "fscore/utils/types.h"
-#include "fscore/utils/flags.h"
-#include "fscore/utils/string.h"
+#include "fscore/types.h"
+#include "fsutil/flags.h"
+#include "fsmem/stl_types.h"
 
 
 #define FS_FILESYS_INFOF(format, ...) FS_INFOF((DebugString("[File System] ") + DebugString(format)), __VA_ARGS__)
@@ -92,7 +92,6 @@ namespace fs
         Arena* getArena() const { return _pArena; }
     private:
         Arena* _pArena;
-
 
         using DeviceMap = Map<const char*, IFileDevice*, Arena, CompareCString>;
         using DeviceMapPair = std::pair<const char*, IFileDevice*>;

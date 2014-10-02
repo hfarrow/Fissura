@@ -1,6 +1,6 @@
 <Logging>
-    <Log tag="DEBUG" debugger="1" file="1" detailed="0"/>
-    <Log tag="INFO" debugger="1" file="1" detailed="0"/>
+    <Log tag="DEBUG" debugger="1" file="0" detailed="0"/>
+    <Log tag="INFO" debugger="1" file="0" detailed="0"/>
     <Log tag="WARN" debugger="1" file="1" detailed="1"/>
     <Log tag="ERROR" debugger="1" file="1" detailed="1"/>
     <Log tag="FATAL" debugger="1" file="1" detailed="1"/>

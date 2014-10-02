@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE FissuraCore
+#define BOOST_TEST_MODULE fsio
 
 #include <boost/test/unit_test.hpp>
 #include <SDL.h>

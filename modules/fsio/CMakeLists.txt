@@ -14,6 +14,15 @@ set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 set(PROJECT_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME})
 
 include_directories(${PROJECT_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${fscore_SOURCE_DIR}/include)
+include_directories(${fslog_SOURCE_DIR}/include)
+include_directories(${fsmem_SOURCE_DIR}/include)
+include_directories(${fsutil_SOURCE_DIR}/include)
+include_directories(${fstest_SOURCE_DIR}/include)
+include_directories(${PROJECT_TEST_INCLUDE_DIR})
+include_directories(${TINYXML_INCLUDE_DIR})
 
 file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
@@ -35,14 +44,10 @@ add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
                       ${SDL2_LIBRARIES}
                       ${TINYXML_LIBRARIES}
-                      fscore)
-
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${SDL2_INCLUDE_DIRS})
-include_directories(${fscore_SOURCE_DIR}/include)
-include_directories(${fstest_SOURCE_DIR}/include)
-include_directories(${PROJECT_TEST_INCLUDE_DIR})
-include_directories(${TINYXML_INCLUDE_DIR})
+                      fscore
+                      fsmem
+                      fslog
+                      fsutil)
 
 file(GLOB_RECURSE PROJECT_TEST_FILES "${PROJECT_TEST_SOURCE_DIR}/*.cpp")
 

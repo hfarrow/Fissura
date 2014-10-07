@@ -2,3 +2,6 @@
 	path = external/SDL2
     url = git@github.com:spurious/SDL-mirror.git
     ignore = all
+[submodule "external/zlib"]
+	path = external/zlib
+	url = git@github.com:hfarrow/zlib.git

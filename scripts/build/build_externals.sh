@@ -8,7 +8,7 @@ BUILD_DIR=$EXTERNAL_DIR/build
 SDL2_DIR=$EXTERNAL_DIR/SDL2
 TINYXML_DIR=$EXTERNAL_DIR/tinyxml
 ZLIB_DIR=$EXTERNAL_DIR/zlib
-MINIZIP_DIR=$ZLIB_DIR/contrib/minizip
+MINIZIP_DIR=$EXTERNAL_DIR/minizip
 
 pushd $EXTERNAL_DIR
 
@@ -32,10 +32,17 @@ popd
 pushd $ZLIB_DIR
 ./configure --prefix=$BUILD_DIR
 make test
-pushd $MINIZIP_DIR
-make
-popd
 make install
+popd
+
+pushd $MINIZIP_DIR
+rm -rf build
+mkdir build
+cd build
+cmake ../
+make
+make install
+cd ..
 popd
 
 popd

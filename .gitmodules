@@ -4,4 +4,7 @@
     ignore = all
 [submodule "external/zlib"]
 	path = external/zlib
-	url = git@github.com:hfarrow/zlib.git
+	url = git@github.com:madler/zlib.git
+[submodule "external/minizip"]
+	path = external/minizip
+	url = git@github.com:hfarrow/minizip.git

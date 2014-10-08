@@ -23,6 +23,8 @@ include_directories(${fsutil_SOURCE_DIR}/include)
 include_directories(${fstest_SOURCE_DIR}/include)
 include_directories(${PROJECT_TEST_INCLUDE_DIR})
 include_directories(${TINYXML_INCLUDE_DIR})
+include_directories(${ZLIB_INCLUDE_DIR})
+include_directories(${MINIZIP_INCLUDE_DIRS})
 
 file(GLOB_RECURSE PROJECT_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/*.cpp"
@@ -44,6 +46,8 @@ add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
                       ${SDL2_LIBRARIES}
                       ${TINYXML_LIBRARIES}
+                      ${ZLIB_LIBRARIES}
+                      ${MINIZIP_LIBRARIES}
                       fscore
                       fsmem
                       fslog

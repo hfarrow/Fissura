@@ -39,7 +39,8 @@ set(EXTERNAL_LIBRARY_INSTALL_PATH ${CMAKE_SOURCE_DIR}/external/build)
 find_package(SDL2 REQUIRED)
 find_package(TinyXML REQUIRED)
 find_package(Boost 1.54.0 COMPONENTS unit_test_framework REQUIRED)
-
+find_package(ZLIB REQUIRED)
+find_package(MiniZip REQUIRED)
 
 add_subdirectory(modules/fstest)
 add_subdirectory(modules/fscore)

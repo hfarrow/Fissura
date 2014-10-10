@@ -20,7 +20,7 @@ public:
         basePath(SDL_GetBasePath()),
         logger(path("content/logger.xml").c_str(), "fissura")
     {
-       instance() = this;
+        instance() = this;
         std::remove(path("fissura.log").c_str());
         logger.setConsoleSurpressed(true);
         log::setRootLogger(&logger);

@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(create_file_system)
 BOOST_AUTO_TEST_CASE(mount_disk_device_and_open_file_and_unmount)
 {
     FileSystem<FileArena> filesys(&arena);
-    DiskDevice<FileArena> device(&filesys);
+    DiskDevice device;
 
     BOOST_CHECK(!filesys.isMounted(&device));
     filesys.mount(&device);
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(pref_device_piggyback)
     BOOST_REQUIRE(base_path);
 
     FileSystem<FileArena> filesys(&arena);
-    DiskDevice<FileArena> disk(&filesys);
-    PrefDevice pref(&filesys, base_path);
+    DiskDevice disk;
+    PrefDevice pref(base_path);
 
     filesys.mount(&disk);
     filesys.mount(&pref);

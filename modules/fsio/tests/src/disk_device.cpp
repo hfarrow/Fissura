@@ -46,16 +46,16 @@ BOOST_FIXTURE_TEST_SUITE(disk_device, DiskDeviceFixture)
 BOOST_AUTO_TEST_CASE(create_device)
 {
     FileSystem<FileArena> filesys(&arena);
-    DiskDevice<FileArena> device(&filesys);
+    DiskDevice device;
     BOOST_CHECK(device.getType() == "disk");
 }
 
 BOOST_AUTO_TEST_CASE(open_file_and_close)
 {
     FileSystem<FileArena> filesys(&arena);
-    DiskDevice<FileArena> device(&filesys);
+    DiskDevice device;
 
-    auto file = device.open(nullptr, path("content/empty.bin"), IFileSystem::Mode::READ);
+    auto file = device.open(&filesys, nullptr, path("content/empty.bin"), IFileSystem::Mode::READ);
     BOOST_REQUIRE(file);
     BOOST_REQUIRE(file->opened());
 
@@ -67,11 +67,11 @@ BOOST_AUTO_TEST_CASE(open_file_and_close)
 BOOST_AUTO_TEST_CASE(open_with_invalid_device_list)
 {
     FileSystem<FileArena> filesys(&arena);
-    DiskDevice<FileArena> device(&filesys);
+    DiskDevice device;
 
     auto lambda = [&]()
     {
-        auto file = device.open("some:other:devices", path("content/empty.bin"), IFileSystem::Mode::READ);
+        auto file = device.open(&filesys, "some:other:devices", path("content/empty.bin"), IFileSystem::Mode::READ);
     };
 
     FS_REQUIRE_ASSERT(lambda);

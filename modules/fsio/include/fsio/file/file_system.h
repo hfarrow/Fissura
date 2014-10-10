@@ -4,6 +4,7 @@
 #include "fscore/types.h"
 #include "fsutil/flags.h"
 #include "fsmem/stl_types.h"
+#include "fsmem/adapter.h"
 
 
 #define FS_FILESYS_INFOF(format, ...) FS_INFOF((DebugString("[File System] ") + DebugString(format)), __VA_ARGS__)
@@ -21,6 +22,9 @@ namespace fs
                             APPEND,
                             TEXT);
     }
+
+    class IArenaAdapter;
+    class IFileSystem;
 
     class IFile
     {
@@ -48,7 +52,7 @@ namespace fs
         using Mode = Flags<internal::FileSystemModeFlags>;
 
         virtual const char* getType() const FS_ABSTRACT;
-        virtual SharedPtr<IFile> open(const char* deviceList, const char* path, Mode mode) FS_ABSTRACT;
+        virtual SharedPtr<IFile> open(IFileSystem* pFileSystem, const char* deviceList, const char* path, Mode mode) FS_ABSTRACT;
     };
 
     class IAsyncFile
@@ -71,6 +75,7 @@ namespace fs
         virtual void close(SharedPtr<IFile> pFile) FS_ABSTRACT;
 
         virtual bool isMounted(IFileDevice* pDevice) const FS_ABSTRACT;
+        virtual IArenaAdapter* getArenaAdapter() FS_ABSTRACT;
     };
 
     template <class Arena>
@@ -89,15 +94,16 @@ namespace fs
 
         virtual bool isMounted(IFileDevice* pDevice) const override;
 
+        virtual IArenaAdapter* getArenaAdapter() { return &_adapter; };
         Arena* getArena() const { return _pArena; }
     private:
         Arena* _pArena;
+        ArenaAdapter<Arena> _adapter;
 
         using DeviceMap = Map<const char*, IFileDevice*, Arena, CompareCString>;
         using DeviceMapPair = std::pair<const char*, IFileDevice*>;
         using DeviceMapAllocator = StlAllocator<DeviceMapPair, Arena>;
         DeviceMap _mountedDevices;
-
     };
 }
 

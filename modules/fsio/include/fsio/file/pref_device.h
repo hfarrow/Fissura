@@ -8,18 +8,15 @@ namespace fs
     class PrefDevice : public IFileDevice
     {
     public:
-        PrefDevice(IFileSystem* pFileSystem, const char* prefPath);
+        PrefDevice(const char* prefPath);
         virtual ~PrefDevice();
 
         virtual const char* getType() const override { return "pref"; }
-        virtual SharedPtr<IFile> open(const char* deviceList, const char* path, Mode mode) override;
+        virtual SharedPtr<IFile> open(IFileSystem* pFileSystem, const char* deviceList, const char* path, Mode mode) override;
     private:
-        IFileSystem* _pFileSystem;
         const char* _prefPath;
     };
 }
-
-#include "fsio/file/disk_device.inl"
 
 #endif
 

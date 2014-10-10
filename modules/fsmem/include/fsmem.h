@@ -8,6 +8,7 @@
 #include "fsmem/memory_area.h"
 #include "fsmem/source_info.h"
 #include "fsmem/allocation_info.h"
+#include "fsmem/adapter.h"
 
 // Memory Allocators
 #include "fsmem/allocators/page_allocator.h"

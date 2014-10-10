@@ -1,17 +1,17 @@
-#ifndef FS_DISK_DEVICE_H
-#define FS_DISK_DEVICE_H
+#ifndef FS_GZIP_DEVICE_H
+#define FS_GZIP_DEVICE_H
 
 #include "fsio/file/file_system.h"
 
 namespace fs
 {
-    class DiskDevice : public IFileDevice
+    class GzipDevice : public IFileDevice
     {
     public:
-        DiskDevice();
-        virtual ~DiskDevice();
+        GzipDevice();
+        virtual ~GzipDevice();
 
-        virtual const char* getType() const override { return "disk"; }
+        virtual const char* getType() const override { return "gzip"; }
         virtual SharedPtr<IFile> open(IFileSystem* pFileSystem, const char* deviceList, const char* path, Mode mode) override;
     private:
     };

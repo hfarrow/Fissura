@@ -1,7 +1,10 @@
 #include "fsmem/sdl/malloc_hook.h"
-#include "fsmem/memory_arena.h"
 
 #include <cstdlib>
+
+#include "fsmem/adapter.h"
+#include "fsmem/memory_arena.h"
+
 
 using namespace fs;
 

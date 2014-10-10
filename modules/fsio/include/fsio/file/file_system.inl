@@ -12,6 +12,7 @@ namespace fs
     template <class Arena>
     FileSystem<Arena>::FileSystem(Arena* pArena) :
         _pArena(pArena),
+        _adapter(pArena),
         _mountedDevices(CompareCString(), DeviceMapAllocator(pArena))
     {
         FS_ASSERT(pArena);
@@ -88,7 +89,7 @@ namespace fs
         FS_FILESYS_INFOF("Device '%1%' in mode '%2%' is opening file '%3%'",
                 pDevice->getType(), desc, path);
 
-        return pDevice->open(str.c_str(), path, mode);
+        return pDevice->open(this, str.c_str(), path, mode);
     }
 
     template <class Arena>

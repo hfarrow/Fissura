@@ -1,18 +1,17 @@
-#ifndef FS_DISK_FILE_H
-#define FS_DISK_FILE_H
+#ifndef GS_GZIP_FILE_H
+#define GS_GZIP_FILE_H
 
 #include "fscore/types.h"
 
-#include "fsio/file/osfile.h"
 #include "fsio/file/file_system.h"
 
 namespace fs
 {
-    class DiskFile : public IFile
+    class GzipFile : public IFile
     {
     public:
-        DiskFile(const char* path, IFileSystem::Mode mode);
-        virtual ~DiskFile();
+        GzipFile(IArenaAdapter* pArena, SharedPtr<IFile> pFile, IFileSystem::Mode mode);
+        virtual ~GzipFile();
 
         virtual bool opened() const override;
         virtual void close() override;
@@ -28,8 +27,13 @@ namespace fs
         virtual size_t tell() const override;
 
     private:
-        OsFile _file;
+        IArenaAdapter* _pArena;
+        SharedPtr<IFile> _pFile;
+        char* _pBuffer;
+        size_t _deflatedSize;
+        size_t _inflatedSize;
     };
 }
 
 #endif
+

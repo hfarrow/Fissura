@@ -1,6 +1,7 @@
 #include "fsio/file/disk_device.h"
 
 #include "fsio/file/disk_file.h"
+#include "fsio/file/file_system.h"
 
 using namespace fs;
 

@@ -1,5 +1,5 @@
-#ifndef FS_DISK_FILE_H
-#define FS_DISK_FILE_H
+#ifndef FS_IO_DISK_FILE_H
+#define FS_IO_DISK_FILE_H
 
 #include "fscore/types.h"
 
@@ -12,6 +12,7 @@ namespace fs
     {
     public:
         DiskFile(const char* path, IFileSystem::Mode mode);
+        explicit DiskFile(FILE* pFile, bool autoClose);
         virtual ~DiskFile();
 
         virtual bool opened() const override;

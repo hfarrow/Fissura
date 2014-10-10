@@ -1,5 +1,5 @@
-#ifndef FS_FILE_SYSTEM_H
-#define FS_FILE_SYSTEM_H
+#ifndef FS_IO_FILE_SYSTEM_H
+#define FS_IO_FILE_SYSTEM_H
 
 #include "fscore/types.h"
 #include "fsutil/flags.h"

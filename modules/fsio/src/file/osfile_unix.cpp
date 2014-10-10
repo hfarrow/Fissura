@@ -39,6 +39,20 @@ namespace internal
     }
 
     template<>
+    OsFile<PLATFORM_ID>::OsFile(FILE* pFile, bool async, bool autoClose) :
+        _path("nullptr"),// null string will crash boost:format
+        _mode(IFileSystem::Mode::READ | IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE),
+        _async(async)
+    {
+        FS_ASSERT(pFile);
+
+        if(!(_pStream = SDL_RWFromFP(pFile, autoClose ? SDL_TRUE : SDL_FALSE)))
+        {
+            FS_FILESYS_ERRORF("Failed to open file. SDL Error: %1%", SDL_GetError());
+        }
+    }
+
+    template<>
     OsFile<PLATFORM_ID>::~OsFile()
     {
         close();

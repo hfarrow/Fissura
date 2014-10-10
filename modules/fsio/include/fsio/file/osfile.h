@@ -1,5 +1,5 @@
-#ifndef FS_OS_FILE_H
-#define FS_OS_FILE_H
+#ifndef FS_IO_OS_FILE_H
+#define FS_IO_OS_FILE_H
 
 #include "fscore/types.h"
 #include "fsio/file/file_system.h"
@@ -17,6 +17,7 @@ namespace fs
             using OsMode = char[4];
 
             OsFile(const char* path, IFileSystem::Mode mode, bool async);
+            OsFile(FILE* pFile, bool async, bool autoClose);
             ~OsFile();
 
             bool opened() const;

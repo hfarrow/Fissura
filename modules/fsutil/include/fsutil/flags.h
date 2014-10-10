@@ -98,6 +98,8 @@ namespace fs
         using typename TEnum::Bits;
         using Description = char[512];
 
+        static const typename TEnum::Enum NONE = (typename TEnum::Enum)0;
+
         inline Flags(void)
         : _flags(0)
         {

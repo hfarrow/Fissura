@@ -1,5 +1,5 @@
-#ifndef FS_GZIP_DEVICE_H
-#define FS_GZIP_DEVICE_H
+#ifndef FS_IO_GZIP_DEVICE_H
+#define FS_IO_GZIP_DEVICE_H
 
 #include "fsio/file/file_system.h"
 

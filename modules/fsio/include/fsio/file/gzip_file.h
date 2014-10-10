@@ -1,5 +1,5 @@
-#ifndef GS_GZIP_FILE_H
-#define GS_GZIP_FILE_H
+#ifndef FS_IO_GZIP_FILE_H
+#define FS_IO_GZIP_FILE_H
 
 #include "fscore/types.h"
 

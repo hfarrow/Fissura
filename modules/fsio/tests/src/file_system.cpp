@@ -93,6 +93,28 @@ BOOST_AUTO_TEST_CASE(pref_device_piggyback)
     SDL_free(base_path);
 }
 
+BOOST_AUTO_TEST_CASE(temp_device_file_open)
+{
+    FileSystem<FileArena> filesys(&arena);
+    TempDevice device;
+
+    filesys.mount(&device);
+
+    {
+        auto file = filesys.open("temp", nullptr, IFileSystem::Mode::NONE);
+        BOOST_REQUIRE(file);
+        BOOST_REQUIRE(file->opened());
+
+        char data[256] = {0};
+        file->write(data, sizeof(data));
+        file->seek(0);
+        file->seekToEnd();
+        BOOST_CHECK(file->tell() == sizeof(data));
+    }
+
+    filesys.unmount(&device);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 

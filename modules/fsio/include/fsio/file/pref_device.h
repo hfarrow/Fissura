@@ -1,5 +1,5 @@
-#ifndef FS_PREF_DEVICE_H
-#define FS_PREF_DEVICE_H
+#ifndef FS_IO_PREF_DEVICE_H
+#define FS_IO_PREF_DEVICE_H
 
 #include "fsio/file/file_system.h"
 

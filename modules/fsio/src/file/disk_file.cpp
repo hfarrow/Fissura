@@ -13,6 +13,11 @@ DiskFile::DiskFile(const char* path, IFileSystem::Mode mode) :
 {
 }
 
+DiskFile::DiskFile(FILE* pFile, bool autoClose) :
+    _file(pFile, false, autoClose)
+{
+}
+
 DiskFile::~DiskFile()
 {
 
@@ -20,7 +25,7 @@ DiskFile::~DiskFile()
 
 bool DiskFile::opened() const
 {
-        return _file.opened();
+    return _file.opened();
 }
 
 void DiskFile::close()

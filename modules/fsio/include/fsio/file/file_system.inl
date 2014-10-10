@@ -1,5 +1,5 @@
-#ifndef FS_FILE_SYSTEM_INL
-#define FS_FILE_SYSTEM_INL
+#ifndef FS_IO_FILE_SYSTEM_INL
+#define FS_IO_FILE_SYSTEM_INL
 
 #include "fslog/logger.h"
 #include "fscore/assert.h"
@@ -87,7 +87,7 @@ namespace fs
         Mode::Description desc;
         mode.toString(desc);
         FS_FILESYS_INFOF("Device '%1%' in mode '%2%' is opening file '%3%'",
-                pDevice->getType(), desc, path);
+                pDevice->getType(), desc, path ? path : "nullptr");
 
         return pDevice->open(this, str.c_str(), path, mode);
     }

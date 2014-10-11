@@ -10,7 +10,7 @@ namespace fs
     class GzipFile : public IFile
     {
     public:
-        GzipFile(IArenaAdapter* pArena, SharedPtr<IFile> pFile, IFileSystem::Mode mode);
+        GzipFile(SharedPtr<IFile> pFile, IFileSystem::Mode mode);
         virtual ~GzipFile();
 
         virtual bool opened() const override;
@@ -27,7 +27,6 @@ namespace fs
         virtual size_t tell() const override;
 
     private:
-        IArenaAdapter* _pArena;
         SharedPtr<IFile> _pFile;
         char* _pBuffer;
         size_t _deflatedSize;

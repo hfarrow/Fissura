@@ -3,6 +3,7 @@
 #include "fscore/types.h"
 
 #include "fsio/file/file_system.h"
+#include "fsio/file/gzip_file.h"
 
 using namespace fs;
 
@@ -17,6 +18,10 @@ GzipDevice::~GzipDevice()
 
 SharedPtr<IFile> GzipDevice::open(IFileSystem* pFileSystem, const char* deviceList, const char* path, Mode mode)
 {
+    FS_ASSERT_MSG_FORMATTED(deviceList || std::strlen(deviceList) > 0,
+            "GzipDevice is a piggy back device. Invalid device list: '%1%'", deviceList ? deviceList : "nullptr");
+
     auto inputFile = pFileSystem->open(deviceList, path, mode);
-    return SharedPtr<IFile>();
+
+    return std::allocate_shared<GzipFile>(StlAllocator<GzipFile, IArenaAdapter>(pFileSystem->getArenaAdapter()), inputFile, mode);
 }

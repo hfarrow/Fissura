@@ -6,12 +6,11 @@
 namespace fs
 {
 
-    GzipFile::GzipFile(IArenaAdapter* pArena, SharedPtr<IFile> pFile, IFileSystem::Mode mode) :
-        _pArena(pArena),
+    GzipFile::GzipFile(SharedPtr<IFile> pFile, IFileSystem::Mode mode) :
         _pFile(pFile)
     {
-        FS_ASSERT(pArena);
         FS_ASSERT(pFile);
+        FS_ASSERT(pFile->opened());
 
         pFile->seekToEnd();
         _deflatedSize = pFile->tell();

@@ -23,5 +23,5 @@ SharedPtr<IFile> GzipDevice::open(IFileSystem* pFileSystem, const char* deviceLi
 
     auto inputFile = pFileSystem->open(deviceList, path, mode);
 
-    return std::allocate_shared<GzipFile>(StlAllocator<GzipFile, IArenaAdapter>(pFileSystem->getArenaAdapter()), inputFile, mode);
+    return std::allocate_shared<GzipFile>(StlAllocator<GzipFile, IArenaAdapter>(pFileSystem->getArenaAdapter()), inputFile, pFileSystem, mode);
 }

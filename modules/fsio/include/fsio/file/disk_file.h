@@ -17,6 +17,7 @@ namespace fs
 
         virtual bool opened() const override;
         virtual void close() override;
+        virtual const char* getName() const override;
 
         ////////////////////////////////////////////////////////////////
         // Synchronous API

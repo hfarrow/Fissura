@@ -40,7 +40,7 @@ namespace internal
 
     template<>
     OsFile<PLATFORM_ID>::OsFile(FILE* pFile, bool async, bool autoClose) :
-        _path("nullptr"),// null string will crash boost:format
+        _path("[Unkown FILE* handle]"),
         _mode(IFileSystem::Mode::READ | IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE),
         _async(async)
     {
@@ -75,16 +75,24 @@ namespace internal
     }
 
     template<>
+    const char* OsFile<PLATFORM_ID>::getName() const
+    {
+        return _path;
+    }
+
+    template<>
     size_t OsFile<PLATFORM_ID>::read(void* buffer, size_t length)
     {
         FS_ASSERT_MSG_FORMATTED(opened(), "OsFile to file '%1%' has already been closed.", _path);
+        size_t oldPos = SDL_RWtell(_pStream);
         size_t numRead = SDL_RWread(_pStream, buffer, length, 1);
-        if(numRead == 0)
+        size_t newPos = SDL_RWtell(_pStream);
+        if(numRead == 0 && oldPos == newPos)
         {
             FS_FILESYS_ERRORF("Failed to read %1% bytes from file '%2%'. SDL Error: %3%",
                     length, _path, SDL_GetError());
         }
-        return numRead * length;
+        return newPos - oldPos;
     }
 
     template<>

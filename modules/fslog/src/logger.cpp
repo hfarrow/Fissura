@@ -215,7 +215,6 @@ void Logger::outputFinalBufferToLogs(const DebugString& finalBuffer, u32 flags)
 
 void Logger::flushOutputBuffer()
 {
-    std::lock_guard<std::mutex> lock(_mutex);
     if(_outputBuffer.length() > 0)
     {
         writeToLogFile(_outputBuffer);

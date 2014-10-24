@@ -1,6 +1,8 @@
 #ifndef FS_IO_GZIP_FILE_H
 #define FS_IO_GZIP_FILE_H
 
+#include "zlib.h"
+
 #include "fscore/types.h"
 
 #include "fsio/file/file_system.h"
@@ -10,11 +12,12 @@ namespace fs
     class GzipFile : public IFile
     {
     public:
-        GzipFile(SharedPtr<IFile> pFile, IFileSystem::Mode mode);
+        GzipFile(SharedPtr<IFile> pInputFile, IFileSystem* pFileSystem, IFileSystem::Mode mode);
         virtual ~GzipFile();
 
         virtual bool opened() const override;
         virtual void close() override;
+        virtual const char* getName() const override;
 
         ////////////////////////////////////////////////////////////////
         // Synchronous API
@@ -28,9 +31,19 @@ namespace fs
 
     private:
         SharedPtr<IFile> _pFile;
-        char* _pBuffer;
+        SharedPtr<IFile> _pTempBuffer;
         size_t _deflatedSize;
-        size_t _inflatedSize;
+
+        bool _readInitialized;
+        bool _writeInitialized;
+        z_stream _readStream;
+        z_stream _writeStream;
+        static const size_t _CHUNK_SIZE = 128000;
+        char _buffer[_CHUNK_SIZE];
+        size_t _offset;
+
+        size_t inflate(void* buffer, size_t length);
+        const char* getZlibErrorString(i32 error);
     };
 }
 

@@ -33,6 +33,7 @@ namespace fs
 
         virtual bool opened() const FS_ABSTRACT;
         virtual void close() FS_ABSTRACT;
+        virtual const char* getName() const FS_ABSTRACT;
 
         ////////////////////////////////////////////////////////////////
         // Synchronous API

@@ -22,6 +22,7 @@ namespace fs
 
             bool opened() const;
             void close();
+            const char* getName() const;
 
             ////////////////////////////////////////////////////////////////////////
             // Synchronous API

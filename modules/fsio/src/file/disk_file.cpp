@@ -33,6 +33,11 @@ void DiskFile::close()
     _file.close();
 }
 
+const char* DiskFile::getName() const
+{
+    return _file.getName();
+}
+
 size_t DiskFile::read(void* buffer, size_t length)
 {
     return _file.read(buffer, length);

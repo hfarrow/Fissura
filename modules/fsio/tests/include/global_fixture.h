@@ -22,7 +22,7 @@ public:
     {
         instance() = this;
         std::remove(path("fissura.log").c_str());
-        logger.setConsoleSurpressed(true);
+        // logger.setConsoleSurpressed(true);
         log::setRootLogger(&logger);
     }
 

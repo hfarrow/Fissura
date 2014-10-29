@@ -18,10 +18,10 @@ public:
 
     GlobalFixture() :
         basePath(SDL_GetBasePath()),
-        logger(path("content/logger.xml").c_str(), "fissura")
+        logger(path("content/logger.xml"), "fissura")
     {
         instance() = this;
-        std::remove(path("fissura.log").c_str());
+        std::remove(path("fissura.log"));
         // logger.setConsoleSurpressed(true);
         log::setRootLogger(&logger);
     }
@@ -31,12 +31,22 @@ public:
         SDL_free(basePath);
     }
 
-    std::string path(const char* path)
+    using PathBuffer = char[512];
+    void path(const char* inPath, PathBuffer out)
     {
-        return std::string(basePath) + std::string(path);
+        auto fullPath = std::string(basePath) + std::string(inPath);
+        FS_ASSERT(fullPath.length() < sizeof(PathBuffer));
+        strncpy(out, fullPath.c_str(), sizeof(PathBuffer));
+    }
+
+    const char* path(const char* inPath)
+    {
+        path(inPath, lastPath);
+        return lastPath;
     }
 
     char* basePath;
+    PathBuffer lastPath;
     Logger logger;
 };
 

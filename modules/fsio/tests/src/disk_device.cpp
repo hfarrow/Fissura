@@ -19,7 +19,8 @@ struct DiskDeviceFixture
 {
     DiskDeviceFixture() :
         area(FS_SIZE_OF_MB * 4),
-        arena(area, "FileArena")
+        arena(area, "FileArena"),
+        gf(GlobalFixture::instance())
     {
     }
 
@@ -27,16 +28,9 @@ struct DiskDeviceFixture
     {
     }
 
-    const char* path(const char* path)
-    {
-        _temp = GlobalFixture::instance()->path(path);
-        return _temp.c_str();
-    }
-
     HeapArea area;
     FileArena arena;
-
-    std::string _temp;
+    GlobalFixture* gf;
 };
 
 
@@ -55,9 +49,10 @@ BOOST_AUTO_TEST_CASE(open_file_and_close)
     FileSystem<FileArena> filesys(&arena);
     DiskDevice device;
 
-    auto file = device.open(&filesys, nullptr, path("content/empty.bin"), IFileSystem::Mode::READ);
+    auto file = device.open(&filesys, nullptr, gf->path("content/empty.bin"), IFileSystem::Mode::READ);
     BOOST_REQUIRE(file);
     BOOST_REQUIRE(file->opened());
+    BOOST_CHECK(strcmp(file->getName(), gf->path("content/empty.bin")) == 0);
 
     filesys.close(file);
     BOOST_REQUIRE(!file->opened());
@@ -71,7 +66,7 @@ BOOST_AUTO_TEST_CASE(open_with_invalid_device_list)
 
     auto lambda = [&]()
     {
-        auto file = device.open(&filesys, "some:other:devices", path("content/empty.bin"), IFileSystem::Mode::READ);
+        auto file = device.open(&filesys, "some:other:devices", gf->path("content/empty.bin"), IFileSystem::Mode::READ);
     };
 
     FS_REQUIRE_ASSERT(lambda);

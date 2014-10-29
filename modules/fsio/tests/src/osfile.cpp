@@ -10,7 +10,8 @@ using namespace fs;
 
 struct OsFileFixture
 {
-    OsFileFixture()
+    OsFileFixture() :
+        gf(GlobalFixture::instance())
     {
     }
 
@@ -18,13 +19,7 @@ struct OsFileFixture
     {
     }
 
-    const char* path(const char* path)
-    {
-        _temp = GlobalFixture::instance()->path(path);
-        return _temp.c_str();
-    }
-
-    std::string _temp;
+    GlobalFixture* gf;
 };
 
 
@@ -33,59 +28,60 @@ BOOST_FIXTURE_TEST_SUITE(osfile, OsFileFixture)
 
 BOOST_AUTO_TEST_CASE(open_empty_file_for_read)
 {
-    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/empty.bin"), IFileSystem::Mode::READ, false);
     BOOST_REQUIRE(file.opened());
+    BOOST_CHECK(strcmp(file.getName(), gf->path("content/empty.bin")) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(open_small_file_for_read)
 {
-    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/small.bin"), IFileSystem::Mode::READ, false);
     BOOST_REQUIRE(file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(open_small_file_for_text_read)
 {
-    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ | IFileSystem::Mode::TEXT, false);
+    OsFile file(gf->path("content/small.bin"), IFileSystem::Mode::READ | IFileSystem::Mode::TEXT, false);
     BOOST_REQUIRE(file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(close_file)
 {
-    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/empty.bin"), IFileSystem::Mode::READ, false);
     file.~OsFile();
     BOOST_REQUIRE(!file.opened());
 }
 
 BOOST_AUTO_TEST_CASE(empty_file_size_is_zero)
 {
-    OsFile file(path("content/empty.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/empty.bin"), IFileSystem::Mode::READ, false);
     file.seekToEnd();
     BOOST_CHECK(file.tell() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(small_file_size_is_correct)
 {
-    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.seekToEnd();
     BOOST_CHECK(file.tell() == 1951);
 }
 
 BOOST_AUTO_TEST_CASE(open_missing_file_for_read)
 {
-    auto lambda = [&](){OsFile file(path("content/missing.bin"), IFileSystem::Mode::READ, false);};
+    auto lambda = [&](){OsFile file(gf->path("content/missing.bin"), IFileSystem::Mode::READ, false);};
     FS_REQUIRE_ASSERT(lambda);
 }
 
 BOOST_AUTO_TEST_CASE(seek_to_position)
 {
-    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.seek(100);
     BOOST_CHECK(file.tell() == 100);
 }
 
 BOOST_AUTO_TEST_CASE(skip_forward)
 {
-    OsFile file(path("content/small.bin"), IFileSystem::Mode::READ, false);
+    OsFile file(gf->path("content/small.bin"), IFileSystem::Mode::READ, false);
     file.skip(100);
     BOOST_CHECK(file.tell() == 100);
     file.skip(100);
@@ -94,7 +90,7 @@ BOOST_AUTO_TEST_CASE(skip_forward)
 
 BOOST_AUTO_TEST_CASE(open_new_file_for_write)
 {
-    const char* fileName = path("content/new.bin");
+    const char* fileName = gf->path("content/new.bin");
     std::remove(fileName);
     {
         OsFile file(fileName, IFileSystem::Mode::WRITE | IFileSystem::Mode::CREATE, false);
@@ -106,7 +102,7 @@ BOOST_AUTO_TEST_CASE(open_new_file_for_write)
 
 BOOST_AUTO_TEST_CASE(write_and_read)
 {
-    const char* fileName = path("content/new.bin");
+    const char* fileName = gf->path("content/new.bin");
     std::remove(fileName);
 
     {
@@ -131,7 +127,7 @@ BOOST_AUTO_TEST_CASE(write_and_read)
 
 BOOST_AUTO_TEST_CASE(write_then_append)
 {
-    const char* fileName = path("content/new.bin");
+    const char* fileName = gf->path("content/new.bin");
     std::remove(fileName);
 
     {

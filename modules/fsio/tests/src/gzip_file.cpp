@@ -19,7 +19,8 @@ struct GzipFileFixture
 {
     GzipFileFixture() :
         area(FS_SIZE_OF_MB * 4),
-        arena(area, "FileArena")
+        arena(area, "FileArena"),
+        gf(GlobalFixture::instance())
     {
     }
 
@@ -27,16 +28,9 @@ struct GzipFileFixture
     {
     }
 
-    const char* path(const char* path)
-    {
-        _temp = GlobalFixture::instance()->path(path);
-        return _temp.c_str();
-    }
-
     HeapArea area;
     FileArena arena;
-
-    std::string _temp;
+    GlobalFixture* gf;
 };
 
 
@@ -47,11 +41,12 @@ BOOST_AUTO_TEST_CASE(open_gzip_small_file_for_read)
 {
     FileSystem<FileArena> filesys(&arena);
     DiskDevice disk;
-    GzipFile file(disk.open(&filesys, nullptr, path("content/text.txt.gz"), IFileSystem::Mode::READ),
+    GzipFile file(disk.open(&filesys, nullptr, gf->path("content/text.txt.gz"), IFileSystem::Mode::READ),
             &filesys, IFileSystem::Mode::READ);
 
     BOOST_CHECK(file.opened());
     BOOST_CHECK(file.tell() == 0);
+    BOOST_CHECK(strcmp(file.getName(), gf->path("content/text.txt.gz")) == 0);
 
     char buffer[1024] = {0};
     auto size = file.read(buffer, sizeof(buffer));
@@ -60,7 +55,7 @@ BOOST_AUTO_TEST_CASE(open_gzip_small_file_for_read)
     BOOST_REQUIRE(size < sizeof(buffer));
 
     char expectedContents[sizeof(buffer)];
-    auto expectedFile = disk.open(&filesys, nullptr, path("content/text.txt"), IFileSystem::Mode::READ);
+    auto expectedFile = disk.open(&filesys, nullptr, gf->path("content/text.txt"), IFileSystem::Mode::READ);
 
     BOOST_REQUIRE(expectedFile && expectedFile->opened());
     expectedFile->read(expectedContents, sizeof(expectedContents));
@@ -71,10 +66,10 @@ BOOST_AUTO_TEST_CASE(open_gzip_large_file_for_small_reads)
 {
     FileSystem<FileArena> filesys(&arena);
     DiskDevice disk;
-    GzipFile file(disk.open(&filesys, nullptr, path("content/large_data.bin.gz"), IFileSystem::Mode::READ),
+    GzipFile file(disk.open(&filesys, nullptr, gf->path("content/large_data.bin.gz"), IFileSystem::Mode::READ),
                   &filesys, IFileSystem::Mode::READ);
 
-    auto expectedFile = disk.open(&filesys, nullptr, path("content/large_data.bin"), IFileSystem::Mode::READ);
+    auto expectedFile = disk.open(&filesys, nullptr, gf->path("content/large_data.bin"), IFileSystem::Mode::READ);
 
     BOOST_CHECK(file.opened());
     BOOST_CHECK(expectedFile->opened());
@@ -106,10 +101,10 @@ BOOST_AUTO_TEST_CASE(open_gzip_large_file_for_large_reads)
 {
     FileSystem<FileArena> filesys(&arena);
     DiskDevice disk;
-    GzipFile file(disk.open(&filesys, nullptr, path("content/large_data.bin.gz"), IFileSystem::Mode::READ),
+    GzipFile file(disk.open(&filesys, nullptr, gf->path("content/large_data.bin.gz"), IFileSystem::Mode::READ),
                   &filesys, IFileSystem::Mode::READ);
 
-    auto expectedFile = disk.open(&filesys, nullptr, path("content/large_data.bin"), IFileSystem::Mode::READ);
+    auto expectedFile = disk.open(&filesys, nullptr, gf->path("content/large_data.bin"), IFileSystem::Mode::READ);
 
     BOOST_CHECK(file.opened());
     BOOST_CHECK(expectedFile->opened());
@@ -141,6 +136,19 @@ BOOST_AUTO_TEST_CASE(open_gzip_large_file_for_large_reads)
     expectedFile->seekToEnd();
     auto endPos = expectedFile->tell();
     BOOST_CHECK(currentPos == endPos);
+}
+
+BOOST_AUTO_TEST_CASE(open_and_read_to_null_buffer)
+{
+    FileSystem<FileArena> filesys(&arena);
+    DiskDevice disk;
+    GzipFile file(disk.open(&filesys, nullptr, gf->path("content/text.txt.gz"), IFileSystem::Mode::READ),
+            &filesys, IFileSystem::Mode::READ);
+
+    size_t size = 1;
+    auto lambda = [&](){size = file.read(nullptr, 13);};
+    FS_REQUIRE_ASSERT(lambda);
+    BOOST_CHECK(size == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

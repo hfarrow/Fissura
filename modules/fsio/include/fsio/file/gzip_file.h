@@ -30,6 +30,7 @@ namespace fs
         virtual size_t tell() const override;
 
     private:
+        IFileSystem::Mode _mode;
         SharedPtr<IFile> _pFile;
         SharedPtr<IFile> _pTempBuffer;
         size_t _deflatedSize;

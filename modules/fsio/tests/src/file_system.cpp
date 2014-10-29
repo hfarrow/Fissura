@@ -19,7 +19,8 @@ struct FileSystemFixture
 {
     FileSystemFixture() :
         area(FS_SIZE_OF_MB * 4),
-        arena(area, "FileArena")
+        arena(area, "FileArena"),
+        gf(GlobalFixture::instance())
     {
     }
 
@@ -27,16 +28,9 @@ struct FileSystemFixture
     {
     }
 
-    const char* path(const char* path)
-    {
-        _temp = GlobalFixture::instance()->path(path);
-        return _temp.c_str();
-    }
-
     HeapArea area;
     FileArena arena;
-
-    std::string _temp;
+    GlobalFixture* gf;
 };
 
 
@@ -60,9 +54,10 @@ BOOST_AUTO_TEST_CASE(mount_disk_device_and_open_file_and_unmount)
     BOOST_CHECK(filesys.isMounted(&device));
 
     {
-        auto file = filesys.open("disk", path("content/small.bin"), IFileSystem::Mode::READ | IFileSystem::Mode::TEXT);
+        auto file = filesys.open("disk", gf->path("content/small.bin"), IFileSystem::Mode::READ | IFileSystem::Mode::TEXT);
         BOOST_REQUIRE(file);
         BOOST_REQUIRE(file->opened());
+        BOOST_CHECK(strcmp(file->getName(), gf->path("content/small.bin")) == 0);
     }
 
     filesys.unmount(&device);

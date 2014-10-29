@@ -20,9 +20,11 @@
 namespace fs
 {
     GzipFile::GzipFile(SharedPtr<IFile> pFile, IFileSystem* pFileSystem, IFileSystem::Mode mode) :
+        _mode(mode),
         _pFile(pFile),
         _readInitialized(false),
-        _writeInitialized(false)
+        _writeInitialized(false),
+        _offset(0)
     {
         FS_ASSERT(pFile);
         FS_ASSERT(pFile->opened());
@@ -94,9 +96,18 @@ namespace fs
             return 0;
         }
 
+        if(!_mode.isSet(IFileSystem::Mode::READ))
+        {
+            IFileSystem::Mode::Description desc;
+            _mode.toString(desc);
+            FS_FILESYS_ERRORF("File named '%1% is not opened in READ mode. Mode for file is '%2%.",
+                    getName(), desc);
+            return 0;
+        }
+
         if(!_pTempBuffer)
         {
-            return deflate(buffer, length);
+            return inflate(buffer, length);
         }
         else
         {
@@ -108,6 +119,21 @@ namespace fs
 
     size_t GzipFile::write(const void* buffer, size_t length)
     {
+        if(!opened())
+        {
+            FS_FILESYS_ERRORF("Cannot read from closed file '%1%'", getName());
+            return 0;
+        }
+
+        if(!_mode.isSet(IFileSystem::Mode::WRITE))
+        {
+            IFileSystem::Mode::Description desc;
+            _mode.toString(desc);
+            FS_FILESYS_ERRORF("File named '%1% is not opened in WRITE mode. Mode for file is '%2%.",
+                    getName(), desc);
+            return 0;
+        }
+
         // TODO: If end of stream, append to gzip? https://github.com/madler/zlib/blob/master/examples/gzappend.c
 
         // ensure _pFile has been inflated to _pTempBuffer
@@ -167,6 +193,9 @@ namespace fs
 
     size_t GzipFile::inflate(void* buffer, size_t length)
     {
+        FS_ASSERT(buffer);
+        FS_ASSERT(length > 0);
+
         i32 ret;
         _readStream.avail_out = length;
         _readStream.next_out = (uchar*)buffer;
@@ -185,17 +214,17 @@ namespace fs
 
             do
             {
-                ret = inflate(&_readStream, Z_NO_FLUSH);
+                ret = ::inflate(&_readStream, Z_NO_FLUSH);
 
-                FS_ASSERT(ret != Z_STREAM_ERROR);
                 switch (ret) {
                 case Z_NEED_DICT:
                     ret = Z_DATA_ERROR;
                     // Intentional fall through
                 case Z_DATA_ERROR:
                 case Z_MEM_ERROR:
+                case Z_STREAM_ERROR:
                     FS_FILESYS_ERRORF("Failed to inflate chunk from file '%1%'. ZLib Error: %2% Message: %3%",
-                        getName(), getZlibErrorString(ret), _readStream.msg);
+                        getName(), getZlibErrorString(ret), _readStream.msg ? _readStream.msg : "[no message]");
                     close();
                     return 0;
                 }
